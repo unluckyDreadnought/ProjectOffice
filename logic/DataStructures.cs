@@ -22,4 +22,12 @@
         OrganizationTypes = 3,
         Subtasks = 4
     }
+
+    public enum Connection
+    {
+        OK = 0,
+        HostUnreachable = 1,
+        UserError = 2,
+        DatabaseNotExist = 3
+    }
 }

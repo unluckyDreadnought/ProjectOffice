@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.logic;
+using ProjectOffice.logic.app;
 using ProjectOffice.Properties;
 
 namespace ProjectOffice.forms

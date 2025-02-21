@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.forms;
 
-namespace ProjectOffice.logic
+namespace ProjectOffice.logic.app
 {
     public static class AppUser
     {

@@ -42,11 +42,13 @@ namespace ProjectOffice.forms
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.unknownUsrPlugPanel = new System.Windows.Forms.Panel();
+            this.hidePswdChar = new System.Windows.Forms.PictureBox();
             this.closeSettingsBtn = new System.Windows.Forms.Button();
             this.checkSettingsPswdBtn = new System.Windows.Forms.Button();
             this.pswdToSettingsTextBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.unknownUsrPlugPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.hidePswdChar)).BeginInit();
             this.SuspendLayout();
             // 
             // hostTextBox
@@ -57,6 +59,7 @@ namespace ProjectOffice.forms
             this.hostTextBox.Name = "hostTextBox";
             this.hostTextBox.Size = new System.Drawing.Size(322, 38);
             this.hostTextBox.TabIndex = 0;
+            this.hostTextBox.TextChanged += new System.EventHandler(this.settingTextBox_TextChanged);
             // 
             // usrTextBox
             // 
@@ -66,6 +69,7 @@ namespace ProjectOffice.forms
             this.usrTextBox.Name = "usrTextBox";
             this.usrTextBox.Size = new System.Drawing.Size(191, 38);
             this.usrTextBox.TabIndex = 1;
+            this.usrTextBox.TextChanged += new System.EventHandler(this.settingTextBox_TextChanged);
             // 
             // usrPswdTextBox
             // 
@@ -75,6 +79,7 @@ namespace ProjectOffice.forms
             this.usrPswdTextBox.Name = "usrPswdTextBox";
             this.usrPswdTextBox.Size = new System.Drawing.Size(260, 38);
             this.usrPswdTextBox.TabIndex = 2;
+            this.usrPswdTextBox.TextChanged += new System.EventHandler(this.settingTextBox_TextChanged);
             // 
             // dbNameTextBox
             // 
@@ -84,6 +89,7 @@ namespace ProjectOffice.forms
             this.dbNameTextBox.Name = "dbNameTextBox";
             this.dbNameTextBox.Size = new System.Drawing.Size(322, 38);
             this.dbNameTextBox.TabIndex = 3;
+            this.dbNameTextBox.Visible = false;
             // 
             // testConnectionBtn
             // 
@@ -97,6 +103,7 @@ namespace ProjectOffice.forms
             this.testConnectionBtn.TabIndex = 4;
             this.testConnectionBtn.Text = "Протестировать";
             this.testConnectionBtn.UseVisualStyleBackColor = false;
+            this.testConnectionBtn.Click += new System.EventHandler(this.testConnectionBtn_Click);
             // 
             // saveSettingsBtn
             // 
@@ -111,6 +118,7 @@ namespace ProjectOffice.forms
             this.saveSettingsBtn.TabIndex = 5;
             this.saveSettingsBtn.Text = "Сохранить";
             this.saveSettingsBtn.UseVisualStyleBackColor = false;
+            this.saveSettingsBtn.Click += new System.EventHandler(this.saveSettingsBtn_Click);
             // 
             // closeBtn
             // 
@@ -159,6 +167,7 @@ namespace ProjectOffice.forms
             this.label4.Size = new System.Drawing.Size(133, 25);
             this.label4.TabIndex = 7;
             this.label4.Text = "Название БД";
+            this.label4.Visible = false;
             // 
             // label5
             // 
@@ -171,6 +180,7 @@ namespace ProjectOffice.forms
             // 
             // unknownUsrPlugPanel
             // 
+            this.unknownUsrPlugPanel.Controls.Add(this.hidePswdChar);
             this.unknownUsrPlugPanel.Controls.Add(this.closeSettingsBtn);
             this.unknownUsrPlugPanel.Controls.Add(this.checkSettingsPswdBtn);
             this.unknownUsrPlugPanel.Controls.Add(this.pswdToSettingsTextBox);
@@ -180,6 +190,18 @@ namespace ProjectOffice.forms
             this.unknownUsrPlugPanel.Name = "unknownUsrPlugPanel";
             this.unknownUsrPlugPanel.Size = new System.Drawing.Size(562, 423);
             this.unknownUsrPlugPanel.TabIndex = 8;
+            // 
+            // hidePswdChar
+            // 
+            this.hidePswdChar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.hidePswdChar.Image = global::ProjectOffice.Properties.Resources.SHOW_PICTURE;
+            this.hidePswdChar.Location = new System.Drawing.Point(449, 170);
+            this.hidePswdChar.Name = "hidePswdChar";
+            this.hidePswdChar.Size = new System.Drawing.Size(39, 39);
+            this.hidePswdChar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.hidePswdChar.TabIndex = 3;
+            this.hidePswdChar.TabStop = false;
+            this.hidePswdChar.Click += new System.EventHandler(this.hidePswdChar_Click);
             // 
             // closeSettingsBtn
             // 
@@ -210,8 +232,9 @@ namespace ProjectOffice.forms
             this.pswdToSettingsTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.pswdToSettingsTextBox.Location = new System.Drawing.Point(83, 171);
             this.pswdToSettingsTextBox.Name = "pswdToSettingsTextBox";
-            this.pswdToSettingsTextBox.Size = new System.Drawing.Size(370, 34);
+            this.pswdToSettingsTextBox.Size = new System.Drawing.Size(346, 34);
             this.pswdToSettingsTextBox.TabIndex = 1;
+            this.pswdToSettingsTextBox.TextChanged += new System.EventHandler(this.pswdToSettingsTextBox_TextChanged);
             // 
             // label6
             // 
@@ -236,10 +259,10 @@ namespace ProjectOffice.forms
             this.Controls.Add(this.closeBtn);
             this.Controls.Add(this.saveSettingsBtn);
             this.Controls.Add(this.testConnectionBtn);
-            this.Controls.Add(this.dbNameTextBox);
-            this.Controls.Add(this.usrPswdTextBox);
-            this.Controls.Add(this.usrTextBox);
             this.Controls.Add(this.hostTextBox);
+            this.Controls.Add(this.usrTextBox);
+            this.Controls.Add(this.usrPswdTextBox);
+            this.Controls.Add(this.dbNameTextBox);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "ConnectionSettingsForm";
@@ -247,6 +270,7 @@ namespace ProjectOffice.forms
             this.Load += new System.EventHandler(this.ConnectionSettingsForm_Load);
             this.unknownUsrPlugPanel.ResumeLayout(false);
             this.unknownUsrPlugPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.hidePswdChar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -271,5 +295,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Button checkSettingsPswdBtn;
         private System.Windows.Forms.TextBox pswdToSettingsTextBox;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.PictureBox hidePswdChar;
     }
 }

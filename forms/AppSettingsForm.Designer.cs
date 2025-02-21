@@ -31,8 +31,10 @@ namespace ProjectOffice.forms
         {
             this.backToMenuBtn = new System.Windows.Forms.Button();
             this.saveSettingsBtn = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.setsPswdTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.hidePassChars = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.hidePassChars)).BeginInit();
             this.SuspendLayout();
             // 
             // backToMenuBtn
@@ -61,15 +63,18 @@ namespace ProjectOffice.forms
             this.saveSettingsBtn.TabIndex = 16;
             this.saveSettingsBtn.Text = "Сохранить";
             this.saveSettingsBtn.UseVisualStyleBackColor = false;
+            this.saveSettingsBtn.Click += new System.EventHandler(this.saveSettingsBtn_Click);
             // 
-            // textBox1
+            // setsPswdTextBox
             // 
-            this.textBox1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox1.Location = new System.Drawing.Point(62, 131);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(387, 34);
-            this.textBox1.TabIndex = 14;
-            this.textBox1.Text = "Admin";
+            this.setsPswdTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.setsPswdTextBox.Location = new System.Drawing.Point(62, 131);
+            this.setsPswdTextBox.MaxLength = 256;
+            this.setsPswdTextBox.Name = "setsPswdTextBox";
+            this.setsPswdTextBox.Size = new System.Drawing.Size(347, 34);
+            this.setsPswdTextBox.TabIndex = 14;
+            this.setsPswdTextBox.UseSystemPasswordChar = true;
+            this.setsPswdTextBox.TextChanged += new System.EventHandler(this.setsPswdTextBox_TextChanged);
             // 
             // label1
             // 
@@ -80,21 +85,35 @@ namespace ProjectOffice.forms
             this.label1.Text = "Настройка пароля к настройкам приложения";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // hidePassChars
+            // 
+            this.hidePassChars.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.hidePassChars.Image = global::ProjectOffice.Properties.Resources.SHOW_PICTURE;
+            this.hidePassChars.Location = new System.Drawing.Point(426, 131);
+            this.hidePassChars.Name = "hidePassChars";
+            this.hidePassChars.Size = new System.Drawing.Size(39, 39);
+            this.hidePassChars.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.hidePassChars.TabIndex = 17;
+            this.hidePassChars.TabStop = false;
+            this.hidePassChars.Click += new System.EventHandler(this.hidePassChars_Click);
+            // 
             // AppSettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.ClientSize = new System.Drawing.Size(506, 335);
+            this.Controls.Add(this.hidePassChars);
             this.Controls.Add(this.backToMenuBtn);
             this.Controls.Add(this.saveSettingsBtn);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.setsPswdTextBox);
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "AppSettingsForm";
             this.Text = "Settings";
             this.Load += new System.EventHandler(this.AppSettingsForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.hidePassChars)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -104,7 +123,8 @@ namespace ProjectOffice.forms
 
         private System.Windows.Forms.Button backToMenuBtn;
         private System.Windows.Forms.Button saveSettingsBtn;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox setsPswdTextBox;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.PictureBox hidePassChars;
     }
 }
