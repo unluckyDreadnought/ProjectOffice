@@ -107,6 +107,7 @@ namespace ProjectOffice.forms
             this.PswdTextBox_nec.Size = new System.Drawing.Size(329, 38);
             this.PswdTextBox_nec.TabIndex = 2;
             this.PswdTextBox_nec.UseSystemPasswordChar = true;
+            this.PswdTextBox_nec.TextChanged += new System.EventHandler(this.PswdTextBox_nec_TextChanged);
             // 
             // LoginTextBox_nec
             // 
@@ -122,6 +123,7 @@ namespace ProjectOffice.forms
             this.LoginTextBox_nec.Name = "LoginTextBox_nec";
             this.LoginTextBox_nec.Size = new System.Drawing.Size(329, 38);
             this.LoginTextBox_nec.TabIndex = 1;
+            this.LoginTextBox_nec.TextChanged += new System.EventHandler(this.LoginTextBox_nec_TextChanged);
             // 
             // showPswdImgBox
             // 

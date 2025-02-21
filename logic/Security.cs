@@ -16,6 +16,14 @@ namespace ProjectOffice.logic
             byte[] inputBytes = Encoding.UTF8.GetBytes(input + salt);
             string output = BitConverter.ToString(hashFunc.ComputeHash(inputBytes)).Replace("-", "").ToLower();
             return output;
-        }  
+        }
+        
+        public static string HashSha512(string input)
+        {
+            SHA512 sha5 = SHA512.Create();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            string output = BitConverter.ToString(sha5.ComputeHash(inputBytes)).Replace("-", "").ToLower();
+            return output;
+        }
     }
 }

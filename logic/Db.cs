@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
+using System.Text.RegularExpressions;
 using ProjectOffice.logic.app;
 using MySql.Data.MySqlClient;
 
@@ -11,6 +10,7 @@ namespace ProjectOffice.logic
     public class Db
     {
         private AppSettings _appConfig = null;
+        private Regex _regexp = null;
 
         public Db()
         {
@@ -50,5 +50,95 @@ namespace ProjectOffice.logic
             return can;
         }
 
+        public int ExecuteNoDataResult(string query)
+        {
+            (MySqlConnection con, int errCode) = GetOpenConnection();
+            if (con == null) return -1;
+            MySqlCommand com = new MySqlCommand(query, con);
+            int affected = 0;
+            try
+            {
+                affected = com.ExecuteNonQuery();
+            }
+            catch (MySqlException)
+            {
+                con.Close();
+                return -1;
+            }
+            con.Close();
+            return affected;
+        }
+
+        public object ExecuteScalar(string query)
+        {
+            (MySqlConnection con, int errCode) = GetOpenConnection();
+            if (con == null) return -1;
+            MySqlCommand com = new MySqlCommand(query, con);
+            object result = null;
+            try
+            {
+                result = com.ExecuteScalar();
+            }
+            catch (MySqlException ex)
+            {
+                con.Close();
+                return ex;
+            }
+            con.Close();
+            return result;
+        }
+
+        public DataTable ExecuteReader(string query, params string[] args)
+        {
+            (MySqlConnection con, int errCode) = GetOpenConnection();
+            if (con == null) return null;
+            MySqlCommand com = new MySqlCommand(query, con);
+
+            if (query.Contains("@"))
+            {
+                _regexp = new Regex("@\\w*");
+                MatchCollection mathces = _regexp.Matches(query);
+                int i = 0;
+                foreach (Match param in mathces)
+                {
+                    try
+                    {
+                        com.Parameters.AddWithValue(param.Value.Replace("@", ""), args[i]);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        break;
+                    }
+                    i++;
+                }
+            }
+
+            DataTable dt = new DataTable();
+            try
+            {
+                MySqlDataReader rdr = com.ExecuteReader();
+                dt.Load(rdr);
+            }
+            catch (MySqlException)
+            {
+                return null;
+                con.Close();
+            }
+            return dt;
+        }
+
+        public string[] FindUser(string login, string passwd)
+        {
+            string query = $"select concat(UserSurname, ' ', substring(UserName, 1, 1), '.', substring(UserPatronymic, 1, 1)) as snf, UserModeID, UserID from `{_appConfig.dbName}`.`user` where UserLogin = @login and UserPassword = @pswd;";
+
+            DataTable result = ExecuteReader(query, login, passwd);
+            if (result == null) return null; 
+
+            if (result.Rows.Count == 0)
+            {
+                return new string[] { "Пользователь с такими учётными данными не найден." };
+            }
+            return new string[] { result.Rows[0][0].ToString(), result.Rows[0][1].ToString(), result.Rows[0][2].ToString() };
+        }
     }
 }
