@@ -14,11 +14,9 @@ namespace ProjectOffice.forms
 {
     public partial class AppSettingsForm : Form
     {
-        private AppSettings _appConfig = null;
         public AppSettingsForm()
         {
             InitializeComponent();
-            _appConfig = new AppSettings();
         }
 
         // Функция, управляющая доступностью для нажатия кнопки сохранения
@@ -26,7 +24,7 @@ namespace ProjectOffice.forms
         {
             if (setsPswdTextBox.Text.Trim().Length > 0)
             {
-                saveSettingsBtn.Enabled = !(_appConfig.settingsPswd == setsPswdTextBox.Text.Trim()); 
+                saveSettingsBtn.Enabled = !(AppSettings.settingsPswd == setsPswdTextBox.Text.Trim()); 
             }
             else
             {
@@ -50,8 +48,8 @@ namespace ProjectOffice.forms
         // Обработчик события нажатия на кнопку сохранения
         private void saveSettingsBtn_Click(object sender, EventArgs e)
         {
-            _appConfig.settingsPswd = setsPswdTextBox.Text.Trim();
-            _appConfig.SaveModified();
+            AppSettings.settingsPswd = setsPswdTextBox.Text.Trim();
+            AppSettings.SaveModified();
         }
 
         // Обработчик события изменения текста в текстовом поле

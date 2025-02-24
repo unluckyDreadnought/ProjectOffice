@@ -16,7 +16,6 @@ namespace ProjectOffice.forms
     public partial class ConnectionSettingsForm : Form
     {
         private bool[] dbSetsFilling;
-        private AppSettings _appConfig = null;
         private Db _db = null;
 
         private bool HasTrue(bool[] array)
@@ -33,7 +32,7 @@ namespace ProjectOffice.forms
         // Функция изменения доступности кнопки применения параметров подключения
         private void CheckFieldsFilling()
         {
-            string[] currentSets = { _appConfig.dbHost, _appConfig.dbUser, _appConfig.dbUserPass };
+            string[] currentSets = { AppSettings.dbHost, AppSettings.dbUser, AppSettings.dbUserPass };
             byte cntr = 0;
             foreach (Control control in this.Controls)
             {
@@ -64,19 +63,19 @@ namespace ProjectOffice.forms
         // Функция применения изменённых настроек
         private void SaveSettings()
         {
-            if (dbSetsFilling[0]) _appConfig.dbHost = hostTextBox.Text;
-            if (dbSetsFilling[1]) _appConfig.dbUser = usrTextBox.Text;
-            if (dbSetsFilling[2]) _appConfig.dbUserPass = usrPswdTextBox.Text;
-            _appConfig.SaveModified();
+            if (dbSetsFilling[0]) AppSettings.dbHost = hostTextBox.Text;
+            if (dbSetsFilling[1]) AppSettings.dbUser = usrTextBox.Text;
+            if (dbSetsFilling[2]) AppSettings.dbUserPass = usrPswdTextBox.Text;
+            AppSettings.SaveModified();
             CheckFieldsFilling();
         }
 
         // Функция восстановления текущих применённых значений настроек в текстовых полях
         private void RestoreSettings()
         {
-            hostTextBox.Text = _appConfig.dbHost;
-            usrTextBox.Text = _appConfig.dbUser;
-            usrPswdTextBox.Text = _appConfig.dbUserPass;
+            hostTextBox.Text = AppSettings.dbHost;
+            usrTextBox.Text = AppSettings.dbUser;
+            usrPswdTextBox.Text = AppSettings.dbUserPass;
             CheckFieldsFilling();
         }
 
@@ -84,7 +83,6 @@ namespace ProjectOffice.forms
         {
             InitializeComponent();
             dbSetsFilling = new bool[3];
-            _appConfig = new AppSettings();
             _db = new Db();
         }
 
@@ -112,7 +110,7 @@ namespace ProjectOffice.forms
 
         private void checkSettingsPswdBtn_Click(object sender, EventArgs e)
         {
-            if (_appConfig.settingsPswd == Security.hashMd5(pswdToSettingsTextBox.Text.Trim(), "D1n5altn")) {
+            if (AppSettings.settingsPswd == Security.hashMd5(pswdToSettingsTextBox.Text.Trim(), "D1n5altn")) {
                 GetAccessToSetting(true);
             }
             else

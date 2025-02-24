@@ -9,18 +9,12 @@ namespace ProjectOffice.logic
 {
     public class Db
     {
-        private AppSettings _appConfig = null;
         private Regex _regexp = null;
-
-        public Db()
-        {
-            _appConfig = new AppSettings();
-        }
 
         public string MakeConnectionString(bool withDbName = true)
         {
-            string conStr = $"host={_appConfig.dbHost};user={_appConfig.dbUser};password={_appConfig.dbUserPass};";
-            if (withDbName) conStr += $"database={_appConfig.dbName};";
+            string conStr = $"host={AppSettings.dbHost};user={AppSettings.dbUser};password={AppSettings.dbUserPass};";
+            if (withDbName) conStr += $"database={AppSettings.dbName};";
             return conStr;
         }
 
@@ -129,7 +123,7 @@ namespace ProjectOffice.logic
 
         public string[] FindUser(string login, string passwd)
         {
-            string query = $"select concat(UserSurname, ' ', substring(UserName, 1, 1), '.', substring(UserPatronymic, 1, 1)) as snf, UserModeID, UserID from `{_appConfig.dbName}`.`user` where UserLogin = @login and UserPassword = @pswd;";
+            string query = $"select concat(UserSurname, ' ', substring(UserName, 1, 1), '.', substring(UserPatronymic, 1, 1)) as snf, UserModeID, UserID from `{AppSettings.dbName}`.`user` where UserLogin = @login and UserPassword = @pswd;";
 
             DataTable result = ExecuteReader(query, login, passwd);
             if (result == null) return null; 
