@@ -90,6 +90,25 @@ namespace ProjectOffice.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CREATE DATABASE  IF NOT EXISTS `project_office` /*!40100 DEFAULT CHARACTER SET utf8mb3 */ /*!80016 DEFAULT ENCRYPTION=&apos;N&apos; */;
+        ///USE `project_office`;
+        ///-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+        ///--
+        ///-- Host: 127.0.0.1    Database: project_office
+        ///-- ------------------------------------------------------
+        ///-- Server version	8.0.30
+        ///
+        ////*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+        ////*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+        ////*!40101 SET @OLD_COLLATION_CO [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string data_dump {
+            get {
+                return ResourceManager.GetString("data_dump", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap EDIT_BTN_PICTURE {
@@ -120,12 +139,58 @@ namespace ProjectOffice.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #UserID;log;pass;h
+        ///9;1_nW9nRO;048Q~8F);3657c8b2441df7a617d74ca6db6921ebd7502c08dd489bdb6b0b5ca06ade150de563c0f941dced7fabf3b44518a77a22162971ea6ac39f6a4ef6fdfd915f443c
+        ///
+        ///10;8q@NJX5R;aB%3kH?Z;56a83f23adbcb123a490ea61de1fc30292f21d2a22fa6b521b03cce0c3158079f2a71b3cfb480710c70b5716b73a4b693ff70011b36af5866a1442b1bfa047d7
+        ///
+        ///11;l$C3Z3da;EFbmV$O*;44fd5df9c491fb201f933ff5c510f37c3d43ec0dc24bf5f8f10581223d84b645b7dc980841204c965b007afc49ca93172962f55cc7a6bf66c60949e30ebe1326
+        ///
+        ///12;ueB~J5mk;KSC$)@Vj;41da80ad8c95b [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string pass {
+            get {
+                return ResourceManager.GetString("pass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap PLUG_PICTURE {
             get {
                 object obj = ResourceManager.GetObject("PLUG_PICTURE", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon PROJECT_OFFICE_ICON {
+            get {
+                object obj = ResourceManager.GetObject("PROJECT_OFFICE_ICON", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PROJECT_OFFICE_LOGO {
+            get {
+                object obj = ResourceManager.GetObject("PROJECT_OFFICE_LOGO", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] PROJECT_OFFICE_LOGO_SVG {
+            get {
+                object obj = ResourceManager.GetObject("PROJECT_OFFICE_LOGO_SVG", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

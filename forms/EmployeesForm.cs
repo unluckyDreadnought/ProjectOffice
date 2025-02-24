@@ -26,19 +26,13 @@ namespace ProjectOffice.forms
         private void EmployeesForm_Load(object sender, EventArgs e)
         {
             this.Text = $"{Resources.APP_NAME}: Сотрудники";
-            employeeEditorPanel.Hide();
         }
 
         private void editEmployeeBtn_Click(object sender, EventArgs e)
         {
-            this.Text = $"{Resources.APP_NAME}: Редактор сотрудников";
-            employeeEditorPanel.Show();
-        }
-
-        private void hideEditorPanel_Click(object sender, EventArgs e)
-        {
-            this.Text = $"{Resources.APP_NAME}: Сотрудники";
-            employeeEditorPanel.Hide();
+            string userId = "";
+            UserEditor uEdit = new UserEditor(edit: true);
+            uEdit.ShowDialog();
         }
 
         private void backToMenu_Click(object sender, EventArgs e)

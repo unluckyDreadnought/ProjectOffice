@@ -23,8 +23,6 @@ namespace ProjectOffice.forms
         private void UsersForm_Load(object sender, EventArgs e)
         {
             this.Text = $"{Resources.APP_NAME}: Пользователи системы";
-            userEditorPanel.Hide();
-
             userSnp.Text = AppUser.Snp;
             userMode.Text = AppUser.GetUserMode();
 
@@ -49,17 +47,15 @@ namespace ProjectOffice.forms
 
         private void addUserBtn_Click(object sender, EventArgs e)
         {
-            userEditorPanel.Show();
+            UserEditor uEdit = new UserEditor(user: true);
+            uEdit.ShowDialog();
         }
 
         private void editUserBtn_Click(object sender, EventArgs e)
         {
-            userEditorPanel.Show();
-        }
-
-        private void hideUserEditorBtn_Click(object sender, EventArgs e)
-        {
-            userEditorPanel.Hide();
+            //string userId = usersTable.SelectedRows[0].Cells[0].Value.ToString();
+            UserEditor uEdit = new UserEditor(edit: true, user: true);
+            uEdit.ShowDialog();
         }
     }
 }

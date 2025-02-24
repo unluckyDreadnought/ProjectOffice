@@ -29,8 +29,8 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.userSnp = new System.Windows.Forms.Label();
@@ -48,42 +48,31 @@ namespace ProjectOffice.forms
             this.pass = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.role = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.backToMenuBtn = new System.Windows.Forms.Button();
-            this.userEditorPanel = new System.Windows.Forms.Panel();
-            this.hideUserEditorBtn = new System.Windows.Forms.Button();
-            this.userRoleCombo = new System.Windows.Forms.ComboBox();
-            this.userPswdTextBox = new System.Windows.Forms.TextBox();
-            this.userLoginTextBox = new System.Windows.Forms.TextBox();
-            this.userPatronymicTextBox = new System.Windows.Forms.TextBox();
-            this.userNameTextBox = new System.Windows.Forms.TextBox();
-            this.userSurnameTextBox = new System.Windows.Forms.TextBox();
-            this.saveUserBtn = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tableActionBtnPanel.SuspendLayout();
             this.toolStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.usersTable)).BeginInit();
-            this.userEditorPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49.99999F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.00001F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.backToMenuBtn, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.userEditorPanel, 2, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.440357F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.440356F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40.54774F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40.54774F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.464167F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.464166F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(834, 450);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
@@ -97,14 +86,14 @@ namespace ProjectOffice.forms
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(611, 36);
+            this.panel1.Size = new System.Drawing.Size(828, 36);
             this.panel1.TabIndex = 0;
             // 
             // userSnp
             // 
             this.userSnp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.userSnp.AutoSize = true;
-            this.userSnp.Location = new System.Drawing.Point(288, 6);
+            this.userSnp.Location = new System.Drawing.Point(505, 6);
             this.userSnp.Name = "userSnp";
             this.userSnp.Size = new System.Drawing.Size(79, 29);
             this.userSnp.TabIndex = 0;
@@ -114,7 +103,7 @@ namespace ProjectOffice.forms
             // 
             this.userMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.userMode.AutoSize = true;
-            this.userMode.Location = new System.Drawing.Point(456, 6);
+            this.userMode.Location = new System.Drawing.Point(673, 6);
             this.userMode.Name = "userMode";
             this.userMode.Size = new System.Drawing.Size(79, 29);
             this.userMode.TabIndex = 0;
@@ -129,7 +118,7 @@ namespace ProjectOffice.forms
             this.panel2.Location = new System.Drawing.Point(3, 45);
             this.panel2.Name = "panel2";
             this.tableLayoutPanel1.SetRowSpan(this.panel2, 2);
-            this.panel2.Size = new System.Drawing.Size(611, 358);
+            this.panel2.Size = new System.Drawing.Size(828, 358);
             this.panel2.TabIndex = 1;
             // 
             // tableActionBtnPanel
@@ -138,7 +127,7 @@ namespace ProjectOffice.forms
             this.tableActionBtnPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tableActionBtnPanel.Location = new System.Drawing.Point(0, 314);
             this.tableActionBtnPanel.Name = "tableActionBtnPanel";
-            this.tableActionBtnPanel.Size = new System.Drawing.Size(611, 44);
+            this.tableActionBtnPanel.Size = new System.Drawing.Size(828, 44);
             this.tableActionBtnPanel.TabIndex = 2;
             // 
             // toolStrip2
@@ -154,10 +143,10 @@ namespace ProjectOffice.forms
             this.deleteUserBtn,
             this.toolsDisplayModeCombo});
             this.toolStrip2.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.toolStrip2.Location = new System.Drawing.Point(182, 8);
+            this.toolStrip2.Location = new System.Drawing.Point(279, 6);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip2.Size = new System.Drawing.Size(211, 28);
+            this.toolStrip2.Size = new System.Drawing.Size(213, 31);
             this.toolStrip2.Stretch = true;
             this.toolStrip2.TabIndex = 2;
             this.toolStrip2.Text = "toolStrip2";
@@ -213,28 +202,28 @@ namespace ProjectOffice.forms
             this.usersTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.usersTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.usersTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.usersTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.usersTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.usersTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.usersTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.fio,
             this.login,
             this.pass,
             this.role});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.usersTable.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.usersTable.DefaultCellStyle = dataGridViewCellStyle4;
             this.usersTable.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.usersTable.EnableHeadersVisualStyles = false;
             this.usersTable.Location = new System.Drawing.Point(0, 0);
@@ -243,7 +232,7 @@ namespace ProjectOffice.forms
             this.usersTable.RowHeadersWidth = 51;
             this.usersTable.RowTemplate.Height = 24;
             this.usersTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.usersTable.Size = new System.Drawing.Size(608, 308);
+            this.usersTable.Size = new System.Drawing.Size(825, 308);
             this.usersTable.TabIndex = 0;
             // 
             // fio
@@ -281,121 +270,6 @@ namespace ProjectOffice.forms
             this.backToMenuBtn.UseVisualStyleBackColor = true;
             this.backToMenuBtn.Click += new System.EventHandler(this.backToMenuBtn_Click);
             // 
-            // userEditorPanel
-            // 
-            this.userEditorPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.userEditorPanel.Controls.Add(this.hideUserEditorBtn);
-            this.userEditorPanel.Controls.Add(this.userRoleCombo);
-            this.userEditorPanel.Controls.Add(this.userPswdTextBox);
-            this.userEditorPanel.Controls.Add(this.userLoginTextBox);
-            this.userEditorPanel.Controls.Add(this.userPatronymicTextBox);
-            this.userEditorPanel.Controls.Add(this.userNameTextBox);
-            this.userEditorPanel.Controls.Add(this.userSurnameTextBox);
-            this.userEditorPanel.Controls.Add(this.saveUserBtn);
-            this.userEditorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.userEditorPanel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.userEditorPanel.Location = new System.Drawing.Point(620, 3);
-            this.userEditorPanel.Name = "userEditorPanel";
-            this.tableLayoutPanel1.SetRowSpan(this.userEditorPanel, 4);
-            this.userEditorPanel.Size = new System.Drawing.Size(211, 444);
-            this.userEditorPanel.TabIndex = 3;
-            // 
-            // hideUserEditorBtn
-            // 
-            this.hideUserEditorBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.hideUserEditorBtn.Location = new System.Drawing.Point(4, 395);
-            this.hideUserEditorBtn.Name = "hideUserEditorBtn";
-            this.hideUserEditorBtn.Size = new System.Drawing.Size(43, 40);
-            this.hideUserEditorBtn.TabIndex = 3;
-            this.hideUserEditorBtn.Text = ">";
-            this.hideUserEditorBtn.UseVisualStyleBackColor = true;
-            this.hideUserEditorBtn.Click += new System.EventHandler(this.hideUserEditorBtn_Click);
-            // 
-            // userRoleCombo
-            // 
-            this.userRoleCombo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.userRoleCombo.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.userRoleCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.userRoleCombo.FormattingEnabled = true;
-            this.userRoleCombo.Items.AddRange(new object[] {
-            "Администратор",
-            "Менеджер",
-            "Сотрудник"});
-            this.userRoleCombo.Location = new System.Drawing.Point(36, 306);
-            this.userRoleCombo.Name = "userRoleCombo";
-            this.userRoleCombo.Size = new System.Drawing.Size(166, 33);
-            this.userRoleCombo.TabIndex = 2;
-            // 
-            // userPswdTextBox
-            // 
-            this.userPswdTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.userPswdTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.userPswdTextBox.Location = new System.Drawing.Point(36, 245);
-            this.userPswdTextBox.Name = "userPswdTextBox";
-            this.userPswdTextBox.Size = new System.Drawing.Size(166, 30);
-            this.userPswdTextBox.TabIndex = 1;
-            this.userPswdTextBox.Text = "*********";
-            // 
-            // userLoginTextBox
-            // 
-            this.userLoginTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.userLoginTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.userLoginTextBox.Location = new System.Drawing.Point(36, 195);
-            this.userLoginTextBox.Name = "userLoginTextBox";
-            this.userLoginTextBox.Size = new System.Drawing.Size(166, 30);
-            this.userLoginTextBox.TabIndex = 1;
-            this.userLoginTextBox.Text = "login12345";
-            // 
-            // userPatronymicTextBox
-            // 
-            this.userPatronymicTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.userPatronymicTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.userPatronymicTextBox.Location = new System.Drawing.Point(36, 122);
-            this.userPatronymicTextBox.Name = "userPatronymicTextBox";
-            this.userPatronymicTextBox.Size = new System.Drawing.Size(166, 30);
-            this.userPatronymicTextBox.TabIndex = 1;
-            this.userPatronymicTextBox.Text = "Иванович";
-            // 
-            // userNameTextBox
-            // 
-            this.userNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.userNameTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.userNameTextBox.Location = new System.Drawing.Point(36, 69);
-            this.userNameTextBox.Name = "userNameTextBox";
-            this.userNameTextBox.Size = new System.Drawing.Size(166, 30);
-            this.userNameTextBox.TabIndex = 1;
-            this.userNameTextBox.Text = "Иван";
-            // 
-            // userSurnameTextBox
-            // 
-            this.userSurnameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.userSurnameTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.userSurnameTextBox.Location = new System.Drawing.Point(36, 23);
-            this.userSurnameTextBox.Name = "userSurnameTextBox";
-            this.userSurnameTextBox.Size = new System.Drawing.Size(166, 30);
-            this.userSurnameTextBox.TabIndex = 1;
-            this.userSurnameTextBox.Text = "Иванов";
-            // 
-            // saveUserBtn
-            // 
-            this.saveUserBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveUserBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(143)))), ((int)(((byte)(252)))));
-            this.saveUserBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.saveUserBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.saveUserBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.saveUserBtn.Location = new System.Drawing.Point(74, 395);
-            this.saveUserBtn.Name = "saveUserBtn";
-            this.saveUserBtn.Size = new System.Drawing.Size(128, 40);
-            this.saveUserBtn.TabIndex = 0;
-            this.saveUserBtn.Text = "Сохранить";
-            this.saveUserBtn.UseVisualStyleBackColor = false;
-            // 
             // UsersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -404,6 +278,7 @@ namespace ProjectOffice.forms
             this.ClientSize = new System.Drawing.Size(834, 450);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "UsersForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "UsersForm";
             this.Load += new System.EventHandler(this.UsersForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -415,8 +290,6 @@ namespace ProjectOffice.forms
             this.toolStrip2.ResumeLayout(false);
             this.toolStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.usersTable)).EndInit();
-            this.userEditorPanel.ResumeLayout(false);
-            this.userEditorPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -435,15 +308,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.DataGridViewTextBoxColumn pass;
         private System.Windows.Forms.DataGridViewTextBoxColumn role;
         private System.Windows.Forms.Button backToMenuBtn;
-        private System.Windows.Forms.Panel userEditorPanel;
-        private System.Windows.Forms.Button hideUserEditorBtn;
-        private System.Windows.Forms.ComboBox userRoleCombo;
-        private System.Windows.Forms.TextBox userPswdTextBox;
-        private System.Windows.Forms.TextBox userLoginTextBox;
-        private System.Windows.Forms.TextBox userPatronymicTextBox;
-        private System.Windows.Forms.TextBox userNameTextBox;
-        private System.Windows.Forms.TextBox userSurnameTextBox;
-        private System.Windows.Forms.Button saveUserBtn;
         private System.Windows.Forms.ToolStrip toolStrip2;
         private System.Windows.Forms.ToolStripButton editUserBtn;
         private System.Windows.Forms.ToolStripButton deleteUserBtn;

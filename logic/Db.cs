@@ -9,6 +9,7 @@ namespace ProjectOffice.logic
 {
     public class Db
     {
+        public static string Name { get { return AppSettings.dbName;  } }
         private Regex _regexp = null;
 
         public string MakeConnectionString(bool withDbName = true)

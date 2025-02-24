@@ -158,6 +158,12 @@
     <Compile Include="forms\SubtaskList.Designer.cs">
       <DependentUpon>SubtaskList.cs</DependentUpon>
     </Compile>
+    <Compile Include="forms\UserEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\UserEditor.Designer.cs">
+      <DependentUpon>UserEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="forms\UsersForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -222,6 +228,9 @@
     <EmbeddedResource Include="forms\SubtaskList.resx">
       <DependentUpon>SubtaskList.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="forms\UserEditor.resx">
+      <DependentUpon>UserEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="forms\UsersForm.resx">
       <DependentUpon>UsersForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -278,6 +287,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\user.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ProjectOfficeIcon.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ProjectOfficeIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ProjectOfficeIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\data_dump.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pass.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

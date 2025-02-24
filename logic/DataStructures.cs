@@ -1,5 +1,12 @@
 ﻿namespace ProjectOffice.logic
 {
+    public static class Symbols
+    {
+        public static string ru_alp { get { return "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"; } }
+        public static string en_alp { get { return "abcdefghijklmnopqrstuvwxyz"; } }
+        public static string spec { get { return "!_+=~$#%^:&?*(){}[]-<>"; } }
+    }
+
     public enum ChooseMode
     {
         Client = 0,
