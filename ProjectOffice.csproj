@@ -175,6 +175,7 @@
     <Compile Include="logic\DataStructures.cs" />
     <Compile Include="logic\Db.cs" />
     <Compile Include="logic\Security.cs" />
+    <Compile Include="logic\Сompression.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="forms\ActJournal.resx">
