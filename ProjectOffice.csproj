@@ -298,10 +298,10 @@
     <None Include="Resources\ProjectOfficeIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\data_dump.sql" />
+    <None Include="Resources\pass.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\pass.txt" />
+    <None Include="Resources\data_dump.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

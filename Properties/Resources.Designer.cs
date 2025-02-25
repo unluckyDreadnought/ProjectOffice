@@ -90,9 +90,7 @@ namespace ProjectOffice.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE DATABASE  IF NOT EXISTS `project_office` /*!40100 DEFAULT CHARACTER SET utf8mb3 */ /*!80016 DEFAULT ENCRYPTION=&apos;N&apos; */;
-        ///USE `project_office`;
-        ///-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+        ///   Looks up a localized string similar to -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
         ///--
         ///-- Host: 127.0.0.1    Database: project_office
         ///-- ------------------------------------------------------
@@ -100,7 +98,11 @@ namespace ProjectOffice.Properties {
         ///
         ////*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
         ////*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-        ////*!40101 SET @OLD_COLLATION_CO [rest of string was truncated]&quot;;.
+        ////*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+        ////*!50503 SET NAMES utf8 */;
+        ////*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+        ////*!40103 SET TIME_ZONE=&apos;+00:00&apos; */;
+        ////* [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string data_dump {
             get {
