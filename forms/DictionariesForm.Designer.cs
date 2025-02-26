@@ -30,7 +30,7 @@ namespace ProjectOffice.forms
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DictionariesForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.userSnpLbl = new System.Windows.Forms.Label();
@@ -94,14 +94,14 @@ namespace ProjectOffice.forms
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(576, 49);
+            this.panel1.Size = new System.Drawing.Size(574, 49);
             this.panel1.TabIndex = 0;
             // 
             // userSnpLbl
             // 
             this.userSnpLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.userSnpLbl.AutoSize = true;
-            this.userSnpLbl.Location = new System.Drawing.Point(253, 6);
+            this.userSnpLbl.Location = new System.Drawing.Point(251, 6);
             this.userSnpLbl.Name = "userSnpLbl";
             this.userSnpLbl.Size = new System.Drawing.Size(79, 29);
             this.userSnpLbl.TabIndex = 0;
@@ -111,7 +111,7 @@ namespace ProjectOffice.forms
             // 
             this.userModeLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.userModeLbl.AutoSize = true;
-            this.userModeLbl.Location = new System.Drawing.Point(421, 6);
+            this.userModeLbl.Location = new System.Drawing.Point(419, 6);
             this.userModeLbl.Name = "userModeLbl";
             this.userModeLbl.Size = new System.Drawing.Size(79, 29);
             this.userModeLbl.TabIndex = 0;
@@ -126,7 +126,7 @@ namespace ProjectOffice.forms
             this.panel2.Location = new System.Drawing.Point(3, 58);
             this.panel2.Name = "panel2";
             this.tableLayoutPanel1.SetRowSpan(this.panel2, 2);
-            this.panel2.Size = new System.Drawing.Size(576, 470);
+            this.panel2.Size = new System.Drawing.Size(574, 470);
             this.panel2.TabIndex = 1;
             // 
             // panel3
@@ -136,7 +136,7 @@ namespace ProjectOffice.forms
             this.panel3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel3.Location = new System.Drawing.Point(0, 437);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(576, 33);
+            this.panel3.Size = new System.Drawing.Size(574, 33);
             this.panel3.TabIndex = 2;
             // 
             // toolStrip1
@@ -145,8 +145,8 @@ namespace ProjectOffice.forms
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.specCheckBtn,
-            this.statusCheckBtn,
             this.stagesCheckBtn,
+            this.statusCheckBtn,
             this.addObject,
             this.editObject,
             this.deleteObject,
@@ -157,24 +157,23 @@ namespace ProjectOffice.forms
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.Size = new System.Drawing.Size(576, 33);
+            this.toolStrip1.Size = new System.Drawing.Size(574, 33);
             this.toolStrip1.Stretch = true;
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
             // specCheckBtn
             // 
-            this.specCheckBtn.Checked = true;
             this.specCheckBtn.CheckOnClick = true;
-            this.specCheckBtn.CheckState = System.Windows.Forms.CheckState.Checked;
             this.specCheckBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.specCheckBtn.Image = ((System.Drawing.Image)(resources.GetObject("specCheckBtn.Image")));
             this.specCheckBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.specCheckBtn.Name = "specCheckBtn";
             this.specCheckBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.specCheckBtn.Size = new System.Drawing.Size(91, 30);
-            this.specCheckBtn.Text = "Должности";
-            this.specCheckBtn.Click += new System.EventHandler(this.specCheckBtn_Click);
+            this.specCheckBtn.Size = new System.Drawing.Size(121, 30);
+            this.specCheckBtn.Text = "Специальности";
+            this.specCheckBtn.CheckedChanged += new System.EventHandler(this.specCheckBtn_CheckedChanged);
+            this.specCheckBtn.Click += new System.EventHandler(this.toolStripBtn_Click);
             // 
             // statusCheckBtn
             // 
@@ -186,7 +185,8 @@ namespace ProjectOffice.forms
             this.statusCheckBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.statusCheckBtn.Size = new System.Drawing.Size(67, 30);
             this.statusCheckBtn.Text = "Статусы";
-            this.statusCheckBtn.Click += new System.EventHandler(this.statusCheckBtn_Click);
+            this.statusCheckBtn.CheckedChanged += new System.EventHandler(this.statusCheckBtn_CheckedChanged);
+            this.statusCheckBtn.Click += new System.EventHandler(this.toolStripBtn_Click);
             // 
             // stagesCheckBtn
             // 
@@ -198,7 +198,8 @@ namespace ProjectOffice.forms
             this.stagesCheckBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.stagesCheckBtn.Size = new System.Drawing.Size(56, 30);
             this.stagesCheckBtn.Text = "Этапы";
-            this.stagesCheckBtn.Click += new System.EventHandler(this.stagesCheckBtn_Click);
+            this.stagesCheckBtn.CheckedChanged += new System.EventHandler(this.stagesCheckBtn_CheckedChanged);
+            this.stagesCheckBtn.Click += new System.EventHandler(this.toolStripBtn_Click);
             // 
             // addObject
             // 
@@ -231,6 +232,7 @@ namespace ProjectOffice.forms
             this.deleteObject.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.deleteObject.Size = new System.Drawing.Size(29, 30);
             this.deleteObject.Text = "Редактировать";
+            this.deleteObject.Click += new System.EventHandler(this.deleteObject_Click);
             // 
             // toolsDisplayModeCombo
             // 
@@ -249,7 +251,8 @@ namespace ProjectOffice.forms
             this.typesCheckBtn.Name = "typesCheckBtn";
             this.typesCheckBtn.Size = new System.Drawing.Size(146, 24);
             this.typesCheckBtn.Text = "Типы организаций";
-            this.typesCheckBtn.Click += new System.EventHandler(this.typesCheckBtn_Click);
+            this.typesCheckBtn.CheckedChanged += new System.EventHandler(this.typesCheckBtn_CheckedChanged);
+            this.typesCheckBtn.Click += new System.EventHandler(this.toolStripBtn_Click);
             // 
             // subtasksCheckBtn
             // 
@@ -260,22 +263,25 @@ namespace ProjectOffice.forms
             this.subtasksCheckBtn.Name = "subtasksCheckBtn";
             this.subtasksCheckBtn.Size = new System.Drawing.Size(89, 24);
             this.subtasksCheckBtn.Text = "Подзадачи";
-            this.subtasksCheckBtn.Click += new System.EventHandler(this.subtasksCheckBtn_Click);
+            this.subtasksCheckBtn.CheckedChanged += new System.EventHandler(this.subtasksCheckBtn_CheckedChanged);
+            this.subtasksCheckBtn.Click += new System.EventHandler(this.toolStripBtn_Click);
             // 
             // objectTable
             // 
+            this.objectTable.AllowUserToAddRows = false;
+            this.objectTable.AllowUserToDeleteRows = false;
             this.objectTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.objectTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.objectTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.objectTable.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.objectTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.objectTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.objectTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.objectTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.name});
@@ -283,12 +289,14 @@ namespace ProjectOffice.forms
             this.objectTable.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.objectTable.EnableHeadersVisualStyles = false;
             this.objectTable.Location = new System.Drawing.Point(0, 0);
+            this.objectTable.MultiSelect = false;
             this.objectTable.Name = "objectTable";
             this.objectTable.RowHeadersVisible = false;
             this.objectTable.RowHeadersWidth = 51;
+            this.objectTable.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.objectTable.RowTemplate.Height = 24;
             this.objectTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.objectTable.Size = new System.Drawing.Size(576, 470);
+            this.objectTable.Size = new System.Drawing.Size(574, 470);
             this.objectTable.TabIndex = 0;
             // 
             // name
@@ -316,10 +324,10 @@ namespace ProjectOffice.forms
             this.editorPanel.Controls.Add(this.saveObjectBtn);
             this.editorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.editorPanel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.editorPanel.Location = new System.Drawing.Point(585, 3);
+            this.editorPanel.Location = new System.Drawing.Point(583, 3);
             this.editorPanel.Name = "editorPanel";
             this.tableLayoutPanel1.SetRowSpan(this.editorPanel, 4);
-            this.editorPanel.Size = new System.Drawing.Size(208, 582);
+            this.editorPanel.Size = new System.Drawing.Size(210, 582);
             this.editorPanel.TabIndex = 3;
             // 
             // hideEditorPanelBtn
@@ -340,7 +348,7 @@ namespace ProjectOffice.forms
             this.objectTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.objectTextBox.Location = new System.Drawing.Point(27, 304);
             this.objectTextBox.Name = "objectTextBox";
-            this.objectTextBox.Size = new System.Drawing.Size(163, 30);
+            this.objectTextBox.Size = new System.Drawing.Size(165, 30);
             this.objectTextBox.TabIndex = 1;
             this.objectTextBox.Text = "Иванов";
             // 
@@ -348,10 +356,10 @@ namespace ProjectOffice.forms
             // 
             this.saveObjectBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.saveObjectBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(143)))), ((int)(((byte)(252)))));
-            this.saveObjectBtn.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
+            this.saveObjectBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
             this.saveObjectBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.saveObjectBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.saveObjectBtn.Location = new System.Drawing.Point(71, 533);
+            this.saveObjectBtn.Location = new System.Drawing.Point(73, 533);
             this.saveObjectBtn.Name = "saveObjectBtn";
             this.saveObjectBtn.Size = new System.Drawing.Size(128, 40);
             this.saveObjectBtn.TabIndex = 0;

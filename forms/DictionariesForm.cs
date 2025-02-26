@@ -14,13 +14,13 @@ namespace ProjectOffice.forms
 {
     public partial class DictionariesForm : Form
     {
-        public DictionariesForm(params Dictionaries[] displayed)
-        {
-            InitializeComponent();
-            HideButtons();
-            ShowButtons(displayed);
-            editorPanel.Hide();
-        }
+        Db _db = new Db();
+        string currentDictionary = "";
+        DictionaryEditForm addObjectForm = null;
+
+        string table = "";
+        string columnIdName = "";
+        string[] columnsToUpdate = null;
 
         private void HideButtons()
         {
@@ -73,12 +73,42 @@ namespace ProjectOffice.forms
             }
         }
 
+        private void ActivateFirstCheckBtn()
+        {
+            int i = 0;
+            while (i < toolStrip1.Items.Count)
+            {
+                if (toolStrip1.Items[i] is ToolStripButton && toolStrip1.Items[i].Name.Contains("Check") && ((ToolStripButton)toolStrip1.Items[i]).Enabled)
+                {
+                    ((ToolStripButton)toolStrip1.Items[i]).Checked = true;
+                    break;
+                }
+                i++;
+            }
+        }
+
+        public DictionariesForm(params Dictionaries[] displayed)
+        {
+            InitializeComponent();
+            HideButtons();
+            ShowButtons(displayed);
+            ActivateFirstCheckBtn();
+            editorPanel.Hide();
+        }
+
         private void DictionariesForm_Load(object sender, EventArgs e)
         {
             this.Text = $"{Resources.APP_NAME}: Справочники";
+            this.Icon = Resources.PROJECT_OFFICE_ICON;
         }
 
-        private void ClearTablePart()
+        private void ClearTable()
+        {
+            objectTable.Columns.Clear();
+            objectTable.DataSource = null;
+        }
+
+        private void CheckNeedToClearTable()
         {
             bool dictOpen = false;
             foreach (object item in toolStrip1.Items)
@@ -92,8 +122,7 @@ namespace ProjectOffice.forms
             }
             if (!dictOpen)
             {
-                objectTable.Rows.Clear();
-                objectTable.Columns.Clear();
+                ClearTable();
             }
         }
 
@@ -104,33 +133,149 @@ namespace ProjectOffice.forms
                 if (item is ToolStripButton == false) continue;
                 if ((ToolStripButton)item != (ToolStripButton)sender) ((ToolStripButton)item).Checked = false;
             }
-            ClearTablePart();
+            CheckNeedToClearTable();
 
         }
 
-        private void specCheckBtn_Click(object sender, EventArgs e)
+        private DataTable GetSpecializations()
         {
-            UncheckOtherBtns(sender);
+            string query = "select * from specialization order by SpecializationTitle;";
+            DataTable dt = _db.ExecuteReader(query);
+            return dt;
         }
 
-        private void statusCheckBtn_Click(object sender, EventArgs e)
+        private DataTable GetStatuses()
         {
-            UncheckOtherBtns(sender);
+            string query = "select * from status order by StatusTitle;";
+            DataTable dt = _db.ExecuteReader(query);
+            return dt;
         }
 
-        private void stagesCheckBtn_Click(object sender, EventArgs e)
+        private DataTable GetStages()
         {
-            UncheckOtherBtns(sender);
+            string query = "select * from stage order by StageTitle;";
+            DataTable dt = _db.ExecuteReader(query);
+            return dt;
         }
 
-        private void typesCheckBtn_Click(object sender, EventArgs e)
+        private DataTable GetOrgTypes()
         {
-            UncheckOtherBtns(sender);
+            string query = "select * from organitationtype order by OrganitationTypeDescription;";
+            DataTable dt = _db.ExecuteReader(query);
+            return dt;
         }
 
-        private void subtasksCheckBtn_Click(object sender, EventArgs e)
+        private DataTable GetSubtasks()
+        {
+            string query = "select * from subtask order by SubtaskTitle;";
+            DataTable dt = _db.ExecuteReader(query);
+            return dt;
+        }
+       
+
+        private void UpdateTable(DataTable src, params string[] headers)
+        {
+            ClearTable();
+            if (src == null)
+            {
+                MessageBox.Show("Не удалось загрузить данные", $"Словарь \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            objectTable.DataSource = src;
+            int i = 0;
+            while (i < objectTable.Columns.Count)
+            {
+                if (i == headers.Length) { break; }
+                if (headers[i] == "") objectTable.Columns[i].Visible = false;
+                objectTable.Columns[i].HeaderText = headers[i];
+                i++;
+            }
+            //objectTable.Columns[0].HeaderCell.Selected = false;
+            objectTable.AllowUserToOrderColumns = false;
+        }
+
+        private string GetCheckedText()
+        {
+            string checkedText = "";
+            int i = 0;
+            while (i < toolStrip1.Items.Count)
+            {
+                if (toolStrip1.Items[i] is ToolStripButton && toolStrip1.Items[i].Name.Contains("Check") && ((ToolStripButton)toolStrip1.Items[i]).Checked)
+                {
+                    checkedText = ((ToolStripButton)toolStrip1.Items[i]).Text;
+                    break;
+                }
+                i++;
+            }
+            return checkedText;
+        }
+
+        private void DeleteRow(string table, string idColumn)
+        {
+            string query = $"delete {Db.Name}.{table} where {idColumn} = {objectTable.SelectedRows[0].Cells[0].Value.ToString()};";
+            _db.ExecuteNoDataResult(query);
+        }
+
+        private void SetDbEntityProperties(string tblName, string colIdName, string[] colsToUpdate)
+        {
+            table = tblName;
+            columnIdName = colIdName;
+            columnsToUpdate = colsToUpdate;
+        }
+
+        private void specCheckBtn_CheckedChanged(object sender, EventArgs e)
         {
             UncheckOtherBtns(sender);
+            if (specCheckBtn.Checked)
+            {
+                SetDbEntityProperties("specialization", "SpecializationID", new string[] { "SpecializationTitle" });
+
+                UpdateTable(GetSpecializations(), new string[] { "", "Название специальности" });
+            }
+        }
+
+        private void statusCheckBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            UncheckOtherBtns(sender);
+            if (statusCheckBtn.Checked)
+            {
+                SetDbEntityProperties("status", "StatusID", new string[] { "StatusTitle" });
+
+                UpdateTable(GetStatuses(), new string[] { "", "Статус" });
+            }
+        }
+
+        private void stagesCheckBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            UncheckOtherBtns(sender);
+            if (stagesCheckBtn.Checked)
+            {
+                SetDbEntityProperties("stages", "StageID", new string[] { "StageTitle" });
+
+                UpdateTable(GetStages(), new string[] { "", "Название стадии" });
+            };
+        }
+
+        private void typesCheckBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            UncheckOtherBtns(sender);
+            if (typesCheckBtn.Checked) 
+            {
+                SetDbEntityProperties("organizationtype", "OrganitationTypeName", new string[] { "OrganitationTypeDescription" });
+
+                UpdateTable(GetOrgTypes(), new string[] { "Аббревиатура", "Полное наименование" });
+            };
+        }
+
+        private void subtasksCheckBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            UncheckOtherBtns(sender);
+            if (subtasksCheckBtn.Checked) 
+            {
+                SetDbEntityProperties("subtask", "SubtaskID", new string[] { "SubtaskTitle" });
+
+                UpdateTable(GetSubtasks(), new string[] { "", "Подзадача" });
+            };
         }
 
         private void hideEditorPanelBtn_Click(object sender, EventArgs e)
@@ -138,19 +283,53 @@ namespace ProjectOffice.forms
             editorPanel.Hide();
         }
 
+        private void LaunchAddEditForm(string title, string[] fieldsText, string id, bool edit = false) {
+            if (addObjectForm == null || addObjectForm.IsDisposed)
+            {
+                addObjectForm = new DictionaryEditForm(title, fieldsText, table, columnIdName, columnsToUpdate, id, edit);
+                addObjectForm.FormClosed += (addObjectForm, _) => { 
+                    ((Form)addObjectForm).Dispose();
+                    // ДОБАВИТЬ ОБЩИЙ АПДЕЙТ ТАБЭЛ
+                };
+            }
+            addObjectForm.Show();
+        }
+
         private void addObject_Click(object sender, EventArgs e)
         {
-            editorPanel.Show();
+            //editorPanel.Show();
+            string id = (objectTable.SelectedRows.Count > 0) ? objectTable.SelectedRows[0].Cells[0].Value.ToString() : "";
+            LaunchAddEditForm(GetCheckedText(), new string[] { "Поле 1", "Поле 2" }, id);
         }
 
         private void editObject_Click(object sender, EventArgs e)
         {
-            editorPanel.Show();
+            //editorPanel.Show();
+            string id = (objectTable.SelectedRows.Count > 0) ? objectTable.SelectedRows[0].Cells[0].Value.ToString() : "";
+            LaunchAddEditForm(GetCheckedText(), new string[] { "Поле 1", "Поле 2" }, id, true);
         }
 
         private void backToMenuBtn_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void toolStripBtn_Click(object sender, EventArgs e)
+        {
+            ((ToolStripButton)sender).Checked = !((ToolStripButton)sender).Checked;
+            if (!((ToolStripButton)sender).Checked)
+            {
+                ActivateFirstCheckBtn();
+            }
+        }
+
+        private void deleteObject_Click(object sender, EventArgs e)
+        {
+            if (objectTable.SelectedRows.Count == 0) return;
+            if (MessageBox.Show("Вы уверены, что хотите удалить запись?", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                DeleteRow(table, columnIdName);
+            }
         }
     }
 }

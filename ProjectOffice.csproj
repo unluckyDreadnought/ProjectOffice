@@ -98,6 +98,12 @@
     <Compile Include="forms\DictionariesForm.Designer.cs">
       <DependentUpon>DictionariesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="forms\DictionaryEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\DictionaryEditForm.Designer.cs">
+      <DependentUpon>DictionaryEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="forms\EmployeesForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -201,6 +207,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="forms\DictionariesForm.resx">
       <DependentUpon>DictionariesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\DictionaryEditForm.resx">
+      <DependentUpon>DictionaryEditForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\EmployeesForm.resx">
       <DependentUpon>EmployeesForm.cs</DependentUpon>
