@@ -89,8 +89,10 @@ namespace ProjectOffice.forms
         private void ConnectionSettingsForm_Load(object sender, EventArgs e)
         {
             this.Text = $"{Resources.APP_NAME}: Настройки подключения";
+            this.Icon = Resources.PROJECT_OFFICE_ICON;
             GetAccessToSetting();
             ChangeCheckBtnEnable();
+            pswdToSettingsTextBox.UseSystemPasswordChar = true;
         }
 
         private void hidePswdChar_Click(object sender, EventArgs e)

@@ -36,6 +36,8 @@ namespace ProjectOffice.forms
         private void AppSettingsForm_Load(object sender, EventArgs e)
         {
             this.Text = $"{Resources.APP_NAME}: Настройки";
+            this.Icon = Resources.PROJECT_OFFICE_ICON;
+            setsPswdTextBox.UseSystemPasswordChar = true;
         }
 
         // Обработчик события нажатия на кнопку скрытия / показа пароля

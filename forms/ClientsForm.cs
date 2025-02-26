@@ -16,21 +16,74 @@ namespace ProjectOffice.forms
     public partial class ClientsForm : Form
     {
         OrganizationClientEditorForm orgEdit;
+        Db _db = null;
 
         public ClientsForm()
         {
             InitializeComponent();
+            _db = new Db();
+        }
+
+        private DataTable GetClients()
+        {
+            string query = @"select  
+ClientID, case when ClientOrgTypeID is null then concat(ClientName) else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientEmail 
+from client; ";
+            DataTable dt = _db.ExecuteReader(query);
+            int indx = 0;
+            while (indx < dt.Rows.Count)
+            {
+                DataRow row = dt.Rows[indx];
+                string temp = row[2].ToString();
+                string phone = "";
+                int cntr = 0;
+                while (cntr < temp.Length)
+                {
+                    if (cntr >= 2 && cntr <= 6) phone += '*';
+                    else phone += temp[cntr];
+                    cntr++;
+                }
+                string[] snp = row[1].ToString().Split(' ');
+                if (row[1].ToString().Contains("'")) row[1] = row[1].ToString();
+                else
+                {
+                    if (snp.Length > 2) row[1] = $"{snp[0]} {snp[1][0]}. {snp[2][0]}";
+                    else row[1] = $"{snp[0]} {snp[1][0]}.";
+                }
+                row[2] = phone;
+                indx++;
+            }
+            return dt;
+        }
+
+        private void UpdateClientsTable()
+        {
+            DataTable src = GetClients();
+            int i = 0;
+            while (i < src.Rows.Count)
+            {
+                DataRow srcRow = src.Rows[i];
+                int indx = clientsTable.Rows.Add();
+                DataGridViewCellCollection rowCells = clientsTable.Rows[indx].Cells;
+                rowCells["clientId"].Value = srcRow[0].ToString();
+                rowCells["clientName"].Value = srcRow[1].ToString();
+                rowCells["clientPhone"].Value = $"+{srcRow[2]}";
+                rowCells["clientEmail"].Value = srcRow[3].ToString();
+                i++;
+            }
         }
 
         private void ClientsForm_Load(object sender, EventArgs e)
         {
             this.Text = $"{Resources.APP_NAME}: Клиенты";
+            this.Icon = Resources.PROJECT_OFFICE_ICON;
             fizClientEditorPanel.Hide();
             userModelbl.Text = AppUser.GetUserMode();
             userSnpLbl.Text = AppUser.Snp;
+            UpdateClientsTable();
         }
 
-        private void OpenEditor()
+        private void OpenEditor(string id = "")
         {
             if (fizSwitchBtn.Checked)
             {
@@ -39,7 +92,7 @@ namespace ProjectOffice.forms
             else
             {
                 fizClientEditorPanel.Hide();
-                orgEdit = new OrganizationClientEditorForm();
+                orgEdit = new OrganizationClientEditorForm(id);
                 orgEdit.ShowDialog();
             }
         }
@@ -77,7 +130,12 @@ namespace ProjectOffice.forms
 
         private void editClientBtn_Click(object sender, EventArgs e)
         {
-            OpenEditor();
+            if (clientsTable.SelectedRows.Count == 0) {
+                MessageBox.Show("Сначала выберите запись для редактирования", "Редактирование записи", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; 
+            }
+            string id = clientsTable.SelectedRows[0].Cells["clientId"].Value.ToString();
+            OpenEditor(id);
         }
 
         private void hideEditorPanelBtn_Click(object sender, EventArgs e)

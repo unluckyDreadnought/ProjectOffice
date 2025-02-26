@@ -71,7 +71,7 @@ namespace ProjectOffice.forms
             this.setsPswdTextBox.Location = new System.Drawing.Point(62, 131);
             this.setsPswdTextBox.MaxLength = 256;
             this.setsPswdTextBox.Name = "setsPswdTextBox";
-            this.setsPswdTextBox.Size = new System.Drawing.Size(347, 34);
+            this.setsPswdTextBox.Size = new System.Drawing.Size(347, 28);
             this.setsPswdTextBox.TabIndex = 14;
             this.setsPswdTextBox.UseSystemPasswordChar = true;
             this.setsPswdTextBox.TextChanged += new System.EventHandler(this.setsPswdTextBox_TextChanged);
@@ -99,7 +99,8 @@ namespace ProjectOffice.forms
             // 
             // AppSettingsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
+            this.AcceptButton = this.saveSettingsBtn;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.ClientSize = new System.Drawing.Size(506, 335);
