@@ -137,6 +137,12 @@ namespace ProjectOffice.forms
 
         }
 
+        private DataTable GetDictionaryRows(string table, string orderColumn) {
+            string query = $"select * from {table} order by {orderColumn};";
+            DataTable dt = _db.ExecuteReader(query);
+            return dt;
+        }
+
         private DataTable GetSpecializations()
         {
             string query = "select * from specialization order by SpecializationTitle;";
@@ -173,7 +179,7 @@ namespace ProjectOffice.forms
         }
        
 
-        private void UpdateTable(DataTable src, params string[] headers)
+        private void UpdateTableBy(DataTable src, params string[] headers)
         {
             ClearTable();
             if (src == null)
@@ -194,6 +200,29 @@ namespace ProjectOffice.forms
             objectTable.AllowUserToOrderColumns = false;
         }
 
+        private void UpdateTable()
+        {
+            int i = 0;
+
+            while (i < toolStrip1.Items.Count)
+            {
+                if (toolStrip1.Items[i] is ToolStripButton && toolStrip1.Items[i].Name.Contains("Check") && ((ToolStripButton)toolStrip1.Items[i]).Checked)
+                {
+                    currentDictionary = ((ToolStripButton)toolStrip1.Items[i]).Text;
+                    break;
+                }
+                i++;
+            }
+            switch (currentDictionary)
+            {
+                case "Специальности": UpdateTableBy(GetSpecializations(), new string[] { "", "Название специальности" }); break;
+                case "Этапы": UpdateTableBy(GetStages(), new string[] { "", "Название стадии" }); break;
+                case "Статусы": UpdateTableBy(GetStatuses(), new string[] { "", "Статус" }); break;
+                case "Типы организаций": UpdateTableBy(GetOrgTypes(), new string[] { "Аббревиатура", "Полное наименование" }); break;
+                case "Подзадачи": UpdateTableBy(GetSubtasks(), new string[] { "", "Подзадача" }); break;
+            }
+        }
+
         private string GetCheckedText()
         {
             string checkedText = "";
@@ -212,7 +241,9 @@ namespace ProjectOffice.forms
 
         private void DeleteRow(string table, string idColumn)
         {
-            string query = $"delete {Db.Name}.{table} where {idColumn} = {objectTable.SelectedRows[0].Cells[0].Value.ToString()};";
+            int temp = 0;
+            string key = (int.TryParse(objectTable.SelectedRows[0].Cells[0].Value.ToString(), out temp)) ? objectTable.SelectedRows[0].Cells[0].Value.ToString() : $"'{objectTable.SelectedRows[0].Cells[0].Value.ToString()}'";
+            string query = $"delete from {Db.Name}.{table} where {idColumn} = {key};";
             _db.ExecuteNoDataResult(query);
         }
 
@@ -229,8 +260,7 @@ namespace ProjectOffice.forms
             if (specCheckBtn.Checked)
             {
                 SetDbEntityProperties("specialization", "SpecializationID", new string[] { "SpecializationTitle" });
-
-                UpdateTable(GetSpecializations(), new string[] { "", "Название специальности" });
+                UpdateTable();
             }
         }
 
@@ -240,8 +270,8 @@ namespace ProjectOffice.forms
             if (statusCheckBtn.Checked)
             {
                 SetDbEntityProperties("status", "StatusID", new string[] { "StatusTitle" });
+                UpdateTable();
 
-                UpdateTable(GetStatuses(), new string[] { "", "Статус" });
             }
         }
 
@@ -250,9 +280,9 @@ namespace ProjectOffice.forms
             UncheckOtherBtns(sender);
             if (stagesCheckBtn.Checked)
             {
-                SetDbEntityProperties("stages", "StageID", new string[] { "StageTitle" });
+                SetDbEntityProperties("stage", "StageID", new string[] { "StageTitle" });
+                UpdateTable();
 
-                UpdateTable(GetStages(), new string[] { "", "Название стадии" });
             };
         }
 
@@ -261,9 +291,9 @@ namespace ProjectOffice.forms
             UncheckOtherBtns(sender);
             if (typesCheckBtn.Checked) 
             {
-                SetDbEntityProperties("organizationtype", "OrganitationTypeName", new string[] { "OrganitationTypeDescription" });
+                SetDbEntityProperties("organitationtype", "OrganitationTypeName", new string[] { "OrganitationTypeDescription" });
+                UpdateTable();
 
-                UpdateTable(GetOrgTypes(), new string[] { "Аббревиатура", "Полное наименование" });
             };
         }
 
@@ -273,8 +303,8 @@ namespace ProjectOffice.forms
             if (subtasksCheckBtn.Checked) 
             {
                 SetDbEntityProperties("subtask", "SubtaskID", new string[] { "SubtaskTitle" });
+                UpdateTable();
 
-                UpdateTable(GetSubtasks(), new string[] { "", "Подзадача" });
             };
         }
 
@@ -287,26 +317,41 @@ namespace ProjectOffice.forms
             if (addObjectForm == null || addObjectForm.IsDisposed)
             {
                 addObjectForm = new DictionaryEditForm(title, fieldsText, table, columnIdName, columnsToUpdate, id, edit);
+                addObjectForm.tableName = GetCheckedText();
                 addObjectForm.FormClosed += (addObjectForm, _) => { 
                     ((Form)addObjectForm).Dispose();
-                    // ДОБАВИТЬ ОБЩИЙ АПДЕЙТ ТАБЭЛ
+                    UpdateTable();
                 };
             }
             addObjectForm.Show();
+        }
+
+        private string[] GetPlaceholders()
+        {
+            string[] placeholders = null;
+            switch (currentDictionary)
+            {
+                case "Специальности": placeholders = new string[] { "", "Название специальности" }; break;
+                case "Этапы": placeholders = new string[] { "", "Название стадии" }; break;
+                case "Статусы": placeholders = new string[] { "", "Статус" }; break;
+                case "Типы организаций": placeholders = new string[] { "Аббревиатура", "Полное наименование" }; break;
+                case "Подзадачи": placeholders = new string[] { "", "Подзадача" }; break;
+            }
+            return placeholders;
         }
 
         private void addObject_Click(object sender, EventArgs e)
         {
             //editorPanel.Show();
             string id = (objectTable.SelectedRows.Count > 0) ? objectTable.SelectedRows[0].Cells[0].Value.ToString() : "";
-            LaunchAddEditForm(GetCheckedText(), new string[] { "Поле 1", "Поле 2" }, id);
+            LaunchAddEditForm(GetCheckedText(), GetPlaceholders(), id);
         }
 
         private void editObject_Click(object sender, EventArgs e)
         {
             //editorPanel.Show();
             string id = (objectTable.SelectedRows.Count > 0) ? objectTable.SelectedRows[0].Cells[0].Value.ToString() : "";
-            LaunchAddEditForm(GetCheckedText(), new string[] { "Поле 1", "Поле 2" }, id, true);
+            LaunchAddEditForm(GetCheckedText(), GetPlaceholders(), id, true);
         }
 
         private void backToMenuBtn_Click(object sender, EventArgs e)
@@ -326,9 +371,10 @@ namespace ProjectOffice.forms
         private void deleteObject_Click(object sender, EventArgs e)
         {
             if (objectTable.SelectedRows.Count == 0) return;
-            if (MessageBox.Show("Вы уверены, что хотите удалить запись?", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.OK)
+            if (MessageBox.Show("Вы уверены, что хотите удалить запись?", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 DeleteRow(table, columnIdName);
+                UpdateTable();
             }
         }
     }

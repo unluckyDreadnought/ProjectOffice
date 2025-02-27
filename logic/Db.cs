@@ -55,7 +55,7 @@ namespace ProjectOffice.logic
             {
                 affected = com.ExecuteNonQuery();
             }
-            catch (MySqlException)
+            catch (MySqlException e)
             {
                 con.Close();
                 return -1;
@@ -63,6 +63,24 @@ namespace ProjectOffice.logic
             con.Close();
             return affected;
         }
+
+        //public (int, Exception) ExecuteNoDataResult(string query) {
+        //    (MySqlConnection con, int errCode) = GetOpenConnection();
+        //    if (con == null) return (-1, null);
+        //    MySqlCommand com = new MySqlCommand(query, con);
+        //    int affected = 0;
+        //    try
+        //    {
+        //        affected = com.ExecuteNonQuery();
+        //    }
+        //    catch (MySqlException e)
+        //    {
+        //        con.Close();
+        //        return (-1, e);
+        //    }
+        //    con.Close();
+        //    return (affected, null);
+        //}
 
         public object ExecuteScalar(string query)
         {
@@ -114,8 +132,9 @@ namespace ProjectOffice.logic
                 MySqlDataReader rdr = com.ExecuteReader();
                 dt.Load(rdr);
             }
-            catch (MySqlException)
+            catch (MySqlException e)
             {
+                ;
                 return null;
                 con.Close();
             }
