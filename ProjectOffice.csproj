@@ -178,6 +178,7 @@
     </Compile>
     <Compile Include="logic\app\AppUser.cs" />
     <Compile Include="logic\app\AppSettings.cs" />
+    <Compile Include="logic\Common.cs" />
     <Compile Include="logic\DataStructures.cs" />
     <Compile Include="logic\Db.cs" />
     <Compile Include="logic\Security.cs" />

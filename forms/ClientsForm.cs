@@ -24,12 +24,13 @@ namespace ProjectOffice.forms
             _db = new Db();
         }
 
-        private DataTable GetClients()
+        private async Task<DataTable> GetClients()
         {
             string query = @"select  
 ClientID, case when ClientOrgTypeID is null then concat(ClientName) else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientEmail 
 from client; ";
-            DataTable dt = _db.ExecuteReader(query);
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
             int indx = 0;
             while (indx < dt.Rows.Count)
             {
@@ -56,9 +57,9 @@ from client; ";
             return dt;
         }
 
-        private void UpdateClientsTable()
+        private async void UpdateClientsTable()
         {
-            DataTable src = GetClients();
+            DataTable src = await GetClients();
             int i = 0;
             while (i < src.Rows.Count)
             {

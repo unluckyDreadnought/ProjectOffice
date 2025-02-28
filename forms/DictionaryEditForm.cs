@@ -51,19 +51,21 @@ namespace ProjectOffice.forms
             return result.ToArray();
         }
 
-        private (bool, bool) FindSame()
+        private async Task<(bool, bool)> FindSame()
         {
             bool sameKey = false;
             bool sameValue = false;
 
-            string query = $"select {columns.Last()} from {Db.Name}.{table};";
-            DataTable dt = _db.ExecuteReader(query);
+            string query = $"select {columns.Last()} from {Db.Name}.{table} where {columns.Last()} != {val.Last()};";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
             if (dt != null)
             {
                 sameKey = DataTableToStringArray(dt).Contains(val[0] == null ? val[0] : val[0].Trim('\''));
             }
-            query = $"select {columns[0]} from {Db.Name}.{table};";
-            dt = _db.ExecuteReader(query);
+            query = $"select {columns[0]} from {Db.Name}.{table} where {columns.Last()} != {val.Last()};";
+            task = _db.ExecuteReaderAsync(query);
+            dt = await Common.GetAsyncResult(task);
             if (dt != null)
             {
                 sameValue = DataTableToStringArray(dt).Contains(val.Last().Trim('\''));
@@ -71,18 +73,20 @@ namespace ProjectOffice.forms
             return (sameKey, sameValue);
         }
         
-        private void InsertRecord(params string[] val)
+        private async void InsertRecord(params string[] val)
         {
             string query = $"insert into {Db.Name}.{table} value (";
             query += string.Join(", ", val) + ");";
-            DataTable res = _db.ExecuteReader(query);
+            var task = _db.ExecuteNoDataResultAsync(query);
+            object res = await _db.GetAsynNonReaderResult(task);
             if (res == null)
             {
-                MessageBox.Show("При добавлении возникла ошибка", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Error); ;
+                MessageBox.Show("При добавлении возникла ошибка", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            else if (res is int && (int)res > 0) MessageBox.Show("Запись успешно добавлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void UpdateRecord(string[] cols, params string[] val)
+        private async void UpdateRecord(string[] cols, params string[] val)
         {
             string query = $"update {Db.Name}.{table} set ";
             int cntr = 0;
@@ -95,11 +99,13 @@ namespace ProjectOffice.forms
             int temp = 0;
             string id = (int.TryParse(updateId, out temp)) ? updateId : $"'{updateId}'";
             query += $" where {cols[cols.Length-1]} = {id};";
-            DataTable res = _db.ExecuteReader(query, val);
+            var task = _db.ExecuteNoDataResultAsync(query);
+            object res = await _db.GetAsynNonReaderResult(task);
             if (res == null)
             {
                 MessageBox.Show("При изменении возникла ошибка", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Error); ;
             }
+            else if (res is int && (int)res > 0) MessageBox.Show("Запись успешно добавлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void CreateInputControls(string[] fieldDescriptions)
@@ -143,14 +149,15 @@ namespace ProjectOffice.forms
             cancelBtn.Focus();
         }
 
-        private string[] GetDataAboutObject(string id, bool keyNeeded)
+        private async Task<string[]> GetDataAboutObject(string id, bool keyNeeded)
         {
             string fields = (keyNeeded) ? $"{string.Join(", ", columns)}" : $"{string.Join(", ", columns, 0, columns.Length - 1)}";
             int temp = 0;
             id = (int.TryParse(id, out temp)) ? id : $"'{id}'";
             string query = $"select {fields} from {Db.Name}.{table} where {columns.Last()} = {id};";
 
-            DataTable data = _db.ExecuteReader(query);
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable data = await Common.GetAsyncResult(task);
             if (data == null) return null;
             List<string> response = new List<string>();
 
@@ -165,9 +172,10 @@ namespace ProjectOffice.forms
             return response.ToArray();
         }
 
-        private void FillFields()
+        private async void FillFields()
         {
-            storedData = GetDataAboutObject(updateId, (panel1.Controls.Count > 1) ? true : false);
+            var task = GetDataAboutObject(updateId, (panel1.Controls.Count > 1) ? true : false);
+            storedData = await task;
             int i = 0;
             while (i < panel1.Controls.Count)
             {
@@ -221,6 +229,7 @@ namespace ProjectOffice.forms
                 if (i == -1)
                 {
                     val[i + 1] = (editMode) ? $"{storedData[i+1]}" : "null";
+                    val[i + 2] = (editMode) ? $"{storedData[i+1]}" : "null";
                 }
                 if (i >= 0 && i < panel1.Controls.Count)
                 {
@@ -319,7 +328,7 @@ namespace ProjectOffice.forms
             EnableButton();
         }
 
-        private void addBtn_Click(object sender, EventArgs e)
+        private async void addBtn_Click(object sender, EventArgs e)
         {
             GetValues();
 
@@ -330,7 +339,7 @@ namespace ProjectOffice.forms
                 val = val.Reverse().ToArray();
             }
 
-            (bool key, bool value) = FindSame();
+            (bool key, bool value) = await FindSame();
             if (key && !editMode)
             {
                 MessageBox.Show("Такой ключ уже существует в базе данных. Запись не будет добавлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);

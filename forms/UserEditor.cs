@@ -20,10 +20,11 @@ namespace ProjectOffice.forms
         object[] storedValues = { };
         string userId = "";
 
-        private void FillSpecCombo()
+        private async void FillSpecCombo()
         {
             string query = $"select SpecializationTitle from `{Db.Name}`.`specialization`;";
-            DataTable dt = _db.ExecuteReader(query);
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
             specCombo.Items.Clear();
             specCombo.Items.Add("Не определено");
             int i = 0;
@@ -35,10 +36,11 @@ namespace ProjectOffice.forms
             specCombo.SelectedIndex = 0;
         }
 
-        private void FillRolesCombo()
+        private async void FillRolesCombo()
         {
             string query = $"select UserModeTitle from `{Db.Name}`.`usermode`;";
-            DataTable dt = _db.ExecuteReader(query);
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
             roleCombo.Items.Clear();
             roleCombo.Items.Add("Не определено");
             int i = 0;
@@ -50,16 +52,16 @@ namespace ProjectOffice.forms
             roleCombo.SelectedIndex = 0;
         }
 
-        private void FillUserInfo(string userId)
+        private async void FillUserInfo(string userId)
         {
             string query = $"select * from  `{Db.Name}`.`user` where UserID = {userId};";
-            DataTable dt = _db.ExecuteReader(query);
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
             if (dt.Rows.Count == 0)
             {
                 MessageBox.Show("Не удалось обнаружить информацию от этом пользователе", "Ошибка загрузки данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
         }
 
         public UserEditor(bool edit = false, bool user = false, string userId = null)

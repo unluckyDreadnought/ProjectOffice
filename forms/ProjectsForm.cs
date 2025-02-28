@@ -22,7 +22,7 @@ namespace ProjectOffice.forms
             _db = new Db();
         }
 
-        private void UpdateProjectsTable(string searchPattern = "", string filter = "", string orderRule = "", string dateRange = "")
+        private async Task<(DataTable, Exception)> GetProjectsData(string searchPattern = "", string filter = "", string orderRule = "", string dateRange = "")
         {
             string query = $@"select project.ProjectID, ProjectTitle, concat(UserSurname, ' ', substring(UserName, 1,1), '.', substring(UserPatronymic, 1,1)) as 'fio', StatusTitle,
 case when ProjectFactEndDate is NULL then ProjectPlanEndDate
@@ -49,10 +49,21 @@ where ProjectTitle like '%{searchPattern}%' ";
                 query += $"order by {orderRule}";
             }
             query += ";";
+            
+            var task = _db.ExecuteReaderAsync(query);
+            return await task;
+        }
 
+        private async void UpdateProjectsTable(string searchPattern = "", string filter = "", string orderRule = "", string dateRange = "")
+        {
+            object res = await _db.GetAsyncReaderResult(GetProjectsData(searchPattern, filter, orderRule, dateRange));
             projectsTable.Rows.Clear();
-            DataTable dt = _db.ExecuteReader(query);
-            if (dt == null) return;
+            if (res is DataTable == false)
+            {
+                if (res != null) MessageBox.Show((string)res, "Обновление данных о проектах", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            DataTable dt = (DataTable)res;
             int i = 0;
             while (i < dt.Rows.Count)
             {
@@ -92,24 +103,61 @@ where ProjectTitle like '%{searchPattern}%' ";
             return String.Join(" ", parts).Trim(' ', '.');
         }
 
+        private object GetDateFromAsync(Task<(object, Exception)> task)
+        {
+            object res = _db.GetAsynNonReaderResult(task);
+            if (res == null) return DateTime.MinValue.ToString("g");
+            if (res is string)
+            {
+                bool date = false;
+                try
+                {
+                    DateTime.Parse((string)res);
+                    date = true;
+                }
+                catch (Exception) { date = false; }
+                if (!date)
+                {
+                    MessageBox.Show((string)res, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return DateTime.MinValue.ToString("g");
+                }
+            }
+            return res;
+        }
+
+        private async Task<string> GetIntAsyncResult(Task<(int, Exception)> task)
+        {
+            object res = await _db.GetAsynNonReaderResult(task);
+            if (res == null) return "";
+            if (res is int && (int)res >= 0) return res.ToString();
+            else
+            {
+                MessageBox.Show((string)res, "Ошибка получения ответственного", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return "";
+            }
+        }
+
         private DateTime GetEarlyStartDate()
         {
             string query = "select ProjectStartDate from project order by ProjectStartDate asc;";
-            return DateTime.Parse(_db.ExecuteScalar(query).ToString());
+            object res = GetDateFromAsync(_db.ExecuteScalarAsync(query));
+            return DateTime.Parse(res.ToString());
         }
 
         private DateTime GetLastDate()
         {
             string query = "select ProjectPlanEndDate from project order by ProjectPlanEndDate desc; ";
-            return DateTime.Parse(_db.ExecuteScalar(query).ToString());
+            object res = GetDateFromAsync(_db.ExecuteScalarAsync(query));
+            return DateTime.Parse(res.ToString());
         }
 
-        private string[] GetResponsibleEmployees()
+        private async Task<string[]> GetResponsibleEmployees()
         {
             string query = $@"select distinct concat(`user`.UserSurname, ' ', `user`.UserName, ' ', `user`.UserPatronymic) from userproject
 inner join `user` on `user`.UserID = userproject.UserID
 where IsResponsible = 1;";
-            DataTable dt = _db.ExecuteReader(query);
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
             List<string> respResult = new List<string>();
             int i = 0;
             while (i < dt.Rows.Count)
@@ -120,18 +168,20 @@ where IsResponsible = 1;";
             return respResult.ToArray();
         }
 
-        private string GetRespUserId(string shortSnp)
+        private async Task<string> GetRespUserId(string shortSnp)
         {
             string query = $@"select userproject.UserID from userproject
 inner join `user` on `user`.UserID = userproject.UserID
 where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', substring(`user`.UserName,1,1), '. ', substring(`user`.UserPatronymic,1,1)); ";
-            return _db.ExecuteScalar(query).ToString();
+            var task = _db.ExecuteNoDataResultAsync(query);
+            return await GetIntAsyncResult(task);
         }
 
-        private string[] GetStatuses()
+        private async Task<string[]> GetStatuses()
         {
             string query = $@"select StatusTitle from `status`;";
-            DataTable dt = _db.ExecuteReader(query);
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
             List<string> statuses = new List<string>();
             int i = 0;
             while (i < dt.Rows.Count)
@@ -142,10 +192,11 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             return statuses.ToArray();
         }
 
-        private string GetStatusID(string statusName)
+        private async Task<string> GetStatusID(string statusName)
         {
             string query = $"select StatusID from `status` where StatusTitle = '{statusName}';";
-            return _db.ExecuteScalar(query).ToString();
+            var task = _db.ExecuteNoDataResultAsync(query);
+            return await GetIntAsyncResult(task);
         }
 
         private string GetSearchPattern()
@@ -153,11 +204,12 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             string search = "";
             if (projectSearchLineTextBox.Text == "Поиск") return "";
             string sText = projectSearchLineTextBox.Text.Trim();
-            search = (sText.Length < 3) ? "" : sText;
+            //search = (sText.Length < 3) ? "" : sText;
+            search = sText;
             return search;
         }
 
-        private string GetFilterCondition()
+        private async Task<string> GetFilterCondition()
         {
             string id = "";
             string column = "";
@@ -167,7 +219,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
                 case 1:
                     {
                         column = "userproject.UserID";
-                        id = GetRespUserId(projectFilterCombo.SelectedItem.ToString());
+                        id = await GetRespUserId(projectFilterCombo.SelectedItem.ToString());
 
                         break;
                     }
@@ -175,7 +227,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
                 case 3:
                     {
                         column = "project.ProjectStatusID";
-                        id = GetStatusID(projectFilterCombo.SelectedItem.ToString());
+                        id = await GetStatusID(projectFilterCombo.SelectedItem.ToString());
 
                         break;
                     }
@@ -243,9 +295,9 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             if (projectSearchLineTextBox.Text == "Поиск") EraseSearchLinePlaceholder();
         }
 
-        private void projectSearchLineTextBox_TextChanged(object sender, EventArgs e)
+        private async void projectSearchLineTextBox_TextChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
         private void projectFilterOnCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -254,31 +306,31 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             projectFilterCombo.Items.Add("Отсутствует");
             switch (projectFilterOnCombo.SelectedIndex)
             {
-                case 1: projectFilterCombo.Items.AddRange(GetResponsibleEmployees()); break;
+                case 1: projectFilterCombo.Items.AddRange(GetResponsibleEmployees().GetAwaiter().GetResult()); break;
                 case 2: break;
-                case 3: projectFilterCombo.Items.AddRange(GetStatuses()); break;
+                case 3: projectFilterCombo.Items.AddRange(GetStatuses().GetAwaiter().GetResult()); break;
                 default: break;
             }
         }
 
-        private void projectFilterCombo_SelectedIndexChanged(object sender, EventArgs e)
+        private async void projectFilterCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
-        private void projectSortCombo_SelectedIndexChanged(object sender, EventArgs e)
+        private async void projectSortCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
-        private void projectStartRangeDatePicker_ValueChanged(object sender, EventArgs e)
+        private async void projectStartRangeDatePicker_ValueChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
-        private void projectEndDatePicker_ValueChanged(object sender, EventArgs e)
+        private async void projectEndDatePicker_ValueChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
         private void projectResetFilterBtn_Click(object sender, EventArgs e)

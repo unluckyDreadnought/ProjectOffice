@@ -26,15 +26,21 @@ namespace ProjectOffice.forms
             if (editId != "")
             {
                 editMode = true;
-                storedOrgInfo = GetClientInfo(editId);
+                var task = GetClientInfo(editId);
+                while (task.Status != TaskStatus.RanToCompletion)
+                {
+                    task.Wait();
+                }
+                storedOrgInfo = task.Result;
             }
         }
 
-        private string[] GetClientInfo(string clientId)
+        private async Task<string[]> GetClientInfo(string clientId)
         {
             string query = $@"select ClientID, ClientOrgTypeID, ClientName, ClientAddress, ClientBankAccount, ClientBank, 
 ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBIK from client where ClientID = {clientId};";
-            DataTable dt = _db.ExecuteReader(query);
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
             List<string> info = new List<string>();
             int i = 0;
             while (i < dt.Columns.Count)

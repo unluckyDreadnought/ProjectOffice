@@ -62,12 +62,12 @@ namespace ProjectOffice.forms
         }
 
         // Обработчик нажатия на кнопку входа в приложение
-        private void LogInBtn_Click(object sender, EventArgs e)
+        private async void LogInBtn_Click(object sender, EventArgs e)
         {
             string login = LoginTextBox_nec.Text.Trim();
             string pass = Security.HashSha512(PswdTextBox_nec.Text.Trim());
             // Поиск пользователя по логину и хэшированному паролю среди записанных в базе данных
-            string[] result = _db.FindUser(login, pass);
+            string[] result = await _db.FindUser(login, pass);
             if (result == null)
             {
                 MessageBox.Show("Ошибка обращения к базе данных", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Error);

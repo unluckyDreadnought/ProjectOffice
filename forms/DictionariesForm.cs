@@ -137,47 +137,11 @@ namespace ProjectOffice.forms
 
         }
 
-        private DataTable GetDictionaryRows(string table, string orderColumn) {
+        private async Task<DataTable> GetDictionaryRows(string table, string orderColumn) {
             string query = $"select * from {table} order by {orderColumn};";
-            DataTable dt = _db.ExecuteReader(query);
-            return dt;
+            var task = _db.ExecuteReaderAsync(query);
+            return await Common.GetAsyncResult(task);
         }
-
-        private DataTable GetSpecializations()
-        {
-            string query = "select * from specialization order by SpecializationTitle;";
-            DataTable dt = _db.ExecuteReader(query);
-            return dt;
-        }
-
-        private DataTable GetStatuses()
-        {
-            string query = "select * from status order by StatusTitle;";
-            DataTable dt = _db.ExecuteReader(query);
-            return dt;
-        }
-
-        private DataTable GetStages()
-        {
-            string query = "select * from stage order by StageTitle;";
-            DataTable dt = _db.ExecuteReader(query);
-            return dt;
-        }
-
-        private DataTable GetOrgTypes()
-        {
-            string query = "select * from organitationtype order by OrganitationTypeDescription;";
-            DataTable dt = _db.ExecuteReader(query);
-            return dt;
-        }
-
-        private DataTable GetSubtasks()
-        {
-            string query = "select * from subtask order by SubtaskTitle;";
-            DataTable dt = _db.ExecuteReader(query);
-            return dt;
-        }
-       
 
         private void UpdateTableBy(DataTable src, params string[] headers)
         {
@@ -200,7 +164,7 @@ namespace ProjectOffice.forms
             objectTable.AllowUserToOrderColumns = false;
         }
 
-        private void UpdateTable()
+        private async void UpdateTable()
         {
             int i = 0;
 
@@ -215,11 +179,31 @@ namespace ProjectOffice.forms
             }
             switch (currentDictionary)
             {
-                case "Специальности": UpdateTableBy(GetSpecializations(), new string[] { "", "Название специальности" }); break;
-                case "Этапы": UpdateTableBy(GetStages(), new string[] { "", "Название стадии" }); break;
-                case "Статусы": UpdateTableBy(GetStatuses(), new string[] { "", "Статус" }); break;
-                case "Типы организаций": UpdateTableBy(GetOrgTypes(), new string[] { "Аббревиатура", "Полное наименование" }); break;
-                case "Подзадачи": UpdateTableBy(GetSubtasks(), new string[] { "", "Подзадача" }); break;
+                case "Специальности": 
+                    { 
+                        UpdateTableBy(await GetDictionaryRows(Db.GetTableName(Db.Tables.Specialization), "SpecializationTitle"), new string[] { "", "Название специальности" }); 
+                        break; 
+                    }
+                case "Этапы":
+                    {
+                        UpdateTableBy(await GetDictionaryRows(Db.GetTableName(Db.Tables.Stage), "StageTitle"), new string[] { "", "Название стадии" });
+                        break;
+                    }
+                case "Статусы":
+                    {
+                        UpdateTableBy(await GetDictionaryRows(Db.GetTableName(Db.Tables.Status), "StatusTitle"), new string[] { "", "Статус" });
+                        break;
+                    }
+                case "Типы организаций":
+                    {
+                        UpdateTableBy(await GetDictionaryRows(Db.GetTableName(Db.Tables.OrgType), "OrganitationTypeDescription"), new string[] { "Аббревиатура", "Полное наименование" });
+                        break;
+                    }
+                case "Подзадачи":
+                    {
+                        UpdateTableBy(await GetDictionaryRows(Db.GetTableName(Db.Tables.Subtask), "SubtaskTitle"), new string[] { "", "Подзадача" });
+                        break;
+                    }
             }
         }
 
@@ -239,12 +223,15 @@ namespace ProjectOffice.forms
             return checkedText;
         }
 
-        private void DeleteRow(string table, string idColumn)
+        private async void DeleteRow(string table, string idColumn)
         {
             int temp = 0;
             string key = (int.TryParse(objectTable.SelectedRows[0].Cells[0].Value.ToString(), out temp)) ? objectTable.SelectedRows[0].Cells[0].Value.ToString() : $"'{objectTable.SelectedRows[0].Cells[0].Value.ToString()}'";
             string query = $"delete from {Db.Name}.{table} where {idColumn} = {key};";
-            _db.ExecuteNoDataResult(query);
+            object res = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            if (res == null) return;
+            if (res is int && (int)res > 0) MessageBox.Show("Запись успешно удалена", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else if (res is string) MessageBox.Show((string)res, $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void SetDbEntityProperties(string tblName, string colIdName, string[] colsToUpdate)
