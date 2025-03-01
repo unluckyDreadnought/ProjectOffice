@@ -135,7 +135,7 @@ namespace ProjectOffice.forms
                     }
                 case UserRole.Manager:
                     {
-                        btnTexts = new string[] { "Учёт проектов", "Сотрудники", "Справочники", "Планирование", "Статистика", "Покинуть личный кабинет", "Выход" };
+                        btnTexts = new string[] { "Учёт проектов", "Сотрудники", "Справочники", "Статистика", "Покинуть личный кабинет", "Выход" };
                         break;
                     }
                 case UserRole.Employee:
