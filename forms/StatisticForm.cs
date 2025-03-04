@@ -2,19 +2,69 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.logic;
+using ProjectOffice.logic.app;
 using ProjectOffice.Properties;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ProjectOffice.forms
 {
     public partial class StatisticForm : Form
     {
         private Db _db = null;
+
+        private void DrawChartOnData(int rejected, int active, int outOfDate, int completed)
+        {
+            int[] data = new int[] { rejected, active, outOfDate, completed };
+            string[] titles = new string[] { "Отклонённые", "Активные", "Просрочные", "Завершённые" };
+            allProjectStatsChart.Series.Clear();
+            allProjectStatsChart.Series.Add(new Series("DataSeries") { 
+                ChartType = SeriesChartType.Pie
+            });
+            //allProjectStatsChart.Series["DataSeries"].LegendText = "Проекты";
+            allProjectStatsChart.Series["DataSeries"].Points.DataBindXY(titles, data);
+            allProjectStatsChart.Series["DataSeries"].Label = "#PERCENT{P}";
+            allProjectStatsChart.Series["DataSeries"].LegendText = "#VALX";
+        }
+
+        private void SaveReport()
+        {
+            string[] arr;
+            string template = $@"{Directory.GetParent(Directory.GetParent(Application.StartupPath).FullName).FullName}\templates\stats.xlsx";
+            Excel.Application app = new Excel.Application();
+            if (app == null)
+            {
+                MessageBox.Show("Не удалось создать отчёт", "Отчёт Excel", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            app.Visible = false;
+            //Excel.Workbooks workbooks = app.Workbooks;
+            //Excel.Workbook book = workbooks.Add(Excel.XlWBATemplate.xlWBATWorksheet);
+            Excel.Workbook wb;
+            Excel.Worksheet ws;
+            wb = app.Workbooks.Open(template);
+            ws = wb.Worksheets[1];
+
+            Excel.Range cell = ws.Range["A3:A3"];
+            cell.Value = DateTime.Now.ToString("g");
+            cell = ws.Range["D3:D3"];
+            cell.Value = AppUser.Snp;
+
+            string basePath = $@"C:\Users\{Environment.UserName}\Documents\myfile.xlsx";
+
+            MessageBox.Show($"Файл будет сохранён по пути {basePath}", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ws.Columns.AutoFit();
+
+            wb.SaveAs(basePath);
+            wb.Close();
+            app.Quit();
+            ;
+        }
+
         private async Task<DataTable> GetCommonStats()
         {
             string query = $@"select StatusTitle, case when (StatusTitle != 'Завершено' && StatusTitle != 'Отклонён') && ProjectPlanEndDate < now()  then 1 else 0 end from {Db.Name}.project 
@@ -57,6 +107,8 @@ order by StatusTitle;";
                 i++;
             }
 
+            DrawChartOnData(rejected, active, outOfDate, completed);
+
             activeProjectsCountLbl.Text = $"{active}";
             completedProjectsCountLbl.Text = $"{completed}";
             rejectedProjectsCountLbl.Text = $"{rejected}";
@@ -89,6 +141,11 @@ order by StatusTitle;";
                 FillCommonStats();
             }
             else { ; }
+        }
+
+        private void statsReportBtn_Click(object sender, EventArgs e)
+        {
+            SaveReport();
         }
     }
 }

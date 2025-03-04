@@ -29,9 +29,9 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.statsTabControl = new System.Windows.Forms.TabControl();
             this.commonStatsTab = new System.Windows.Forms.TabPage();
             this.outOfDateProjectsCount = new System.Windows.Forms.Label();
@@ -89,10 +89,10 @@ namespace ProjectOffice.forms
             this.commonStatsTab.Controls.Add(this.label3);
             this.commonStatsTab.Controls.Add(this.label2);
             this.commonStatsTab.Controls.Add(this.label1);
-            this.commonStatsTab.Location = new System.Drawing.Point(4, 31);
+            this.commonStatsTab.Location = new System.Drawing.Point(4, 38);
             this.commonStatsTab.Name = "commonStatsTab";
             this.commonStatsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.commonStatsTab.Size = new System.Drawing.Size(669, 395);
+            this.commonStatsTab.Size = new System.Drawing.Size(669, 388);
             this.commonStatsTab.TabIndex = 0;
             this.commonStatsTab.Text = "Общее";
             // 
@@ -101,7 +101,7 @@ namespace ProjectOffice.forms
             this.outOfDateProjectsCount.AutoSize = true;
             this.outOfDateProjectsCount.Location = new System.Drawing.Point(240, 222);
             this.outOfDateProjectsCount.Name = "outOfDateProjectsCount";
-            this.outOfDateProjectsCount.Size = new System.Drawing.Size(21, 24);
+            this.outOfDateProjectsCount.Size = new System.Drawing.Size(26, 29);
             this.outOfDateProjectsCount.TabIndex = 7;
             this.outOfDateProjectsCount.Text = "n";
             // 
@@ -110,7 +110,7 @@ namespace ProjectOffice.forms
             this.rejectedProjectsCountLbl.AutoSize = true;
             this.rejectedProjectsCountLbl.Location = new System.Drawing.Point(240, 177);
             this.rejectedProjectsCountLbl.Name = "rejectedProjectsCountLbl";
-            this.rejectedProjectsCountLbl.Size = new System.Drawing.Size(21, 24);
+            this.rejectedProjectsCountLbl.Size = new System.Drawing.Size(26, 29);
             this.rejectedProjectsCountLbl.TabIndex = 7;
             this.rejectedProjectsCountLbl.Text = "n";
             // 
@@ -119,7 +119,7 @@ namespace ProjectOffice.forms
             this.completedProjectsCountLbl.AutoSize = true;
             this.completedProjectsCountLbl.Location = new System.Drawing.Point(240, 131);
             this.completedProjectsCountLbl.Name = "completedProjectsCountLbl";
-            this.completedProjectsCountLbl.Size = new System.Drawing.Size(21, 24);
+            this.completedProjectsCountLbl.Size = new System.Drawing.Size(26, 29);
             this.completedProjectsCountLbl.TabIndex = 7;
             this.completedProjectsCountLbl.Text = "n";
             // 
@@ -128,7 +128,7 @@ namespace ProjectOffice.forms
             this.activeProjectsCountLbl.AutoSize = true;
             this.activeProjectsCountLbl.Location = new System.Drawing.Point(240, 86);
             this.activeProjectsCountLbl.Name = "activeProjectsCountLbl";
-            this.activeProjectsCountLbl.Size = new System.Drawing.Size(21, 24);
+            this.activeProjectsCountLbl.Size = new System.Drawing.Size(26, 29);
             this.activeProjectsCountLbl.TabIndex = 7;
             this.activeProjectsCountLbl.Text = "n";
             // 
@@ -137,23 +137,24 @@ namespace ProjectOffice.forms
             this.totalProjectCountLbl.AutoSize = true;
             this.totalProjectCountLbl.Location = new System.Drawing.Point(240, 37);
             this.totalProjectCountLbl.Name = "totalProjectCountLbl";
-            this.totalProjectCountLbl.Size = new System.Drawing.Size(21, 24);
+            this.totalProjectCountLbl.Size = new System.Drawing.Size(26, 29);
             this.totalProjectCountLbl.TabIndex = 7;
             this.totalProjectCountLbl.Text = "n";
             // 
             // allProjectStatsChart
             // 
-            chartArea1.Name = "ChartArea1";
-            this.allProjectStatsChart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.allProjectStatsChart.Legends.Add(legend1);
+            chartArea2.Name = "ChartArea1";
+            this.allProjectStatsChart.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.allProjectStatsChart.Legends.Add(legend2);
             this.allProjectStatsChart.Location = new System.Drawing.Point(349, 19);
             this.allProjectStatsChart.Name = "allProjectStatsChart";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.allProjectStatsChart.Series.Add(series1);
+            this.allProjectStatsChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Pastel;
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.allProjectStatsChart.Series.Add(series2);
             this.allProjectStatsChart.Size = new System.Drawing.Size(300, 300);
             this.allProjectStatsChart.TabIndex = 6;
             this.allProjectStatsChart.Text = "chart1";
@@ -164,7 +165,7 @@ namespace ProjectOffice.forms
             this.label5.Location = new System.Drawing.Point(23, 222);
             this.label5.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(148, 24);
+            this.label5.Size = new System.Drawing.Size(190, 29);
             this.label5.TabIndex = 1;
             this.label5.Text = "Просроченных:";
             // 
@@ -174,7 +175,7 @@ namespace ProjectOffice.forms
             this.label4.Location = new System.Drawing.Point(23, 177);
             this.label4.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(137, 24);
+            this.label4.Size = new System.Drawing.Size(178, 29);
             this.label4.TabIndex = 2;
             this.label4.Text = "Отклонённых:";
             // 
@@ -184,7 +185,7 @@ namespace ProjectOffice.forms
             this.label3.Location = new System.Drawing.Point(23, 131);
             this.label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(139, 24);
+            this.label3.Size = new System.Drawing.Size(183, 29);
             this.label3.TabIndex = 3;
             this.label3.Text = "Выполненных:";
             // 
@@ -194,7 +195,7 @@ namespace ProjectOffice.forms
             this.label2.Location = new System.Drawing.Point(23, 86);
             this.label2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(103, 24);
+            this.label2.Size = new System.Drawing.Size(129, 29);
             this.label2.TabIndex = 4;
             this.label2.Text = "Активных:";
             // 
@@ -204,7 +205,7 @@ namespace ProjectOffice.forms
             this.label1.Location = new System.Drawing.Point(23, 37);
             this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(158, 24);
+            this.label1.Size = new System.Drawing.Size(200, 29);
             this.label1.TabIndex = 5;
             this.label1.Text = "Всего проектов:";
             // 
@@ -215,10 +216,10 @@ namespace ProjectOffice.forms
             this.projectStatsTab.Controls.Add(this.statusContainer);
             this.projectStatsTab.Controls.Add(this.projectStatsCombo);
             this.projectStatsTab.Controls.Add(this.projectLbl);
-            this.projectStatsTab.Location = new System.Drawing.Point(4, 31);
+            this.projectStatsTab.Location = new System.Drawing.Point(4, 38);
             this.projectStatsTab.Name = "projectStatsTab";
             this.projectStatsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.projectStatsTab.Size = new System.Drawing.Size(669, 395);
+            this.projectStatsTab.Size = new System.Drawing.Size(669, 388);
             this.projectStatsTab.TabIndex = 1;
             this.projectStatsTab.Text = "Проекты";
             // 
@@ -244,9 +245,9 @@ namespace ProjectOffice.forms
             this.projectCompleteStatusBar,
             this.statusLbl});
             this.statusContainer.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.statusContainer.Location = new System.Drawing.Point(24, 84);
+            this.statusContainer.Location = new System.Drawing.Point(24, 80);
             this.statusContainer.Name = "statusContainer";
-            this.statusContainer.Size = new System.Drawing.Size(572, 34);
+            this.statusContainer.Size = new System.Drawing.Size(572, 38);
             this.statusContainer.SizingGrip = false;
             this.statusContainer.TabIndex = 2;
             this.statusContainer.Text = "Статус выполнения";
@@ -264,7 +265,7 @@ namespace ProjectOffice.forms
             // statusLbl
             // 
             this.statusLbl.Name = "statusLbl";
-            this.statusLbl.Size = new System.Drawing.Size(123, 29);
+            this.statusLbl.Size = new System.Drawing.Size(157, 32);
             this.statusLbl.Text = "n/m (00.00%)";
             // 
             // projectStatsCombo
@@ -276,7 +277,7 @@ namespace ProjectOffice.forms
             this.projectStatsCombo.FormattingEnabled = true;
             this.projectStatsCombo.Location = new System.Drawing.Point(152, 24);
             this.projectStatsCombo.Name = "projectStatsCombo";
-            this.projectStatsCombo.Size = new System.Drawing.Size(265, 30);
+            this.projectStatsCombo.Size = new System.Drawing.Size(265, 37);
             this.projectStatsCombo.TabIndex = 1;
             // 
             // projectLbl
@@ -286,7 +287,7 @@ namespace ProjectOffice.forms
             this.projectLbl.AutoSize = true;
             this.projectLbl.Location = new System.Drawing.Point(45, 27);
             this.projectLbl.Name = "projectLbl";
-            this.projectLbl.Size = new System.Drawing.Size(75, 24);
+            this.projectLbl.Size = new System.Drawing.Size(96, 29);
             this.projectLbl.TabIndex = 0;
             this.projectLbl.Text = "Проект";
             // 
@@ -309,6 +310,7 @@ namespace ProjectOffice.forms
             this.statsReportBtn.TabIndex = 3;
             this.statsReportBtn.Text = "Сохранить в отчёт";
             this.statsReportBtn.UseVisualStyleBackColor = true;
+            this.statsReportBtn.Click += new System.EventHandler(this.statsReportBtn_Click);
             // 
             // backToMenu
             // 
@@ -322,7 +324,7 @@ namespace ProjectOffice.forms
             // 
             // StatisticForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(677, 430);
