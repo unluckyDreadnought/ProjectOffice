@@ -289,7 +289,10 @@ namespace ProjectOffice.logic
                 msg = e;
             }
 
-            if (rdr != null || !rdr.IsClosed) rdr.Close();
+            if (rdr != null)
+            {
+                if (!rdr.IsClosed) rdr.Close();
+            }
             await con.CloseAsync();
 
             return (dt, msg);

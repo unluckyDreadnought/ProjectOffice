@@ -19,10 +19,16 @@ namespace ProjectOffice.forms
         bool[] fieldsFilled = new bool[] { false, false };
         private Db _db = null;
 
+        private void LoginDebug(string user)
+        {
+            LoginTextBox_nec.Text = PswdTextBox_nec.Text = user;
+        }
+
         public AuthorizationForm()
         {
             InitializeComponent();
             _db = new Db();
+            LoginDebug("admin"); // admin  manager
         }
 
         // Функция, управляющая доступностью кнопки входа в зависимости от заполненности полей

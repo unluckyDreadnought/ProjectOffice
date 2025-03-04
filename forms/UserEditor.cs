@@ -83,6 +83,7 @@ namespace ProjectOffice.forms
             FillSpecCombo();
             if (userMode)
             {
+                FillUserInfo(userId);
                 userAccountEditPnl.Show();
                 FillRolesCombo();
             }
