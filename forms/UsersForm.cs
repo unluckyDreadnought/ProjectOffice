@@ -16,6 +16,7 @@ namespace ProjectOffice.forms
     public partial class UsersForm : Form
     {
         Db _db = new Db();
+        string userId = "";
 
         private async Task<(DataTable, Exception)> GetUserList()
         {
@@ -83,9 +84,13 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID";
 
         private void editUserBtn_Click(object sender, EventArgs e)
         {
-            string userId = usersTable.SelectedRows[0].Cells[0].Value.ToString();
             UserEditor uEdit = new UserEditor(edit: true, user: true, userId);
             uEdit.ShowDialog();
+        }
+
+        private void usersTable_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            userId = usersTable.Rows[e.RowIndex].Cells[0].Value.ToString();
         }
     }
 }

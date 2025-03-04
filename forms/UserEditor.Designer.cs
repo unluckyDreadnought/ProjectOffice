@@ -75,7 +75,7 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -98,7 +98,7 @@ namespace ProjectOffice.forms
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel4.Location = new System.Drawing.Point(163, 2);
-            this.panel4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(379, 222);
             this.panel4.TabIndex = 1;
@@ -111,7 +111,7 @@ namespace ProjectOffice.forms
             this.specCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.specCombo.FormattingEnabled = true;
             this.specCombo.Location = new System.Drawing.Point(52, 174);
-            this.specCombo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.specCombo.Margin = new System.Windows.Forms.Padding(2);
             this.specCombo.Name = "specCombo";
             this.specCombo.Size = new System.Drawing.Size(292, 28);
             this.specCombo.TabIndex = 1;
@@ -174,7 +174,7 @@ namespace ProjectOffice.forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.patronymicTextBox.Location = new System.Drawing.Point(52, 123);
-            this.patronymicTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.patronymicTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.patronymicTextBox.MaxLength = 50;
             this.patronymicTextBox.Name = "patronymicTextBox";
             this.patronymicTextBox.Size = new System.Drawing.Size(292, 26);
@@ -187,7 +187,7 @@ namespace ProjectOffice.forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nameTextBox.Location = new System.Drawing.Point(52, 72);
-            this.nameTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nameTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.nameTextBox.MaxLength = 45;
             this.nameTextBox.Name = "nameTextBox";
             this.nameTextBox.Size = new System.Drawing.Size(292, 26);
@@ -200,7 +200,7 @@ namespace ProjectOffice.forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.surnameTextBox.Location = new System.Drawing.Point(52, 24);
-            this.surnameTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.surnameTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.surnameTextBox.MaxLength = 60;
             this.surnameTextBox.Name = "surnameTextBox";
             this.surnameTextBox.Size = new System.Drawing.Size(292, 26);
@@ -214,7 +214,7 @@ namespace ProjectOffice.forms
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel1.Location = new System.Drawing.Point(163, 318);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(379, 46);
             this.panel1.TabIndex = 0;
@@ -228,7 +228,7 @@ namespace ProjectOffice.forms
             this.addEditBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.addEditBtn.ForeColor = System.Drawing.Color.White;
             this.addEditBtn.Location = new System.Drawing.Point(268, 5);
-            this.addEditBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.addEditBtn.Margin = new System.Windows.Forms.Padding(2);
             this.addEditBtn.Name = "addEditBtn";
             this.addEditBtn.Size = new System.Drawing.Size(108, 36);
             this.addEditBtn.TabIndex = 0;
@@ -250,7 +250,7 @@ namespace ProjectOffice.forms
             this.userAccountEditPnl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userAccountEditPnl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.userAccountEditPnl.Location = new System.Drawing.Point(2, 228);
-            this.userAccountEditPnl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.userAccountEditPnl.Margin = new System.Windows.Forms.Padding(2);
             this.userAccountEditPnl.Name = "userAccountEditPnl";
             this.userAccountEditPnl.Size = new System.Drawing.Size(540, 86);
             this.userAccountEditPnl.TabIndex = 1;
@@ -260,7 +260,7 @@ namespace ProjectOffice.forms
             this.roleCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.roleCombo.FormattingEnabled = true;
             this.roleCombo.Location = new System.Drawing.Point(7, 23);
-            this.roleCombo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.roleCombo.Margin = new System.Windows.Forms.Padding(2);
             this.roleCombo.Name = "roleCombo";
             this.roleCombo.Size = new System.Drawing.Size(151, 28);
             this.roleCombo.TabIndex = 3;
@@ -303,7 +303,7 @@ namespace ProjectOffice.forms
             this.generatePswdBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.generatePswdBtn.AutoSize = true;
             this.generatePswdBtn.Location = new System.Drawing.Point(380, 51);
-            this.generatePswdBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.generatePswdBtn.Margin = new System.Windows.Forms.Padding(2);
             this.generatePswdBtn.Name = "generatePswdBtn";
             this.generatePswdBtn.Size = new System.Drawing.Size(136, 30);
             this.generatePswdBtn.TabIndex = 0;
@@ -316,7 +316,7 @@ namespace ProjectOffice.forms
             this.generateLoginBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.generateLoginBtn.AutoSize = true;
             this.generateLoginBtn.Location = new System.Drawing.Point(203, 51);
-            this.generateLoginBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.generateLoginBtn.Margin = new System.Windows.Forms.Padding(2);
             this.generateLoginBtn.Name = "generateLoginBtn";
             this.generateLoginBtn.Size = new System.Drawing.Size(136, 30);
             this.generateLoginBtn.TabIndex = 0;
@@ -328,7 +328,7 @@ namespace ProjectOffice.forms
             // 
             this.passTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.passTextBox.Location = new System.Drawing.Point(371, 24);
-            this.passTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.passTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.passTextBox.MaxLength = 128;
             this.passTextBox.Name = "passTextBox";
             this.passTextBox.Size = new System.Drawing.Size(163, 26);
@@ -338,7 +338,7 @@ namespace ProjectOffice.forms
             // 
             this.loginTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.loginTextBox.Location = new System.Drawing.Point(178, 24);
-            this.loginTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.loginTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.loginTextBox.MaxLength = 100;
             this.loginTextBox.Name = "loginTextBox";
             this.loginTextBox.Size = new System.Drawing.Size(170, 26);
@@ -350,7 +350,7 @@ namespace ProjectOffice.forms
             this.panel3.Controls.Add(this.userPhoto);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(2, 2);
-            this.panel3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(157, 222);
             this.panel3.TabIndex = 1;
@@ -362,12 +362,13 @@ namespace ProjectOffice.forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.userPhoto.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.userPhoto.Location = new System.Drawing.Point(19, 10);
-            this.userPhoto.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.userPhoto.Margin = new System.Windows.Forms.Padding(2);
             this.userPhoto.Name = "userPhoto";
             this.userPhoto.Size = new System.Drawing.Size(126, 194);
             this.userPhoto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.userPhoto.TabIndex = 0;
             this.userPhoto.TabStop = false;
+            this.userPhoto.Click += new System.EventHandler(this.userPhoto_Click);
             // 
             // panel2
             // 
@@ -376,7 +377,7 @@ namespace ProjectOffice.forms
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel2.Location = new System.Drawing.Point(2, 318);
-            this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(157, 46);
             this.panel2.TabIndex = 0;
@@ -386,7 +387,7 @@ namespace ProjectOffice.forms
             this.backToListBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.backToListBtn.AutoSize = true;
             this.backToListBtn.Location = new System.Drawing.Point(2, 5);
-            this.backToListBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.backToListBtn.Margin = new System.Windows.Forms.Padding(2);
             this.backToListBtn.Name = "backToListBtn";
             this.backToListBtn.Size = new System.Drawing.Size(100, 36);
             this.backToListBtn.TabIndex = 0;
@@ -401,7 +402,7 @@ namespace ProjectOffice.forms
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(544, 366);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "UserEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "UserEditor";

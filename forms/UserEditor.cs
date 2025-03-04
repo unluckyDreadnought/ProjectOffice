@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 using ProjectOffice.logic;
 using ProjectOffice.Properties;
@@ -14,11 +15,12 @@ namespace ProjectOffice.forms
 {
     public partial class UserEditor : Form
     {
+        MemoryStream imgMem = null;
         bool editMode = false;
         bool userMode = false;
         Db _db = new Db();
         object[] storedValues = { };
-        string userId = "";
+        string userAc = "";
 
         private async void FillSpecCombo()
         {
@@ -62,6 +64,13 @@ namespace ProjectOffice.forms
                 MessageBox.Show("Не удалось обнаружить информацию от этом пользователе", "Ошибка загрузки данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            // id mode spec 3s 4n 5p l psw photo
+            roleCombo.SelectedIndex = (int)dt.Rows[0][1];
+            nameTextBox.Text = (string)dt.Rows[0][4];
+            surnameTextBox.Text = (string)dt.Rows[0][3];
+            patronymicTextBox.Text = (string)dt.Rows[0][5];
+            loginTextBox.Text = (string)dt.Rows[0][6];
         }
 
         public UserEditor(bool edit = false, bool user = false, string userId = null)
@@ -69,6 +78,7 @@ namespace ProjectOffice.forms
             InitializeComponent();
             editMode = edit;
             userMode = user;
+            userAc = userId;
         }
 
         private void UserEditor_Load(object sender, EventArgs e)
@@ -83,11 +93,12 @@ namespace ProjectOffice.forms
             FillSpecCombo();
             if (userMode)
             {
-                FillUserInfo(userId);
+                FillUserInfo(userAc);
                 userAccountEditPnl.Show();
                 FillRolesCombo();
             }
             else userAccountEditPnl.Hide();
+            userPhoto.Image = Resources.USR_PLUG_PICTURE;
         }
 
         private void fioFields_KeyPressed(object sender, KeyPressEventArgs e)
@@ -124,6 +135,23 @@ namespace ProjectOffice.forms
         private void generatePswdBtn_Click(object sender, EventArgs e)
         {
             passTextBox.Text = Security.GenerateString(8, true);
+        }
+
+        private void userPhoto_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "Изображение JPEG|*.jpg;*.jpeg|Изображение PNG|*.png";
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            fileDialog.CheckFileExists = fileDialog.CheckPathExists = true;
+            fileDialog.Multiselect = false;
+            if (fileDialog.ShowDialog() != DialogResult.OK) return;
+
+            imgMem = new MemoryStream();
+            using (var file = File.Open(fileDialog.FileName, FileMode.Open))
+            {
+                file.CopyTo(imgMem);
+            }
+            userPhoto.Image = new Bitmap(imgMem);
         }
     }
 }

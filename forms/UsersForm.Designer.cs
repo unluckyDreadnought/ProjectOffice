@@ -43,12 +43,12 @@ namespace ProjectOffice.forms
             this.deleteUserBtn = new System.Windows.Forms.ToolStripButton();
             this.toolsDisplayModeCombo = new System.Windows.Forms.ToolStripComboBox();
             this.usersTable = new System.Windows.Forms.DataGridView();
-            this.backToMenuBtn = new System.Windows.Forms.Button();
             this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.userAvatar = new System.Windows.Forms.DataGridViewImageColumn();
             this.fio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.login = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.role = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.backToMenuBtn = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -68,7 +68,7 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1.Controls.Add(this.backToMenuBtn, 0, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.440356F));
@@ -87,7 +87,7 @@ namespace ProjectOffice.forms
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel1.Location = new System.Drawing.Point(2, 2);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(622, 30);
             this.panel1.TabIndex = 0;
@@ -121,7 +121,7 @@ namespace ProjectOffice.forms
             this.panel2.Controls.Add(this.usersTable);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(2, 36);
-            this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
             this.tableLayoutPanel1.SetRowSpan(this.panel2, 2);
             this.panel2.Size = new System.Drawing.Size(622, 292);
@@ -132,7 +132,7 @@ namespace ProjectOffice.forms
             this.tableActionBtnPanel.Controls.Add(this.toolStrip2);
             this.tableActionBtnPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tableActionBtnPanel.Location = new System.Drawing.Point(0, 256);
-            this.tableActionBtnPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableActionBtnPanel.Margin = new System.Windows.Forms.Padding(2);
             this.tableActionBtnPanel.Name = "tableActionBtnPanel";
             this.tableActionBtnPanel.Size = new System.Drawing.Size(622, 36);
             this.tableActionBtnPanel.TabIndex = 2;
@@ -235,7 +235,7 @@ namespace ProjectOffice.forms
             this.usersTable.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.usersTable.EnableHeadersVisualStyles = false;
             this.usersTable.Location = new System.Drawing.Point(0, 0);
-            this.usersTable.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.usersTable.Margin = new System.Windows.Forms.Padding(2);
             this.usersTable.Name = "usersTable";
             this.usersTable.RowHeadersVisible = false;
             this.usersTable.RowHeadersWidth = 51;
@@ -243,18 +243,7 @@ namespace ProjectOffice.forms
             this.usersTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.usersTable.Size = new System.Drawing.Size(620, 251);
             this.usersTable.TabIndex = 0;
-            // 
-            // backToMenuBtn
-            // 
-            this.backToMenuBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.backToMenuBtn.Location = new System.Drawing.Point(2, 332);
-            this.backToMenuBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.backToMenuBtn.Name = "backToMenuBtn";
-            this.backToMenuBtn.Size = new System.Drawing.Size(112, 31);
-            this.backToMenuBtn.TabIndex = 2;
-            this.backToMenuBtn.Text = "Меню";
-            this.backToMenuBtn.UseVisualStyleBackColor = true;
-            this.backToMenuBtn.Click += new System.EventHandler(this.backToMenuBtn_Click);
+            this.usersTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.usersTable_CellClick);
             // 
             // id
             // 
@@ -287,6 +276,18 @@ namespace ProjectOffice.forms
             this.role.MinimumWidth = 6;
             this.role.Name = "role";
             // 
+            // backToMenuBtn
+            // 
+            this.backToMenuBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.backToMenuBtn.Location = new System.Drawing.Point(2, 332);
+            this.backToMenuBtn.Margin = new System.Windows.Forms.Padding(2);
+            this.backToMenuBtn.Name = "backToMenuBtn";
+            this.backToMenuBtn.Size = new System.Drawing.Size(112, 31);
+            this.backToMenuBtn.TabIndex = 2;
+            this.backToMenuBtn.Text = "Меню";
+            this.backToMenuBtn.UseVisualStyleBackColor = true;
+            this.backToMenuBtn.Click += new System.EventHandler(this.backToMenuBtn_Click);
+            // 
             // UsersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -294,7 +295,7 @@ namespace ProjectOffice.forms
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(626, 366);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "UsersForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "UsersForm";
