@@ -23,7 +23,7 @@ namespace ProjectOffice.forms
         string userAc = "";
         bool[] fieldsFilled = null;
         byte[] neccessaryFields = new byte[] { 1, 2, 5, 6, 7 };
-        Regex secRegex = new Regex("^(?=.*?[A - Z])(?=.*?[a - z])(?=.*?[0 - 9])(?=.*?[#?!@$%^&*-]).{8,}$");
+        Regex secRegex = new Regex("(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}");
         
 
         // UserID, UserModeID, UserSpecializationID, UserSurname, UserName, UserPatronymic, UserLogin, UserPassword, UserPhoto
@@ -95,13 +95,13 @@ namespace ProjectOffice.forms
                 return;
             }
 
-            storedValues = DT
+            storedValues = dt.Rows[0].ItemArray;
 
-            roleCombo.SelectedIndex = (int)dt.Rows[0][1];
-            nameTextBox.Text = (string)dt.Rows[0][4];
-            surnameTextBox.Text = (string)dt.Rows[0][3];
-            patronymicTextBox.Text = (string)dt.Rows[0][5];
-            loginTextBox.Text = (string)dt.Rows[0][6];
+            roleCombo.SelectedIndex = Convert.ToInt32(dt.Rows[0][1].ToString());
+            nameTextBox.Text = dt.Rows[0][4].ToString();
+            surnameTextBox.Text = dt.Rows[0][3].ToString();
+            patronymicTextBox.Text = dt.Rows[0][5].ToString();
+            loginTextBox.Text = dt.Rows[0][6].ToString();
         }
 
         public UserEditor(bool edit = false, bool user = false, string userId = null)
@@ -219,13 +219,13 @@ namespace ProjectOffice.forms
 
         private void ChangeEnabledBtn()
         {
-            if (userMode && userAc != "")
+            if (userMode && (userAc != "" && userAc != null))
             {
-                HaveDiffFromDbValue();
+                addEditBtn.Enabled = HaveDiffFromDbValue();
             }
             else
             {
-                IsNeccessariesFilled();
+                addEditBtn.Enabled = IsNeccessariesFilled();
             }
         }
 
@@ -243,22 +243,88 @@ namespace ProjectOffice.forms
 
         private void specCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            fieldsFilled[4] = specCombo.SelectedIndex < 1;
+            fieldsFilled[4] = specCombo.SelectedIndex > 0;
             ChangeEnabledBtn();
         }
 
         private void roleCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            fieldsFilled[5] = roleCombo.SelectedIndex < 1;
+            fieldsFilled[5] = roleCombo.SelectedIndex > 0;
             ChangeEnabledBtn();
         }
 
         private void accountFields_TextChanged(object sender, EventArgs e)
         {
             bool res = secRegex.Match(((TextBox)sender).Text.Trim()).Success;
-            if (((TextBox)sender).Name == "") fieldsFilled[6] = res;
+            if (((TextBox)sender).Name == "loginTextBox") fieldsFilled[6] = res;
             else fieldsFilled[7] = res;
             ChangeEnabledBtn();
+        }
+
+        private string GetSpecialization()
+        {
+            return (specCombo.SelectedIndex <= 0) ? "null" : $"{specCombo.SelectedIndex}";
+        }
+
+        private string GetPatronymic()
+        {
+            return patronymicTextBox.Text.Trim() == "" ? "null" : patronymicTextBox.Text.Trim();
+        }
+
+        private string GetPassWord()
+        {
+            return Security.HashSha512(passTextBox.Text.Trim());
+        }
+
+        private async Task  AddUser()
+        {
+            string query = $@"insert into {Db.Name}.user  
+value (null,{roleCombo.SelectedIndex},{GetSpecialization()},'{surnameTextBox.Text.Trim()}','{nameTextBox.Text.Trim()}','{GetPatronymic()}','{loginTextBox.Text.Trim()}','{GetPassWord()}',null)";
+            (int rows, Exception e) = await _db.ExecuteNoDataResultAsync(query);
+            if (e != null)
+            {
+                MessageBox.Show(e.Message, "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            if (rows > 0) MessageBox.Show($"Пользователь создан успешно.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private async Task EditUser()
+        {
+            string query = $@"update {Db.Name}.user 
+UserModeID = {roleCombo.SelectedIndex}, UserSpecialization = {GetSpecialization()}, UserSurname = '{surnameTextBox.Text.Trim()}', UserName = '{nameTextBox.Text.Trim()}', UserPatronymic = '{GetPatronymic()}', UserLogin = '{loginTextBox.Text.Trim()}', UserPassword = '{GetPassWord()}', UserPhoto = null";
+            (int rows, Exception e) = await _db.ExecuteNoDataResultAsync(query);
+            if (e != null)
+            {
+                MessageBox.Show(e.Message, "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            if (rows > 0) MessageBox.Show($"Пользователь успешно отредактирован.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ClearFields()
+        {
+            surnameTextBox.Text = "";
+            nameTextBox.Text = "";
+            patronymicTextBox.Text = "";
+            specCombo.SelectedIndex = 0;
+            roleCombo.SelectedIndex = 0;
+            loginTextBox.Text = "";
+            passTextBox.Text = "";
+        }
+
+        private async void addEditBtn_Click(object sender, EventArgs e)
+        {
+            if (userMode && (userAc != "" && userAc != null))
+            {
+
+                ClearFields();
+                this.Close();
+            }
+            else
+            {
+                await AddUser();
+                ClearFields();
+                this.Close();
+            }
         }
     }
 }

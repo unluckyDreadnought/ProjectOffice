@@ -25,5 +25,23 @@ namespace ProjectOffice.logic
             }
             else return (DataTable)res;
         }
+
+        public static string[] DataTableToStringArray(DataTable dt)
+        {
+            List<string> result = new List<string>();
+            int r = 0;
+            while (r < dt.Rows.Count)
+            {
+                int colCount = dt.Rows[r].ItemArray.Length;
+                int c = 0;
+                while (c < colCount)
+                {
+                    result.Add(dt.Rows[r][c].ToString());
+                    c++;
+                }
+                r++;
+            }
+            return result.ToArray();
+        }
     }
 }

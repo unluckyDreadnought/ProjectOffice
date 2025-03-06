@@ -33,23 +33,7 @@ namespace ProjectOffice.forms
         bool[] fieldsFilled = null;
         string[] storedData = null;
 
-        private string[] DataTableToStringArray(DataTable dt)
-        {
-            List<string> result = new List<string>();
-            int r = 0;
-            while (r < dt.Rows.Count)
-            {
-                int colCount = dt.Rows[r].ItemArray.Length;
-                int c = 0;
-                while (c < colCount)
-                {
-                    result.Add(dt.Rows[r][c].ToString());
-                    c++;
-                }
-                r++;
-            }
-            return result.ToArray();
-        }
+        
 
         private async Task<(bool, bool)> FindSame()
         {
@@ -61,14 +45,14 @@ namespace ProjectOffice.forms
             DataTable dt = await Common.GetAsyncResult(task);
             if (dt != null)
             {
-                sameKey = DataTableToStringArray(dt).Contains(val[0] == null ? val[0] : val[0].Trim('\''));
+                sameKey = Common.DataTableToStringArray(dt).Contains(val[0] == null ? val[0] : val[0].Trim('\''));
             }
             query = $"select {columns[0]} from {Db.Name}.{table} where {columns.Last()} != {val.Last()};";
             task = _db.ExecuteReaderAsync(query);
             dt = await Common.GetAsyncResult(task);
             if (dt != null)
             {
-                sameValue = DataTableToStringArray(dt).Contains(val.Last().Trim('\''));
+                sameValue = Common.DataTableToStringArray(dt).Contains(val.Last().Trim('\''));
             }
             return (sameKey, sameValue);
         }

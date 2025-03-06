@@ -80,12 +80,14 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID";
         {
             UserEditor uEdit = new UserEditor(user: true);
             uEdit.ShowDialog();
+            UpdateUserList();
         }
 
         private void editUserBtn_Click(object sender, EventArgs e)
         {
             UserEditor uEdit = new UserEditor(edit: true, user: true, userId);
             uEdit.ShowDialog();
+            UpdateUserList();
         }
 
         private void usersTable_CellClick(object sender, DataGridViewCellEventArgs e)
