@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
@@ -21,6 +21,36 @@ namespace ProjectOffice.forms
         Db _db = new Db();
         object[] storedValues = { };
         string userAc = "";
+        bool[] fieldsFilled = null;
+        byte[] neccessaryFields = new byte[] { 1, 2, 5, 6, 7 };
+        Regex secRegex = new Regex("^(?=.*?[A - Z])(?=.*?[a - z])(?=.*?[0 - 9])(?=.*?[#?!@$%^&*-]).{8,}$");
+        
+
+        // UserID, UserModeID, UserSpecializationID, UserSurname, UserName, UserPatronymic, UserLogin, UserPassword, UserPhoto
+
+        private bool HaveDiffFromDbValue()
+        {
+            //bool photo = 
+            bool role = roleCombo.SelectedIndex != Convert.ToInt32(storedValues[1]);
+            bool spec = specCombo.SelectedIndex != Convert.ToInt32(storedValues[2]);
+            bool snp = surnameTextBox.Text != storedValues[3].ToString() || nameTextBox.Text != storedValues[4].ToString() || patronymicTextBox.Text != storedValues[5].ToString();
+            bool login = loginTextBox.Text != storedValues[6].ToString();
+            bool pass = passTextBox.Text.Trim() != "";
+            return role || spec || snp || login || pass;
+        }
+
+        private bool IsNeccessariesFilled()
+        {
+            bool res = true;
+            int i = 0;
+            while (res && i < neccessaryFields.Length)
+            {
+                if (neccessaryFields[i] >= fieldsFilled.Length) break;
+                res = res & fieldsFilled[neccessaryFields[i]];
+                i++;
+            }
+            return res;
+        }
 
         private async void FillSpecCombo()
         {
@@ -54,7 +84,7 @@ namespace ProjectOffice.forms
             roleCombo.SelectedIndex = 0;
         }
 
-        private async void FillUserInfo(string userId)
+        private async Task FillUserInfo(string userId)
         {
             string query = $"select * from  `{Db.Name}`.`user` where UserID = {userId};";
             var task = _db.ExecuteReaderAsync(query);
@@ -65,7 +95,8 @@ namespace ProjectOffice.forms
                 return;
             }
 
-            // id mode spec 3s 4n 5p l psw photo
+            storedValues = DT
+
             roleCombo.SelectedIndex = (int)dt.Rows[0][1];
             nameTextBox.Text = (string)dt.Rows[0][4];
             surnameTextBox.Text = (string)dt.Rows[0][3];
@@ -81,7 +112,7 @@ namespace ProjectOffice.forms
             userAc = userId;
         }
 
-        private void UserEditor_Load(object sender, EventArgs e)
+        private async void UserEditor_Load(object sender, EventArgs e)
         {
             if (editMode) this.Text = $"{Resources.APP_NAME}: Редактирование";
             else this.Text = $"{Resources.APP_NAME}: Добавление";
@@ -93,11 +124,21 @@ namespace ProjectOffice.forms
             FillSpecCombo();
             if (userMode)
             {
-                FillUserInfo(userAc);
+                fieldsFilled = new bool[8];
                 userAccountEditPnl.Show();
                 FillRolesCombo();
+                if (userAc != "" && userAc != null)
+                {
+                    await FillUserInfo(userAc);
+                    addEditBtn.Enabled = HaveDiffFromDbValue();
+                }
             }
-            else userAccountEditPnl.Hide();
+            else
+            {
+                fieldsFilled = new bool[5];
+                userAccountEditPnl.Hide();
+            }
+            addEditBtn.Enabled = IsNeccessariesFilled();
             userPhoto.Image = Resources.USR_PLUG_PICTURE;
         }
 
@@ -151,7 +192,73 @@ namespace ProjectOffice.forms
             {
                 file.CopyTo(imgMem);
             }
+            userPhoto.Image = null;
+
+            string dataIn = Сompressor.HumanReadableSizeLite(imgMem.Length);
+            byte[] thumb = Сompressor.GetThumbnail(fileDialog.FileName, Convert.ToInt32(Math.Abs(Math.Sin(Math.Cos((double)imgMem.Length / 65535))) * 100));
+            byte[] final = Сompressor.CompressBytes(thumb);
+            //while (final.Length > 65535)
+            //{
+            //    thumb = Сompressor.DecompressBytes(final);
+            //    using (var tmp = new MemoryStream(thumb))
+            //    {
+            //        thumb = Сompressor.GetThumbnail(new Bitmap(tmp), 0);
+            //    }
+            //    final = Сompressor.CompressBytes(thumb);
+
+            //}
+            //string dataOut = Сompressor.HumanReadableSizeLite(Сompressor.CompressImage(fileDialog.FileName).Length);
+
+            //MessageBox.Show($"Вход: {dataIn}\nВыход:\n" +
+            //    $"{Сompressor.HumanReadableSizeLite(thumb.Length)} => {Сompressor.HumanReadableSizeLite(final.Length)}" +
+            //    $"\n{dataOut}");
+
+            imgMem = new MemoryStream(Сompressor.DecompressBytes(final));
             userPhoto.Image = new Bitmap(imgMem);
+        }
+
+        private void ChangeEnabledBtn()
+        {
+            if (userMode && userAc != "")
+            {
+                HaveDiffFromDbValue();
+            }
+            else
+            {
+                IsNeccessariesFilled();
+            }
+        }
+
+        private void snpTextBox_TextChanged(object sender, EventArgs e)
+        {
+            TextBox it = ((TextBox)sender);
+            switch (it.Name)
+            {
+                case "surnameTextBox": fieldsFilled[1] = it.Text.Trim() != ""; break;
+                case "nameTextBox": fieldsFilled[2] = it.Text.Trim() != ""; break;
+                case "patronymicTextBox": fieldsFilled[3] = it.Text.Trim() != "";  break;
+            }
+            ChangeEnabledBtn();
+        }
+
+        private void specCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            fieldsFilled[4] = specCombo.SelectedIndex < 1;
+            ChangeEnabledBtn();
+        }
+
+        private void roleCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            fieldsFilled[5] = roleCombo.SelectedIndex < 1;
+            ChangeEnabledBtn();
+        }
+
+        private void accountFields_TextChanged(object sender, EventArgs e)
+        {
+            bool res = secRegex.Match(((TextBox)sender).Text.Trim()).Success;
+            if (((TextBox)sender).Name == "") fieldsFilled[6] = res;
+            else fieldsFilled[7] = res;
+            ChangeEnabledBtn();
         }
     }
 }
