@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Threading;
 using System.IO;
 using System.Windows.Forms;
 using ProjectOffice.logic;
@@ -92,7 +91,6 @@ namespace ProjectOffice.forms
             if (dt.Rows.Count == 0)
             {
                 MessageBox.Show("Не удалось обнаружить информацию от этом пользователе", "Ошибка загрузки данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
             }
 
             storedValues = dt.Rows[0].ItemArray;
@@ -100,8 +98,12 @@ namespace ProjectOffice.forms
             roleCombo.SelectedIndex = Convert.ToInt32(dt.Rows[0][1].ToString());
             nameTextBox.Text = dt.Rows[0][4].ToString();
             surnameTextBox.Text = dt.Rows[0][3].ToString();
+            int spec = (dt.Rows[0][2].ToString() != "") ? Convert.ToInt32(dt.Rows[0][2].ToString()) : 0;
+            specCombo.SelectedIndex = spec;
             patronymicTextBox.Text = dt.Rows[0][5].ToString();
             loginTextBox.Text = dt.Rows[0][6].ToString();
+
+            addEditBtn.Enabled = HaveDiffFromDbValue();
         }
 
         public UserEditor(bool edit = false, bool user = false, string userId = null)
@@ -130,7 +132,6 @@ namespace ProjectOffice.forms
                 if (userAc != "" && userAc != null)
                 {
                     await FillUserInfo(userAc);
-                    addEditBtn.Enabled = HaveDiffFromDbValue();
                 }
             }
             else
@@ -197,21 +198,25 @@ namespace ProjectOffice.forms
             string dataIn = Сompressor.HumanReadableSizeLite(imgMem.Length);
             byte[] thumb = Сompressor.GetThumbnail(fileDialog.FileName, Convert.ToInt32(Math.Abs(Math.Sin(Math.Cos((double)imgMem.Length / 65535))) * 100));
             byte[] final = Сompressor.CompressBytes(thumb);
-            //while (final.Length > 65535)
-            //{
-            //    thumb = Сompressor.DecompressBytes(final);
-            //    using (var tmp = new MemoryStream(thumb))
-            //    {
-            //        thumb = Сompressor.GetThumbnail(new Bitmap(tmp), 0);
-            //    }
-            //    final = Сompressor.CompressBytes(thumb);
+            while (final.Length > 65535)
+            {
+                thumb = Сompressor.DecompressBytes(final);
+                long size = thumb.Length / 2;
+                while (thumb.Length > size)
+                {
+                    using (var tmp = new MemoryStream(thumb))
+                    {
+                        thumb = Сompressor.GetThumbnail(new Bitmap(tmp), 0);
+                    }
+                }
+                final = Сompressor.CompressBytes(thumb);
 
-            //}
-            //string dataOut = Сompressor.HumanReadableSizeLite(Сompressor.CompressImage(fileDialog.FileName).Length);
+            }
+            string dataOut = Сompressor.HumanReadableSizeLite(Сompressor.CompressImage(fileDialog.FileName).Length);
 
-            //MessageBox.Show($"Вход: {dataIn}\nВыход:\n" +
-            //    $"{Сompressor.HumanReadableSizeLite(thumb.Length)} => {Сompressor.HumanReadableSizeLite(final.Length)}" +
-            //    $"\n{dataOut}");
+            MessageBox.Show($"Вход: {dataIn}\nВыход:\n" +
+                $"{Сompressor.HumanReadableSizeLite(thumb.Length)} => {Сompressor.HumanReadableSizeLite(final.Length)}" +
+                $"\n{dataOut}");
 
             imgMem = new MemoryStream(Сompressor.DecompressBytes(final));
             userPhoto.Image = new Bitmap(imgMem);
@@ -238,19 +243,19 @@ namespace ProjectOffice.forms
                 case "nameTextBox": fieldsFilled[2] = it.Text.Trim() != ""; break;
                 case "patronymicTextBox": fieldsFilled[3] = it.Text.Trim() != "";  break;
             }
-            ChangeEnabledBtn();
+            if (storedValues.Length>0) ChangeEnabledBtn();
         }
 
         private void specCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             fieldsFilled[4] = specCombo.SelectedIndex > 0;
-            ChangeEnabledBtn();
+            if (storedValues.Length > 0) ChangeEnabledBtn();
         }
 
         private void roleCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             fieldsFilled[5] = roleCombo.SelectedIndex > 0;
-            ChangeEnabledBtn();
+            if (storedValues.Length > 0) ChangeEnabledBtn();
         }
 
         private void accountFields_TextChanged(object sender, EventArgs e)
@@ -258,7 +263,7 @@ namespace ProjectOffice.forms
             bool res = secRegex.Match(((TextBox)sender).Text.Trim()).Success;
             if (((TextBox)sender).Name == "loginTextBox") fieldsFilled[6] = res;
             else fieldsFilled[7] = res;
-            ChangeEnabledBtn();
+            if (storedValues.Length > 0) ChangeEnabledBtn();
         }
 
         private string GetSpecialization()
@@ -288,10 +293,42 @@ value (null,{roleCombo.SelectedIndex},{GetSpecialization()},'{surnameTextBox.Tex
             if (rows > 0) MessageBox.Show($"Пользователь создан успешно.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private async Task EditUser()
+        private async Task EditUser(string userId)
         {
-            string query = $@"update {Db.Name}.user 
-UserModeID = {roleCombo.SelectedIndex}, UserSpecialization = {GetSpecialization()}, UserSurname = '{surnameTextBox.Text.Trim()}', UserName = '{nameTextBox.Text.Trim()}', UserPatronymic = '{GetPatronymic()}', UserLogin = '{loginTextBox.Text.Trim()}', UserPassword = '{GetPassWord()}', UserPhoto = null";
+            // UserID, UserModeID, UserSpecialization, UserSurname, UserName, UserPatronymic, UserLogin, UserPassword, UserPhoto
+            string query = $@"update {Db.Name}.user set ";
+
+            if (Convert.ToInt32(storedValues[1].ToString()) != roleCombo.SelectedIndex)
+            {
+                string role = roleCombo.SelectedIndex < 0 ? "null" : $"{roleCombo.SelectedIndex}";
+                query += $"UserModeID = {role}, ";
+            }
+            if (Convert.ToInt32(storedValues[2].ToString()) != specCombo.SelectedIndex)
+            {
+                query += $"UserSpecialization = {GetSpecialization()}, ";
+            }
+            if (storedValues[3].ToString() != surnameTextBox.Text.Trim())
+            {
+                query += $"UserSurname = '{surnameTextBox.Text.Trim()}', ";
+            }
+            if (storedValues[4].ToString() != nameTextBox.Text.Trim())
+            {
+                query += $"UserName = '{nameTextBox.Text.Trim()}', ";
+            }
+            if (storedValues[5].ToString() != patronymicTextBox.Text.Trim())
+            {
+                query += $"UserPatronymic = '{GetPatronymic()}', ";
+            }
+            if (storedValues[6].ToString() != loginTextBox.Text.Trim())
+            {
+                query += $"UserLogin = '{loginTextBox.Text.Trim()}', ";
+            }
+            if (passTextBox.Text.Trim() != "")
+            {
+                query += $"UserPassword = '{GetPassWord()}', ";
+            }
+            query += $"UserPhoto = null where UserID = {userId};";
+
             (int rows, Exception e) = await _db.ExecuteNoDataResultAsync(query);
             if (e != null)
             {
@@ -315,7 +352,7 @@ UserModeID = {roleCombo.SelectedIndex}, UserSpecialization = {GetSpecialization(
         {
             if (userMode && (userAc != "" && userAc != null))
             {
-
+                await EditUser(userAc);
                 ClearFields();
                 this.Close();
             }

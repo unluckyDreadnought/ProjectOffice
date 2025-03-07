@@ -94,5 +94,38 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID";
         {
             userId = usersTable.Rows[e.RowIndex].Cells[0].Value.ToString();
         }
+
+        private async void deleteUserBtn_Click(object sender, EventArgs e)
+        {
+            DataGridViewRow selectedRow = usersTable.Rows.Cast<DataGridViewRow>().Where(
+                row => row.Cells["id"].Value.ToString() == userId).First();
+            string userSnp = selectedRow.Cells["fio"].Value.ToString();
+            string userLogin = selectedRow.Cells["login"].Value.ToString();
+            if (MessageBox.Show($"Вы действительно хотите удалить этого пользователя ({userSnp} [{userLogin}])?", 
+                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                string query = $"delete from {Db.Name}.user where UserID = {userId};";
+                (int rows, Exception ex) = await _db.ExecuteNoDataResultAsync(query);
+                if (ex != null)
+                {
+                    MessageBox.Show(ex.Message, "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                if (rows > 0)
+                {
+                    MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) успешно удалён", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Что-то пошло не так. Пользователь не был удалён.", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                UpdateUserList();
+            }
+            else
+            {
+                MessageBox.Show($"Операция удаления пользователя ({userSnp} [{userLogin}]) прервана", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+        }
     }
 }

@@ -34,7 +34,7 @@ namespace ProjectOffice.forms
             int[] data = new int[] { rejected, active, outOfDate, completed };
             string[] titles = new string[] { "Отклонённые", "Активные", "Просрочные", "Завершённые" };
             allProjectStatsChart.Series.Clear();
-            allProjectStatsChart.Series.Add(new Series("DataSeries") { 
+            allProjectStatsChart.Series.Add(new Series("DataSeries") {
                 ChartType = SeriesChartType.Pie
             });
             //allProjectStatsChart.Series["DataSeries"].LegendText = "Проекты";
@@ -46,7 +46,7 @@ namespace ProjectOffice.forms
         private void SaveReport(int rejected, int active, int outOfDate, int completed)
         {
             string[] arr = new string[] { "Активные проекты", "Отменённые проекты", "Просроченные активные проекты", "Завершённые проекты", "", "Всего" };
-            int[] counts = new int[] { active, rejected, outOfDate, completed, -1, active+rejected+completed };
+            int[] counts = new int[] { active, rejected, outOfDate, completed, -1, active + rejected + completed };
 
             string template = $@"{Directory.GetParent(Directory.GetParent(Application.StartupPath).FullName).FullName}\templates\stats.xlsx";
 
@@ -56,7 +56,7 @@ namespace ProjectOffice.forms
             {
                 app = new Excel.Application();
                 app.WindowDeactivate += App_WindowDeactivate;
-                
+
                 app.WorkbookBeforeClose += App_WorkbookBeforeClose;
 
                 if (app == null)
@@ -129,7 +129,7 @@ namespace ProjectOffice.forms
             {
                 if (wb != null) wb.Save();
             }
-            catch (Exception) { ; }
+            catch (Exception) {; }
         }
 
         private async Task<DataTable> GetCommonStats()
@@ -146,7 +146,7 @@ order by StatusTitle;";
         {
             DataTable dt = await GetCommonStats();
             int i = 0, total = 0;
-            
+
             while (i < dt.Rows.Count)
             {
                 switch (dt.Rows[i].ItemArray[0].ToString())
@@ -154,17 +154,17 @@ order by StatusTitle;";
                     case "Новый":
                     case "В работе":
                     case "Подготовка к завершению":
-                    case "Согласование": 
-                        { 
+                    case "Согласование":
+                        {
                             if (Convert.ToInt32(dt.Rows[i].ItemArray[1]) == 1)
                             {
                                 outOfDate++;
                             }
-                            active++; 
-                            break; 
+                            active++;
+                            break;
                         }
                     case "Отклонён": rejected++; break;
-                    case "Завершено": completed++;  break;
+                    case "Завершено": completed++; break;
                 }
                 total++;
                 i++;
@@ -204,7 +204,7 @@ order by StatusTitle;";
             {
                 FillCommonStats();
             }
-            else { ; }
+            else {; }
         }
 
         private void statsReportBtn_Click(object sender, EventArgs e)
@@ -220,6 +220,17 @@ order by StatusTitle;";
                 p.Kill();
             }
         }
+
+        private void ReleaseObject(object obj)
+        {
+            //try
+            //{
+            //    Marshal.FinalReleaseComObject(obj);
+            // null obj;
+            //}
+            //catch
+        }
+
 
         private void StatisticForm_Activated(object sender, EventArgs e)
         {

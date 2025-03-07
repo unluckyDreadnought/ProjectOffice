@@ -144,7 +144,7 @@ namespace ProjectOffice.forms
 
         private void testConnectionBtn_Click(object sender, EventArgs e)
         {
-            if (_db.CanConnectToDb())
+            if (_db.CanConnectToDb(hostTextBox.Text.Trim(), usrTextBox.Text.Trim(), usrPswdTextBox.Text.Trim()))
             {
                 MessageBox.Show("Подключение было успешно установлено", "Тестирование подключения", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

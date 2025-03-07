@@ -66,10 +66,29 @@ namespace ProjectOffice.logic
             if (withDbName) conStr += $"database={AppSettings.dbName};";
             return conStr;
         }
+        public string MakeConnectionString(string host, string user, string pass, bool withDbName = true)
+        {
+            string conStr = $"host={host};user={user};password={pass};";
+            if (withDbName) conStr += $"database={AppSettings.dbName};";
+            return conStr;
+        }
 
         private (MySqlConnection, int) GetOpenConnection()
         {
             MySqlConnection con = new MySqlConnection(MakeConnectionString());
+            try
+            {
+                con.Open();
+                return (con, 0);
+            }
+            catch (MySqlException ex)
+            {
+                return (null, ex.Number);
+            }
+        }
+        private (MySqlConnection, int) GetOpenConnection(string host, string user, string pass)
+        {
+            MySqlConnection con = new MySqlConnection(MakeConnectionString(host, user, pass));
             try
             {
                 con.Open();
@@ -85,6 +104,17 @@ namespace ProjectOffice.logic
         {
             bool can = false;
             (MySqlConnection con, int code) = GetOpenConnection();
+            if (con != null)
+            {
+                con.Close();
+                can = true;
+            }
+            return can;
+        }
+        public bool CanConnectToDb(string host, string user, string pass)
+        {
+            bool can = false;
+            (MySqlConnection con, int code) = GetOpenConnection(host, user, pass);
             if (con != null)
             {
                 con.Close();
