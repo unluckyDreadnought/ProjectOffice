@@ -6,10 +6,11 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using ProjectOffice;
 
 namespace ProjectOffice.logic
 {
-    public class Сompressor
+    public static class Сompressor
     {
         public static string HumanReadableSizeLite(long size)
         {
@@ -156,7 +157,7 @@ namespace ProjectOffice.logic
                 n++;
                 tmp = new MemoryStream(thumb);
                 Bitmap bmp = new Bitmap(tmp);
-                bmp = Сompressor.ResizeImage(bmp, 900 / n, 1200 / n);
+                bmp = Сompressor.ResizeImage(bmp, bmp.Width / n, bmp.Height / n);
                 thumb = Сompressor.GetThumbnail(bmp, 0);
                 final = Сompressor.CompressBytes(thumb);
                 tmp.Close();

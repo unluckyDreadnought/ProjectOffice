@@ -29,15 +29,16 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MenuForm));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.userDataPanel = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.usrSnpLbl = new System.Windows.Forms.Label();
-            this.usrModeLbl = new System.Windows.Forms.Label();
             this.picturePanel = new System.Windows.Forms.Panel();
             this.splashPicture = new System.Windows.Forms.PictureBox();
             this.buttonsPanel = new System.Windows.Forms.Panel();
+            this.userModeTip = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.userDataPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -67,7 +68,6 @@ namespace ProjectOffice.forms
             this.userDataPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.userDataPanel.Controls.Add(this.pictureBox1);
             this.userDataPanel.Controls.Add(this.usrSnpLbl);
-            this.userDataPanel.Controls.Add(this.usrModeLbl);
             this.userDataPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userDataPanel.Location = new System.Drawing.Point(399, 3);
             this.userDataPanel.Name = "userDataPanel";
@@ -97,17 +97,6 @@ namespace ProjectOffice.forms
             this.usrSnpLbl.Size = new System.Drawing.Size(336, 37);
             this.usrSnpLbl.TabIndex = 3;
             this.usrSnpLbl.Text = "Фамилия И.О.";
-            // 
-            // usrModeLbl
-            // 
-            this.usrModeLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.usrModeLbl.Location = new System.Drawing.Point(2, 43);
-            this.usrModeLbl.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.usrModeLbl.Name = "usrModeLbl";
-            this.usrModeLbl.Size = new System.Drawing.Size(339, 29);
-            this.usrModeLbl.TabIndex = 2;
-            this.usrModeLbl.Text = "label1";
             // 
             // picturePanel
             // 
@@ -166,10 +155,10 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel userDataPanel;
         private System.Windows.Forms.Label usrSnpLbl;
-        private System.Windows.Forms.Label usrModeLbl;
         private System.Windows.Forms.Panel picturePanel;
         private System.Windows.Forms.PictureBox splashPicture;
         private System.Windows.Forms.Panel buttonsPanel;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ToolTip userModeTip;
     }
 }

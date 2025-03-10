@@ -10,6 +10,7 @@ namespace ProjectOffice.logic.app
 {
     public static class AppUser
     {
+        public static string Id = null;
         public static string Snp = "<ФИО не указано>";
         public static UserRole Role = UserRole.Employee;
         public static bool confirmAccessToSettings = false;

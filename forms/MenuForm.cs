@@ -93,6 +93,7 @@ namespace ProjectOffice.forms
         // common
         private void LogoutBtn_Click(object sender, EventArgs e)
         {
+            AppUser.ResetUser();
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
@@ -205,7 +206,7 @@ namespace ProjectOffice.forms
             CenterHorizontally(CreateButtonsAccordingToRole(), buttonsPanel, 30);
             this.Text = $"{Resources.APP_NAME}";
             usrSnpLbl.Text = AppUser.Snp;
-            usrModeLbl.Text = AppUser.GetUserMode();
+            userModeTip.SetToolTip(usrSnpLbl, AppUser.GetUserMode());
             splashPicture.Image = Resources.PLUG_PICTURE;
         }
     }

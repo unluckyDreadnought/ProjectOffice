@@ -84,6 +84,7 @@ namespace ProjectOffice.forms
                 MessageBox.Show(result[0], "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            AppUser.Id = result[2];
             AppUser.Snp = result[0];
             int mode = 0;
             int.TryParse(result[1], out mode);

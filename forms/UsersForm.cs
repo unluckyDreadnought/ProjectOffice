@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.logic;
@@ -21,20 +22,40 @@ namespace ProjectOffice.forms
         private async Task<(DataTable, Exception)> GetUserList()
         {
             string query = $@"select UserID, UserPhoto, usermode.UserModeTitle, concat(UserSurname, ' ', substring(UserName, 1, 1), '. ', substring(UserPatronymic,1,1)), UserLogin from {Db.Name}.user
-inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID";
+inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where UserID != {AppUser.Id};";
             return await _db.ExecuteReaderAsync(query);
         }
 
         private async void UpdateUserList()
         {
+            usersTable.RowTemplate.Height = 40;
+            usersTable.Rows.Clear();
+            
             DataTable dt = await Common.GetAsyncResult(GetUserList());
             int i = 0;
             while (i < dt.Rows.Count)
             {
                 int indx = usersTable.Rows.Add();
+                Bitmap curBmp = null;
+                if (dt.Rows[i].ItemArray[1] as byte[] != null)
+                {
+                    byte[] bytes = Сompressor.DecompressBytes((byte[])dt.Rows[i].ItemArray[1]);
+                    using (MemoryStream ms = new MemoryStream(bytes))
+                    {
+                        curBmp = new Bitmap(ms);
+                    }
+                }
+                else
+                {
+                    curBmp = Resources.USR_PLUG_PICTURE;
+                }
+
+
+                curBmp = Сompressor.ResizeImage(curBmp, 80, 160);
+
                 usersTable.Rows[indx].Height = 40;
                 usersTable.Rows[indx].Cells["id"].Value = dt.Rows[i].ItemArray[0].ToString();
-                usersTable.Rows[indx].Cells["userAvatar"].Value = null;
+                usersTable.Rows[indx].Cells["userAvatar"].Value = curBmp;
                 usersTable.Rows[indx].Cells["fio"].Value = dt.Rows[i].ItemArray[3].ToString();
                 string login = dt.Rows[i].ItemArray[4].ToString();
                 string hiddenLogin = "";
@@ -66,7 +87,7 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID";
         {
             this.Text = $"{Resources.APP_NAME}: Пользователи системы";
             userSnp.Text = AppUser.Snp;
-            userMode.Text = AppUser.GetUserMode();
+            userModeTip.SetToolTip(userSnp, AppUser.GetUserMode());
 
             UpdateUserList();
         }

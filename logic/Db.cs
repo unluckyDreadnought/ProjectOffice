@@ -123,93 +123,58 @@ namespace ProjectOffice.logic
             return can;
         }
 
-        public int ExecuteNoDataResult(string query)
-        {
-            (MySqlConnection con, int errCode) = GetOpenConnection();
-            if (con == null) return -1;
-            MySqlCommand com = new MySqlCommand(query, con);
-            int affected = 0;
-            try
-            {
-                affected = com.ExecuteNonQuery();
-            }
-            catch (MySqlException e)
-            {
-                con.Close();
-                return -1;
-            }
-            con.Close();
-            return affected;
-        }
 
-        public object ExecuteScalar(string query)
+        // Метод для подстановки параметров в запросы
+        // Если текст запроса содержит @, то подразумевается, что необходимо использовать параметры MySqlParameter.
+        // Значения для параметров подставляются из массива args в порядке массива.
+        private int AddParametersToCommand(string query, ref MySqlCommand command, object[] args)
         {
-            (MySqlConnection con, int errCode) = GetOpenConnection();
-            if (con == null) return -1;
-            MySqlCommand com = new MySqlCommand(query, con);
-            object result = null;
-            try
+            int n = 0;
+            _regexp = new Regex("@\\w*");
+            MatchCollection mathces = _regexp.Matches(query);
+            int i = 0;
+            foreach (Match param in mathces)
             {
-                result = com.ExecuteScalar();
-            }
-            catch (MySqlException ex)
-            {
-                con.Close();
-                return ex;
-            }
-            con.Close();
-            return result;
-        }
-
-        public DataTable ExecuteReader(string query, params string[] args)
-        {
-            (MySqlConnection con, int errCode) = GetOpenConnection();
-            if (con == null) return null;
-            MySqlCommand com = new MySqlCommand(query, con);
-
-            if (query.Contains("@"))
-            {
-                _regexp = new Regex("@\\w*");
-                MatchCollection mathces = _regexp.Matches(query);
-                int i = 0;
-                foreach (Match param in mathces)
+                try
                 {
-                    try
+                    if (args[i] is string)
                     {
-                        com.Parameters.AddWithValue(param.Value.Replace("@", ""), args[i]);
+                        command.Parameters.AddWithValue(param.Value.Replace("@", ""), args[i]);
                     }
-                    catch (IndexOutOfRangeException)
+                    else if (args[i] is byte[])
                     {
-                        break;
+                        MySqlParameter tmpBlobParam = new MySqlParameter(param.Value.Replace("@", ""), MySqlDbType.Blob);
+                        tmpBlobParam.Value = args[i];
+                        command.Parameters.Add(tmpBlobParam);
                     }
-                    i++;
+                    
+                    n++;
                 }
+                catch (IndexOutOfRangeException)
+                {
+                    break;
+                }
+                i++;
             }
-
-            DataTable dt = new DataTable();
-            try
-            {
-                MySqlDataReader rdr = com.ExecuteReader();
-                dt.Load(rdr);
-            }
-            catch (MySqlException e)
-            {
-                ;
-                return null;
-                con.Close();
-            }
-            return dt;
+            return n;
         }
 
         // Асинхронный метод получения числового значения из БД
         // query: Текст запроса к БД
-        public async Task<(int, Exception)> ExecuteNoDataResultAsync(string query)
+        // args: Массив значений для параметров
+        public async Task<(int, Exception)> ExecuteNoDataResultAsync(string query, params object[] args)
         {
             MySqlException msg = null;
             int affected = -1;
             (MySqlConnection con, int errCode) = GetOpenConnection();
             if (con == null) return (affected, msg);
             MySqlCommand com = new MySqlCommand(query, con);
+
+            if (query.Contains("@"))
+            {
+                AddParametersToCommand(query, ref com, args);
+            }
+
             try
             {
                 affected = await com.ExecuteNonQueryAsync();
@@ -224,12 +189,19 @@ namespace ProjectOffice.logic
 
         // Асинхронный метод получения одного значения из БД
         // query: Текст запроса к БД
-        public async Task<(object, Exception)> ExecuteScalarAsync(string query)
+        // args: Массив значений для параметров
+        public async Task<(object, Exception)> ExecuteScalarAsync(string query, params object[] args)
         {
             MySqlException msg = null;
             (MySqlConnection con, int errCode) = GetOpenConnection();
             if (con == null) return (-1, msg);
             MySqlCommand com = new MySqlCommand(query, con);
+
+            if (query.Contains("@"))
+            {
+                AddParametersToCommand(query, ref com, args);
+            }
+
             object result = null;
             try
             {
@@ -276,12 +248,8 @@ namespace ProjectOffice.logic
 
         // Асинхронный метод получения данных с помощью MySqlDataReader
         // query: Текст запроса к БД
-        //
-        // Если текст запроса содержит @, то подразумевается, что необходимо использовать параметры MySqlParameter.<br>
-        // Значения для параметров подставляются из массива args в порядке массива.
-        //
         // args: Массив значений для параметров
-        public async Task<(DataTable, Exception)> ExecuteReaderAsync(string query, params string[] args)
+        public async Task<(DataTable, Exception)> ExecuteReaderAsync(string query, params object[] args)
         {
             MySqlException msg = null;
             (MySqlConnection con, int errCode) = GetOpenConnection();
@@ -290,21 +258,7 @@ namespace ProjectOffice.logic
 
             if (query.Contains("@"))
             {
-                _regexp = new Regex("@\\w*");
-                MatchCollection mathces = _regexp.Matches(query);
-                int i = 0;
-                foreach (Match param in mathces)
-                {
-                    try
-                    {
-                        com.Parameters.AddWithValue(param.Value.Replace("@", ""), args[i]);
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        break;
-                    }
-                    i++;
-                }
+                AddParametersToCommand(query, ref com, args);
             }
 
             DataTable dt = new DataTable();
