@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
@@ -43,6 +44,27 @@ namespace ProjectOffice.logic
                 decompressStream.CopyTo(output);
             }
             return output.ToArray();
+        }
+
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighSpeed;
+                graphics.InterpolationMode = InterpolationMode.High;
+                graphics.SmoothingMode = SmoothingMode.HighSpeed;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+            return destImage;
         }
 
         public static byte[] GetThumbnail(string srcPath, int quality)
@@ -112,10 +134,37 @@ namespace ProjectOffice.logic
             return null;
         }
 
-        public static byte[] CompressImage(string srcPath)
+        /// <summary>
+        /// Пережимает входное изображение по пути <see cref="srcPath"/> <br></br>
+        /// и возвращает сжатое изображение до 65 КБ в виде массива байт
+        /// </summary>
+        /// <param name="srcPath">Путь к входному изображению</param>
+        /// <returns>Массив байт до 65 КБ выходного изображения</returns>
+        public static byte[] CompressImageToBytes(string srcPath)
         {
-            byte[] thumbnailBytes = GetThumbnail(srcPath, 0);
-            return CompressBytes(thumbnailBytes);
+            MemoryStream imageMemoryStream = new MemoryStream();
+            using (var file = File.Open(srcPath, FileMode.Open))
+            {
+                file.CopyTo(imageMemoryStream);
+            }
+            byte[] thumb = Сompressor.GetThumbnail(srcPath, Convert.ToInt32(Math.Abs(Math.Sin(Math.Cos((double)imageMemoryStream.Length / 65535))) * 100));
+            byte[] final = Сompressor.CompressBytes(thumb);
+            MemoryStream tmp = null;
+            int n = 0;
+            while (final.Length > 65535)
+            {
+                n++;
+                tmp = new MemoryStream(thumb);
+                Bitmap bmp = new Bitmap(tmp);
+                bmp = Сompressor.ResizeImage(bmp, 900 / n, 1200 / n);
+                thumb = Сompressor.GetThumbnail(bmp, 0);
+                final = Сompressor.CompressBytes(thumb);
+                tmp.Close();
+            }
+            imageMemoryStream = new MemoryStream(Сompressor.DecompressBytes(final));
+            byte[] bytes = imageMemoryStream.ToArray();
+            imageMemoryStream.Close();
+            return bytes;
         }
         
     }

@@ -95,6 +95,21 @@ namespace ProjectOffice.forms
 
             storedValues = dt.Rows[0].ItemArray;
 
+            if ((dt.Rows[0][8] as byte[]) != null && (dt.Rows[0][8] as byte[]).Length > 0)
+            {
+                byte[] imgBytes = Сompressor.DecompressBytes((byte[])dt.Rows[0][8]);
+                using (MemoryStream memStream = new MemoryStream(imgBytes))
+                {
+                    imgMem = new MemoryStream();
+                    memStream.CopyTo(imgMem);
+                    imgMem.Flush();
+
+                    Bitmap tmpBmp = new Bitmap(imgMem);
+                    userPhoto.Image = tmpBmp;
+                }
+            }
+            else userPhoto.Image = null;
+
             roleCombo.SelectedIndex = Convert.ToInt32(dt.Rows[0][1].ToString());
             nameTextBox.Text = dt.Rows[0][4].ToString();
             surnameTextBox.Text = dt.Rows[0][3].ToString();
@@ -140,7 +155,7 @@ namespace ProjectOffice.forms
                 userAccountEditPnl.Hide();
             }
             addEditBtn.Enabled = IsNeccessariesFilled();
-            userPhoto.Image = Resources.USR_PLUG_PICTURE;
+            if (userPhoto.Image == null) userPhoto.Image = Resources.USR_PLUG_PICTURE;
         }
 
         private void fioFields_KeyPressed(object sender, KeyPressEventArgs e)
@@ -179,6 +194,13 @@ namespace ProjectOffice.forms
             passTextBox.Text = Security.GenerateString(8, true);
         }
 
+        private bool  IsImagesEquals(byte[] arr1, byte[] arr2)
+        {
+            string hash1 = Security.hashMd5(arr1.ToString(), "");
+            string hash2 = Security.hashMd5(arr2.ToString(), "");
+            return hash1 == hash2;
+        }
+
         private void userPhoto_Click(object sender, EventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
@@ -188,37 +210,28 @@ namespace ProjectOffice.forms
             fileDialog.Multiselect = false;
             if (fileDialog.ShowDialog() != DialogResult.OK) return;
 
-            imgMem = new MemoryStream();
-            using (var file = File.Open(fileDialog.FileName, FileMode.Open))
-            {
-                file.CopyTo(imgMem);
-            }
-            userPhoto.Image = null;
+            //imgMem = new MemoryStream();
+            //using (var file = File.Open(fileDialog.FileName, FileMode.Open))
+            //{
+            //    file.CopyTo(imgMem);
+            //}
+            //userPhoto.Image = null;
 
-            string dataIn = Сompressor.HumanReadableSizeLite(imgMem.Length);
-            byte[] thumb = Сompressor.GetThumbnail(fileDialog.FileName, Convert.ToInt32(Math.Abs(Math.Sin(Math.Cos((double)imgMem.Length / 65535))) * 100));
-            byte[] final = Сompressor.CompressBytes(thumb);
-            while (final.Length > 65535)
-            {
-                thumb = Сompressor.DecompressBytes(final);
-                long size = thumb.Length / 2;
-                while (thumb.Length > size)
-                {
-                    using (var tmp = new MemoryStream(thumb))
-                    {
-                        thumb = Сompressor.GetThumbnail(new Bitmap(tmp), 0);
-                    }
-                }
-                final = Сompressor.CompressBytes(thumb);
-
-            }
-            string dataOut = Сompressor.HumanReadableSizeLite(Сompressor.CompressImage(fileDialog.FileName).Length);
-
-            MessageBox.Show($"Вход: {dataIn}\nВыход:\n" +
-                $"{Сompressor.HumanReadableSizeLite(thumb.Length)} => {Сompressor.HumanReadableSizeLite(final.Length)}" +
-                $"\n{dataOut}");
-
-            imgMem = new MemoryStream(Сompressor.DecompressBytes(final));
+            //byte[] thumb = Сompressor.GetThumbnail(fileDialog.FileName, Convert.ToInt32(Math.Abs(Math.Sin(Math.Cos((double)imgMem.Length / 65535))) * 100));
+            //byte[] final = Сompressor.CompressBytes(thumb);
+            //MemoryStream tmp = null;
+            //int n = 0;
+            //while (final.Length > 65535)
+            //{
+            //    n++;
+            //    tmp = new MemoryStream(thumb);
+            //    Bitmap bmp = new Bitmap(tmp);
+            //    bmp = Сompressor.ResizeImage(bmp, 900/n, 1200/n);
+            //    thumb = Сompressor.GetThumbnail(bmp, 0);
+            //    final = Сompressor.CompressBytes(thumb);
+            //    tmp.Close();
+            //}
+            imgMem = new MemoryStream(Сompressor.CompressImageToBytes(fileDialog.FileName));
             userPhoto.Image = new Bitmap(imgMem);
         }
 
@@ -362,6 +375,11 @@ value (null,{roleCombo.SelectedIndex},{GetSpecialization()},'{surnameTextBox.Tex
                 ClearFields();
                 this.Close();
             }
+        }
+
+        private void UserEditor_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (imgMem != null) imgMem.Close();
         }
     }
 }
