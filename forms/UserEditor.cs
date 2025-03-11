@@ -230,7 +230,8 @@ namespace ProjectOffice.forms
 
             //imgMem = new MemoryStream(Сompressor.CompressImageToBytes(fileDialog.FileName));
             userPhoto.Image = new Bitmap(imgMem);
-            if (storedValues.Length > 0) ChangeEnabledBtn();
+            if (storedValues.Length > 0) ChangeEnabledBtn(); 
+            else if (userAc == null || userAc == "") ChangeEnabledBtn();
         }
 
         private void ChangeEnabledBtn()
@@ -254,19 +255,22 @@ namespace ProjectOffice.forms
                 case "nameTextBox": fieldsFilled[2] = it.Text.Trim() != ""; break;
                 case "patronymicTextBox": fieldsFilled[3] = it.Text.Trim() != "";  break;
             }
-            if (storedValues.Length>0) ChangeEnabledBtn();
+            if (storedValues.Length > 0) ChangeEnabledBtn();
+            else if (userAc == null || userAc == "") ChangeEnabledBtn();
         }
 
         private void specCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             fieldsFilled[4] = specCombo.SelectedIndex > 0;
             if (storedValues.Length > 0) ChangeEnabledBtn();
+            else if (userAc == null || userAc == "") ChangeEnabledBtn();
         }
 
         private void roleCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             fieldsFilled[5] = roleCombo.SelectedIndex > 0;
             if (storedValues.Length > 0) ChangeEnabledBtn();
+            else if (userAc == null || userAc == "") ChangeEnabledBtn();
         }
 
         private void accountFields_TextChanged(object sender, EventArgs e)
@@ -275,6 +279,7 @@ namespace ProjectOffice.forms
             if (((TextBox)sender).Name == "loginTextBox") fieldsFilled[6] = res;
             else fieldsFilled[7] = res;
             if (storedValues.Length > 0) ChangeEnabledBtn();
+            else if (userAc == null || userAc == "") ChangeEnabledBtn();
         }
 
         private string GetSpecialization()
