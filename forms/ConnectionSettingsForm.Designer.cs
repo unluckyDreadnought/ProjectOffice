@@ -57,7 +57,7 @@ namespace ProjectOffice.forms
             this.hostTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.hostTextBox.Location = new System.Drawing.Point(197, 70);
             this.hostTextBox.Name = "hostTextBox";
-            this.hostTextBox.Size = new System.Drawing.Size(322, 32);
+            this.hostTextBox.Size = new System.Drawing.Size(322, 38);
             this.hostTextBox.TabIndex = 0;
             this.hostTextBox.TextChanged += new System.EventHandler(this.settingTextBox_TextChanged);
             // 
@@ -67,7 +67,7 @@ namespace ProjectOffice.forms
             this.usrTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.usrTextBox.Location = new System.Drawing.Point(47, 171);
             this.usrTextBox.Name = "usrTextBox";
-            this.usrTextBox.Size = new System.Drawing.Size(191, 32);
+            this.usrTextBox.Size = new System.Drawing.Size(191, 38);
             this.usrTextBox.TabIndex = 1;
             this.usrTextBox.TextChanged += new System.EventHandler(this.settingTextBox_TextChanged);
             // 
@@ -77,7 +77,7 @@ namespace ProjectOffice.forms
             this.usrPswdTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.usrPswdTextBox.Location = new System.Drawing.Point(259, 171);
             this.usrPswdTextBox.Name = "usrPswdTextBox";
-            this.usrPswdTextBox.Size = new System.Drawing.Size(260, 32);
+            this.usrPswdTextBox.Size = new System.Drawing.Size(260, 38);
             this.usrPswdTextBox.TabIndex = 2;
             this.usrPswdTextBox.TextChanged += new System.EventHandler(this.settingTextBox_TextChanged);
             // 
@@ -87,7 +87,7 @@ namespace ProjectOffice.forms
             this.dbNameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.dbNameTextBox.Location = new System.Drawing.Point(197, 250);
             this.dbNameTextBox.Name = "dbNameTextBox";
-            this.dbNameTextBox.Size = new System.Drawing.Size(322, 32);
+            this.dbNameTextBox.Size = new System.Drawing.Size(322, 38);
             this.dbNameTextBox.TabIndex = 3;
             this.dbNameTextBox.Visible = false;
             // 
@@ -164,7 +164,7 @@ namespace ProjectOffice.forms
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label4.Location = new System.Drawing.Point(42, 250);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(110, 20);
+            this.label4.Size = new System.Drawing.Size(133, 25);
             this.label4.TabIndex = 7;
             this.label4.Text = "Название БД";
             this.label4.Visible = false;
@@ -174,7 +174,7 @@ namespace ProjectOffice.forms
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(126, 9);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(231, 24);
+            this.label5.Size = new System.Drawing.Size(303, 29);
             this.label5.TabIndex = 7;
             this.label5.Text = "Настройки подключения";
             // 
@@ -211,7 +211,7 @@ namespace ProjectOffice.forms
             this.closeSettingsBtn.TabIndex = 2;
             this.closeSettingsBtn.Text = "Закрыть";
             this.closeSettingsBtn.UseVisualStyleBackColor = true;
-            this.closeSettingsBtn.Click += new System.EventHandler(this.closeSettingsBtn_Click);
+            this.closeSettingsBtn.Click += new System.EventHandler(this.closeBtn_Click);
             // 
             // checkSettingsPswdBtn
             // 
@@ -232,7 +232,7 @@ namespace ProjectOffice.forms
             this.pswdToSettingsTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.pswdToSettingsTextBox.Location = new System.Drawing.Point(83, 171);
             this.pswdToSettingsTextBox.Name = "pswdToSettingsTextBox";
-            this.pswdToSettingsTextBox.Size = new System.Drawing.Size(346, 28);
+            this.pswdToSettingsTextBox.Size = new System.Drawing.Size(346, 34);
             this.pswdToSettingsTextBox.TabIndex = 1;
             this.pswdToSettingsTextBox.TextChanged += new System.EventHandler(this.pswdToSettingsTextBox_TextChanged);
             // 
@@ -246,7 +246,7 @@ namespace ProjectOffice.forms
             // 
             // ConnectionSettingsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.ClientSize = new System.Drawing.Size(562, 423);

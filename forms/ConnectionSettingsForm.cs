@@ -122,11 +122,6 @@ namespace ProjectOffice.forms
             }
         }
 
-        private void closeSettingsBtn_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void closeBtn_Click(object sender, EventArgs e)
         {
             this.Close();

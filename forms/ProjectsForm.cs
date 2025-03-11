@@ -15,6 +15,7 @@ namespace ProjectOffice.forms
     public partial class ProjectsForm : Form
     {
         Db _db = null;
+        bool _loading = true;
 
         public ProjectsForm()
         {
@@ -103,9 +104,9 @@ where ProjectTitle like '%{searchPattern}%' ";
             return String.Join(" ", parts).Trim(' ', '.');
         }
 
-        private object GetDateFromAsync(Task<(object, Exception)> task)
+        private async Task<object> GetDateFromAsync(Task<(object, Exception)> task)
         {
-            object res = _db.GetAsynNonReaderResult(task);
+            object res = await _db.GetAsynNonReaderResult(task);
             if (res == null) return DateTime.MinValue.ToString("g");
             if (res is string)
             {
@@ -137,17 +138,17 @@ where ProjectTitle like '%{searchPattern}%' ";
             }
         }
 
-        private DateTime GetEarlyStartDate()
+        private async Task<DateTime> GetEarlyStartDate()
         {
-            string query = "select ProjectStartDate from project order by ProjectStartDate asc;";
-            object res = GetDateFromAsync(_db.ExecuteScalarAsync(query));
+            string query = "select ProjectStartDate from project order by ProjectStartDate asc limit 1;";
+            object res = await GetDateFromAsync(_db.ExecuteScalarAsync(query));
             return DateTime.Parse(res.ToString());
         }
 
-        private DateTime GetLastDate()
+        private async Task<DateTime> GetLastDate()
         {
-            string query = "select ProjectPlanEndDate from project order by ProjectPlanEndDate desc; ";
-            object res = GetDateFromAsync(_db.ExecuteScalarAsync(query));
+            string query = "select ProjectPlanEndDate from project order by ProjectPlanEndDate desc limit 1; ";
+            object res = await GetDateFromAsync(_db.ExecuteScalarAsync(query));
             return DateTime.Parse(res.ToString());
         }
 
@@ -255,17 +256,22 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             return sort;
         }
 
-        private void ProjectsForm_Load(object sender, EventArgs e)
+        private async void ProjectsForm_Load(object sender, EventArgs e)
         {
+            _loading = true;
             this.Text = $"{Resources.APP_NAME}: Учёт проектов";
             this.Icon = Resources.PROJECT_OFFICE_ICON;
-            UpdateProjectsTable();
-            SetSearchLinePlaceholder();
             this.WindowState = FormWindowState.Maximized;
-            projectStartRangeDatePicker.MinDate = GetEarlyStartDate();
+            DateTime minDateValue = DateTime.MinValue;
+            var minDateTask = GetEarlyStartDate();
+            minDateValue = await minDateTask;
             projectStartRangeDatePicker.Value = projectStartRangeDatePicker.MinDate;
             projectEndDatePicker.MinDate = DateTime.Now;
             projectEndDatePicker.Value = projectEndDatePicker.MinDate;
+            SetSearchLinePlaceholder();
+            projectStartRangeDatePicker.MinDate = minDateValue;
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            _loading = false;
         }
 
         private void backToMenu_Click(object sender, EventArgs e)
@@ -297,7 +303,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
         private async void projectSearchLineTextBox_TextChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
         private void projectFilterOnCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -315,22 +321,22 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
         private async void projectFilterCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
         private async void projectSortCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
         private async void projectStartRangeDatePicker_ValueChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
         private async void projectEndDatePicker_ValueChanged(object sender, EventArgs e)
         {
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
         private void projectResetFilterBtn_Click(object sender, EventArgs e)

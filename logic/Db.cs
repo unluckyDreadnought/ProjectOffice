@@ -177,7 +177,7 @@ namespace ProjectOffice.logic
 
             try
             {
-                affected = await com.ExecuteNonQueryAsync();
+                affected = await com.ExecuteNonQueryAsync(System.Threading.CancellationToken.None); ;
             }
             catch (MySqlException e)
             {
@@ -205,7 +205,7 @@ namespace ProjectOffice.logic
             object result = null;
             try
             {
-                result = await com.ExecuteScalarAsync();
+                result = await com.ExecuteScalarAsync(System.Threading.CancellationToken.None);
             }
             catch (MySqlException ex)
             {
@@ -217,10 +217,10 @@ namespace ProjectOffice.logic
 
         // Метод для получения значения из асинхронных ExecuteScalarAsync
         // Возвращает при успешном запросе - набор строк, при запросе, повлекшем ошибки - описание ошибки, null
-        public object GetAsynNonReaderResult(Task<(object, Exception)> task)
+        public async Task<object> GetAsynNonReaderResult(Task<(object, Exception)> task)
         {
             string msgText = null;
-            (object value, Exception e) = task.GetAwaiter().GetResult();
+            (object value, Exception e) = await task;
 
             if (value != null && value is int)
             {
@@ -228,7 +228,7 @@ namespace ProjectOffice.logic
             }
             msgText = (e != null) ? e.Message : null;
 
-            if (msgText != null) return value;
+            if (msgText == null) return value;
             else return msgText;
         }
 

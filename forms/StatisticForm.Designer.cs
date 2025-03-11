@@ -334,8 +334,6 @@ namespace ProjectOffice.forms
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "StatisticForm";
             this.Text = "StatisticForm";
-            this.Activated += new System.EventHandler(this.StatisticForm_Activated);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StatisticForm_FormClosing);
             this.Load += new System.EventHandler(this.StatisticForm_Load);
             this.statsTabControl.ResumeLayout(false);
             this.commonStatsTab.ResumeLayout(false);

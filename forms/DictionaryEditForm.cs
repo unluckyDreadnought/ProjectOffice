@@ -166,6 +166,7 @@ namespace ProjectOffice.forms
                 ((TextBox)panel1.Controls[i]).Text = storedData[i];
                 i++;
             }
+            EnableButton();
         }
 
         private bool CompareValuesWithDbData()
@@ -251,19 +252,12 @@ namespace ProjectOffice.forms
             editMode = edit;
         }
 
-        // ДОБАВИТЬ ДЛЯ РАБОТЫ:
-        // - ВЗЯТИЕ ДАННЫХ ИЗ БД ПО ИД
-        // - ПРОВЕРКУ НА НЕРАВЕНСТВО С ДАННЫМИ ИЗ БАЗЫ
-        // - ОБРАБОТЧИКИ НАЖАТИЯ НА ПОЛЯ ВВОДА, ПОТЕРИ ФОКУСА (плэйсхолдер); ОБРАБОТЧИК НАЖАТИЯ КЛАВИШИ
-        // Ну и проверить работу (добавление и т.д.)
-
         private void DictionaryEditForm_Load(object sender, EventArgs e)
         {
             this.Icon = Resources.PROJECT_OFFICE_ICON;
             CreateInputControls(placeholders);
             addBtn.Text = (editMode) ? "Изменить" : "Добавить";
             if (editMode) FillFields();
-            EnableButton();
         }
 
         private void RightColor(object sender)

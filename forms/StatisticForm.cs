@@ -15,7 +15,6 @@ namespace ProjectOffice.forms
 {
     public partial class StatisticForm : Form
     {
-        private bool _activeted = false;
         private Db _db = null;
 
         private int active = 0;
@@ -28,6 +27,30 @@ namespace ProjectOffice.forms
         Excel.Worksheet ws = null;
 
         string baseSavePath = "";
+
+        private void FullCloseExcel()
+        {
+            if (wb != null)
+            {
+                wb.Close();
+            }
+            if (app != null)
+            {
+                app.Application.Quit();
+                app.Quit();
+            }
+            ReleaseExcel();
+        }
+
+        private void ReleaseExcel()
+        {
+            if (ws != null) ReleaseObject(ws);
+            if (wb != null) ReleaseObject(wb);
+            if (app != null) ReleaseObject(app);
+            ws = null;
+            wb = null;
+            app = null;
+        }
 
         private void DrawChartOnData(int rejected, int active, int outOfDate, int completed)
         {
@@ -55,15 +78,13 @@ namespace ProjectOffice.forms
             try
             {
                 app = new Excel.Application();
-                app.WindowDeactivate += App_WindowDeactivate;
-
-                app.WorkbookBeforeClose += App_WorkbookBeforeClose;
 
                 if (app == null)
                 {
                     MessageBox.Show("Не удалось создать отчёт", "Отчёт Excel", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+                app.Visible = true;
                 app.Visible = false;
 
                 wb = app.Workbooks.Open(template);
@@ -95,41 +116,25 @@ namespace ProjectOffice.forms
                 MessageBox.Show($"Файл будет сохранён по пути '{baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 ws.Columns.AutoFit();
+
+                app.Visible = true;
+
                 wb.SaveAs(baseSavePath);
-                if (wb != null) wb.Close();
+                FullCloseExcel();
+
                 if (app == null) app = new Excel.Application();
                 wb = app.Workbooks.Open(baseSavePath);
                 ws = wb.Worksheets[1];
 
                 app.Visible = true;
-                _activeted = true;
-            }
-            catch (Exception)
-            {
-                if (wb != null) wb.Close();
-                if (app != null) app.Quit();
-            }
-        }
 
-        private void App_WindowDeactivate(Excel.Workbook Wb, Excel.Window Wn)
-        {
-            if (wb != null)
-            {
-                wb.Close();
-                wb = null;
+                ReleaseExcel();
             }
-            if (app != null) app.Quit();
-            if (app != null) Marshal.FinalReleaseComObject(app);
-            app = null;
-        }
-
-        private void App_WorkbookBeforeClose(Excel.Workbook Wb, ref bool Cancel)
-        {
-            try
+            catch (Exception e)
             {
-                if (wb != null) wb.Save();
+                ;
+                FullCloseExcel();
             }
-            catch (Exception) {; }
         }
 
         private async Task<DataTable> GetCommonStats()
@@ -195,7 +200,6 @@ order by StatusTitle;";
             this.Text = $"{Resources.APP_NAME}: Просмотр статистики";
             this.Icon = Resources.PROJECT_OFFICE_ICON;
             FillCommonStats();
-            _activeted = true;
         }
 
         private void statsTabControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -212,39 +216,24 @@ order by StatusTitle;";
             SaveReport(rejected, active, outOfDate, completed);
         }
 
-        private void StatisticForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Process[] pro = Process.GetProcessesByName("excel");
-            foreach (Process p in pro)
-            {
-                p.Kill();
-            }
-        }
 
         private void ReleaseObject(object obj)
         {
-            //try
-            //{
-            //    Marshal.FinalReleaseComObject(obj);
-            // null obj;
-            //}
-            //catch
-        }
-
-
-        private void StatisticForm_Activated(object sender, EventArgs e)
-        {
-            if (_activeted) return;
-            Process[] pro = Process.GetProcessesByName("excel");
-            foreach (Process p in pro)
+            try
             {
-                try
-                {
-                    p.Kill();
-                }
-                catch (Exception) {; }
+                Marshal.ReleaseComObject(obj);
+                Marshal.FinalReleaseComObject(obj);
+                obj = null;
             }
-            _activeted = false;
+            catch (Exception e)
+            {
+                obj = null;
+            }
+            finally
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
         }
     }
 }
