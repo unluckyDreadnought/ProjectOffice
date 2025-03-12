@@ -29,7 +29,7 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.addObject = new System.Windows.Forms.Button();
             this.searchGroup = new System.Windows.Forms.GroupBox();
@@ -85,8 +85,9 @@ namespace ProjectOffice.forms
             // 
             // searchLine
             // 
+            this.searchLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.searchLine.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.searchLine.Dock = System.Windows.Forms.DockStyle.Fill;
             this.searchLine.Location = new System.Drawing.Point(3, 30);
             this.searchLine.Name = "searchLine";
             this.searchLine.Size = new System.Drawing.Size(511, 34);
@@ -104,6 +105,7 @@ namespace ProjectOffice.forms
             // 
             // cancelBtn
             // 
+            this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cancelBtn.Location = new System.Drawing.Point(12, 6);
             this.cancelBtn.Name = "cancelBtn";
             this.cancelBtn.Size = new System.Drawing.Size(136, 42);
@@ -114,6 +116,7 @@ namespace ProjectOffice.forms
             // 
             // chooseBtn
             // 
+            this.chooseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chooseBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(143)))), ((int)(((byte)(252)))));
             this.chooseBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
             this.chooseBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -134,14 +137,14 @@ namespace ProjectOffice.forms
             this.chooseObjectsTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.chooseObjectsTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.chooseObjectsTable.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.chooseObjectsTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.chooseObjectsTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.chooseObjectsTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.chooseObjectsTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chooseObjectsTable.EnableHeadersVisualStyles = false;
@@ -151,8 +154,10 @@ namespace ProjectOffice.forms
             this.chooseObjectsTable.RowHeadersVisible = false;
             this.chooseObjectsTable.RowHeadersWidth = 51;
             this.chooseObjectsTable.RowTemplate.Height = 24;
+            this.chooseObjectsTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.chooseObjectsTable.Size = new System.Drawing.Size(584, 362);
             this.chooseObjectsTable.TabIndex = 3;
+            this.chooseObjectsTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.chooseObjectsTable_CellClick);
             // 
             // ChooseForm
             // 

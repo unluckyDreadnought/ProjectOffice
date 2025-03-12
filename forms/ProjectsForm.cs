@@ -287,7 +287,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
         private void editProjectBtn_Click(object sender, EventArgs e)
         {
-            ProjectEditorForm projEditor = new ProjectEditorForm();
+            ProjectEditorForm projEditor = new ProjectEditorForm("n"); // selected project
             projEditor.ShowDialog();
         }
 

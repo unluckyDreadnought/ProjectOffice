@@ -28,7 +28,7 @@ namespace ProjectOffice.forms
         {
             string query = @"select  
 ClientID, case when ClientOrgTypeID is null then concat(ClientName) else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientEmail 
-from client; ";
+from client where ClientID > 1; ";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
             int indx = 0;
