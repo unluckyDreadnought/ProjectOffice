@@ -29,6 +29,7 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.specCombo = new System.Windows.Forms.ComboBox();
@@ -54,6 +55,7 @@ namespace ProjectOffice.forms
             this.userPhoto = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.backToListBtn = new System.Windows.Forms.Button();
+            this.tipImageBox = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -114,7 +116,7 @@ namespace ProjectOffice.forms
             this.specCombo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.specCombo.Name = "specCombo";
             this.specCombo.Size = new System.Drawing.Size(387, 33);
-            this.specCombo.TabIndex = 1;
+            this.specCombo.TabIndex = 3;
             this.specCombo.SelectedIndexChanged += new System.EventHandler(this.specCombo_SelectedIndexChanged);
             // 
             // label5
@@ -175,7 +177,7 @@ namespace ProjectOffice.forms
             this.patronymicTextBox.MaxLength = 50;
             this.patronymicTextBox.Name = "patronymicTextBox";
             this.patronymicTextBox.Size = new System.Drawing.Size(387, 30);
-            this.patronymicTextBox.TabIndex = 0;
+            this.patronymicTextBox.TabIndex = 2;
             this.patronymicTextBox.TextChanged += new System.EventHandler(this.snpTextBox_TextChanged);
             this.patronymicTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fioFields_KeyPressed);
             // 
@@ -189,7 +191,7 @@ namespace ProjectOffice.forms
             this.nameTextBox.MaxLength = 45;
             this.nameTextBox.Name = "nameTextBox";
             this.nameTextBox.Size = new System.Drawing.Size(387, 30);
-            this.nameTextBox.TabIndex = 0;
+            this.nameTextBox.TabIndex = 1;
             this.nameTextBox.TextChanged += new System.EventHandler(this.snpTextBox_TextChanged);
             this.nameTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fioFields_KeyPressed);
             // 
@@ -231,7 +233,7 @@ namespace ProjectOffice.forms
             this.addEditBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.addEditBtn.Name = "addEditBtn";
             this.addEditBtn.Size = new System.Drawing.Size(144, 50);
-            this.addEditBtn.TabIndex = 0;
+            this.addEditBtn.TabIndex = 7;
             this.addEditBtn.Text = "button1";
             this.addEditBtn.UseVisualStyleBackColor = false;
             this.addEditBtn.Click += new System.EventHandler(this.addEditBtn_Click);
@@ -264,7 +266,7 @@ namespace ProjectOffice.forms
             this.roleCombo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.roleCombo.Name = "roleCombo";
             this.roleCombo.Size = new System.Drawing.Size(200, 33);
-            this.roleCombo.TabIndex = 3;
+            this.roleCombo.TabIndex = 4;
             this.roleCombo.SelectedIndexChanged += new System.EventHandler(this.roleCombo_SelectedIndexChanged);
             // 
             // label6
@@ -330,7 +332,7 @@ namespace ProjectOffice.forms
             this.passTextBox.MaxLength = 128;
             this.passTextBox.Name = "passTextBox";
             this.passTextBox.Size = new System.Drawing.Size(216, 30);
-            this.passTextBox.TabIndex = 0;
+            this.passTextBox.TabIndex = 6;
             this.passTextBox.TextChanged += new System.EventHandler(this.accountFields_TextChanged);
             this.passTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.accountFields_KeyPressed);
             // 
@@ -341,7 +343,7 @@ namespace ProjectOffice.forms
             this.loginTextBox.MaxLength = 100;
             this.loginTextBox.Name = "loginTextBox";
             this.loginTextBox.Size = new System.Drawing.Size(225, 30);
-            this.loginTextBox.TabIndex = 0;
+            this.loginTextBox.TabIndex = 5;
             this.loginTextBox.TextChanged += new System.EventHandler(this.accountFields_TextChanged);
             this.loginTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.accountFields_KeyPressed);
             // 
@@ -451,5 +453,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label;
+        private System.Windows.Forms.ToolTip tipImageBox;
     }
 }

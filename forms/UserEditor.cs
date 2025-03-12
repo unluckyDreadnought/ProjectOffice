@@ -141,6 +141,7 @@ namespace ProjectOffice.forms
 
         private async void UserEditor_Load(object sender, EventArgs e)
         {
+            tipImageBox.SetToolTip(userPhoto, "Нажмите, чтобы сменить фотографию");
             if (editMode) this.Text = $"{Resources.APP_NAME}: Редактирование";
             else this.Text = $"{Resources.APP_NAME}: Добавление";
             this.Text += (userMode) ? " пользователя" : " сотрудника";
