@@ -29,9 +29,10 @@ namespace ProjectOffice.forms
 
         private bool HaveDiffFromDbValue()
         {
-            bool photo = IsImageBytesDifference(imgMem == null ? null : imgMem.ToArray(), storedValues[8] as byte[] == null ? null : Сompressor.DecompressBytes((byte[])storedValues[8]));
+            bool photo = IsImageBytesDifference(imgMem == null ? null : imgMem.ToArray(), storedValues[8] == System.DBNull.Value ? null : Сompressor.DecompressBytes((byte[])storedValues[8]));
             bool role = roleCombo.SelectedIndex != Convert.ToInt32(storedValues[1]);
-            bool spec = specCombo.SelectedIndex != Convert.ToInt32(storedValues[2]);
+            int specIndx = storedValues[2] != System.DBNull.Value ? Convert.ToInt32(storedValues[2]) : 0;
+            bool spec = specCombo.SelectedIndex != specIndx;
             bool snp = surnameTextBox.Text != storedValues[3].ToString() || nameTextBox.Text != storedValues[4].ToString() || patronymicTextBox.Text != storedValues[5].ToString();
             bool login = loginTextBox.Text != storedValues[6].ToString();
             bool pass = passTextBox.Text.Trim() != "";
@@ -83,6 +84,15 @@ namespace ProjectOffice.forms
             roleCombo.SelectedIndex = 0;
         }
 
+        private async Task SetUserMode(int indexMode)
+        {
+            while (roleCombo.Items.Count != 4)
+            {
+                ;
+            }
+            roleCombo.SelectedIndex = indexMode;
+        }
+
         private async Task FillUserInfo(string userId)
         {
             string query = $"select * from  `{Db.Name}`.`user` where UserID = {userId};";
@@ -95,7 +105,7 @@ namespace ProjectOffice.forms
 
             storedValues = dt.Rows[0].ItemArray;
 
-            if ((dt.Rows[0][8] as byte[]) != null && (dt.Rows[0][8] as byte[]).Length > 0)
+            if (dt.Rows[0][8] != System.DBNull.Value && (dt.Rows[0][8] as byte[]).Length > 0)
             {
                 byte[] imgBytes = Сompressor.DecompressBytes((byte[])dt.Rows[0][8]);
                 using (MemoryStream memStream = new MemoryStream(imgBytes))
@@ -110,14 +120,14 @@ namespace ProjectOffice.forms
             }
             else userPhoto.Image = null;
 
-            roleCombo.SelectedIndex = Convert.ToInt32(dt.Rows[0][1].ToString());
+            // roleCombo.SelectedIndex = Convert.ToInt32(dt.Rows[0][1].ToString());
+            await SetUserMode(Convert.ToInt32(dt.Rows[0][1].ToString()));
             nameTextBox.Text = dt.Rows[0][4].ToString();
             surnameTextBox.Text = dt.Rows[0][3].ToString();
-            int spec = (dt.Rows[0][2].ToString() != "") ? Convert.ToInt32(dt.Rows[0][2].ToString()) : 0;
+            int spec = (dt.Rows[0][2] != System.DBNull.Value && dt.Rows[0][2].ToString() != "") ? Convert.ToInt32(dt.Rows[0][2].ToString()) : 0;
             specCombo.SelectedIndex = spec;
             patronymicTextBox.Text = dt.Rows[0][5].ToString();
             loginTextBox.Text = dt.Rows[0][6].ToString();
-
             addEditBtn.Enabled = HaveDiffFromDbValue();
         }
 
@@ -284,7 +294,7 @@ namespace ProjectOffice.forms
 
         private string GetSpecialization()
         {
-            return (specCombo.SelectedIndex <= 0) ? "null" : $"{specCombo.SelectedIndex}";
+            return (specCombo.SelectedIndex <= 0) ? "0" : $"{specCombo.SelectedIndex}";
         }
 
         private string GetPatronymic()
