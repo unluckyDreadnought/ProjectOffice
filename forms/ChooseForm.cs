@@ -40,8 +40,8 @@ from {Db.Name}.client where ClientID > 1;";
 
         private async Task<DataTable> GetEmployees()
         {
-            string query = $@"select UserID, specialization.SpecializationTitle, 
-concat(UserSurname, ' ', substring(UserName, 1, 1), '.')  as 'Name'
+            string query = $@"select UserID, concat(UserSurname, ' ', substring(UserName, 1, 1), '.')  as 'Name',
+specialization.SpecializationTitle
 from {Db.Name}.user
 inner join {Db.Name}.specialization on `user`.UserSpecializationID = specialization.SpecializationID
 where `user`.UserSpecializationID != 0
@@ -96,6 +96,20 @@ order by UserSurname ASC;";
                     }
                 case ChooseMode.Employee:
                     {
+                        // string[] titles = { "id", "ФИО", "Специальность", "Участие", "Ответственный" };
+                        dt = await GetEmployees();
+                        int r = 0;
+                        while (r < dt.Rows.Count)
+                        {
+                            int indx = chooseObjectsTable.Rows.Add();
+                            int c = 0;
+                            while (c < dt.Columns.Count)
+                            {
+                                chooseObjectsTable.Rows[indx].Cells[c].Value = dt.Rows[r][c].ToString();
+                                c++;
+                            }
+                            r++;
+                        }
                         break;
                     }
                 case ChooseMode.Stages:
@@ -222,6 +236,12 @@ order by UserSurname ASC;";
             }
             else
             {
+                if (SelectedIndexes.Count <= 0) return;
+                var employeesGroup = SelectedIndexes.Where(item => item[0] == selectedId).ToArray();
+                if (employeesGroup.Length == 0 || employeesGroup[0].Length == 0) ;
+                {
+
+                }
                 int indx = SelectedIndexes.IndexOf(SelectedIndexes.Where(item => item[0] == selectedId).ToArray()[0]);
                 SelectedIndexes.RemoveAt(indx);
                 if (twoValueArray)
