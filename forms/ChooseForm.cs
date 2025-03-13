@@ -265,8 +265,15 @@ order by UserSurname ASC;";
             }
             else if (_mode == ChooseMode.Employee)
             {
+                if (chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewCheckBoxCell)
+                {
+                    bool newValue = !Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex]).Value);
+                    ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex]).Value = newValue;
+                    if (e.ColumnIndex == chooseObjectsTable.ColumnCount-1 && newValue) ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex-1]).Value = newValue;
+                    if (e.ColumnIndex == chooseObjectsTable.ColumnCount-2 && !newValue) ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex+1]).Value = newValue;
+                }
                 if (e.ColumnIndex == chooseObjectsTable.Columns.Count - 1) ChangeSelectedList(row, chooseObjectsTable.Columns.Count - e.ColumnIndex, true, 1);
-                else ChangeSelectedList(row, chooseObjectsTable.Columns.Count - e.ColumnIndex, true, 0);
+                else if (e.ColumnIndex == chooseObjectsTable.Columns.Count - 2) ChangeSelectedList(row, chooseObjectsTable.Columns.Count - e.ColumnIndex, true, 0);
             }
             else
             {

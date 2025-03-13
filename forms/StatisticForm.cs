@@ -23,6 +23,7 @@ namespace ProjectOffice.forms
         private int outOfDate = 0;
 
         Excel.Application app = null;
+        Excel.Workbooks wbs = null;
         Excel.Workbook wb = null;
         Excel.Worksheet ws = null;
 
@@ -34,6 +35,10 @@ namespace ProjectOffice.forms
             {
                 wb.Close();
             }
+            if (wbs != null)
+            {
+                wbs.Close();
+            }
             if (app != null)
             {
                 app.Application.Quit();
@@ -44,9 +49,11 @@ namespace ProjectOffice.forms
 
         private void ReleaseExcel()
         {
-            if (ws != null) ReleaseObject(ws);
-            if (wb != null) ReleaseObject(wb);
-            if (app != null) ReleaseObject(app);
+            ReleaseObject(ws);
+            ReleaseObject(wb);
+            ReleaseObject(wbs);
+            ReleaseObject(app);
+            wbs = null;
             ws = null;
             wb = null;
             app = null;
@@ -87,7 +94,8 @@ namespace ProjectOffice.forms
                 app.Visible = true;
                 app.Visible = false;
 
-                wb = app.Workbooks.Open(template);
+                wbs = app.Workbooks;
+                wb = wbs.Open(template);
                 ws = wb.Worksheets[1];
 
                 ws.Range["A3"].Value = DateTime.Now.ToString("g");
@@ -123,7 +131,8 @@ namespace ProjectOffice.forms
                 FullCloseExcel();
 
                 if (app == null) app = new Excel.Application();
-                wb = app.Workbooks.Open(baseSavePath);
+                wbs = app.Workbooks;
+                wb = wbs.Open(baseSavePath);
                 ws = wb.Worksheets[1];
 
                 app.Visible = true;
@@ -221,8 +230,8 @@ order by StatusTitle;";
         {
             try
             {
-                Marshal.ReleaseComObject(obj);
                 Marshal.FinalReleaseComObject(obj);
+                Marshal.ReleaseComObject(obj);
                 obj = null;
             }
             catch (Exception e)

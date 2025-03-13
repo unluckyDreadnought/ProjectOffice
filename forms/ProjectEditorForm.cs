@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.Properties;
@@ -18,6 +18,7 @@ namespace ProjectOffice.forms
         Db _db = new Db();
         string projId = "";
         bool editMode = false;
+        Regex regex = new Regex(@"^Проект \d+$");
 
         private bool tempProject = false;
         private string clientId = "null";
@@ -112,8 +113,9 @@ insert into {Db.Name}.project value (0, 1, 1, {AppUser.Id}, '{projName}', '{Date
 
         private void EraseProjNamePlaceholder()
         {
-            projectNameTextBox.ForeColor = Color.Black;
             projectNameTextBox.Text = "";
+            projectNameTextBox.Clear();
+            projectNameTextBox.ForeColor = Color.Black;
         }
 
         private async void ProjectEditorForm_Load(object sender, EventArgs e)
@@ -154,7 +156,18 @@ insert into {Db.Name}.project value (0, 1, 1, {AppUser.Id}, '{projName}', '{Date
                 DialogResult msgResult = MessageBox.Show("Вы уверены, что хотите перейти к списку проектов и отменить изменения в новом проекте?", "Новый проект", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (msgResult == DialogResult.Yes)
                 {
-                    if (tempProject) await GetNoScalarResult(DeleteProject("0"));
+                    if (tempProject)
+                    {
+                        string project = "0";
+                        DataTable dt = await GetUsersInProject(project);
+                        int i = 0;
+                        while (i < dt.Rows.Count)
+                        {
+                            int tn = await GetNoScalarResult(RemoveUserFromProject(project, dt.Rows[i][0].ToString()));
+                            i++;
+                        }
+                        await GetNoScalarResult(DeleteProject(project));
+                    }
                     this.Close();
                 }
             }
@@ -192,16 +205,100 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             chooseForm.ShowDialog();
         }
 
-        private void chooseEmployeesBtn_Click(object sender, EventArgs e)
+        private async Task<string> GetEmployee(string usrID)
+        {
+            string query = $@"select concat(UserSurname, ' ', substring(UserName, 1, 1), '.')  as 'Name' from {Db.Name}.`user` where UserID = {usrID};";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            string employeeName = (dt.Rows.Count != 0) ? dt.Rows[0][0].ToString() : null;
+            return employeeName;
+        }
+
+        private async Task<DataTable> GetUsersInProject(string projID)
+        {
+            string query = $"select UserID from {Db.Name}.userproject where ProjectID = {projID};";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            return dt;
+        }
+
+        private async Task<(int, string)> AddUserToProject(string projID, string usrID, bool responsible)
+        {
+            string resp = responsible ? "1" : "0";
+            string query = $@"insert into {Db.Name}.userproject value ({usrID}, {projID}, {resp});";
+            object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            if (response is string) return (-1, response.ToString());
+            else
+            {
+                tempProject = true;
+                return (Convert.ToInt32(response.ToString()), null);
+            }
+        }
+
+        private async Task<(int, string)> RemoveUserFromProject(string projID, string usrID)
+        {
+            string query = $@"delete from {Db.Name}.userproject where UserID = {usrID} and ProjectID = {projID};";
+            object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            if (response is string) return (-1, response.ToString());
+            else
+            {
+                tempProject = true;
+                return (Convert.ToInt32(response.ToString()), null);
+            }
+        }
+
+        private async void chooseEmployeesBtn_Click(object sender, EventArgs e)
         {
             ChooseForm chooseForm = new ChooseForm(ChooseMode.Employee);
-            chooseForm.ShowDialog();
+            if (chooseForm.ShowDialog() == DialogResult.OK)
+            {
+                string[][] selected = chooseForm.SelectedIndexes.ToArray();
+                if (selected.Length == 0) return;
+                int set = 0;
+                while (set < selected.Length)
+                {
+                    string tUsrId = selected[set][0];
+                    string name = await GetEmployee(tUsrId);
+                    if (name == null)
+                    {
+                        set++;
+                        continue;
+                    }
+                    int n = await GetNoScalarResult(AddUserToProject("0", tUsrId, selected[set].Length > 1));
+                    int rIndx = employeesTable.Rows.Add();
+                    employeesTable.Rows[rIndx].Cells[0].Value = name;
+                    ((DataGridViewCheckBoxCell)employeesTable.Rows[rIndx].Cells[1]).Value = selected[set].Length > 1;
+                    set++;
+                }
+            }
         }
 
         private void subtaskBtn_Click(object sender, EventArgs e)
         {
             SubtaskList tasksList = new SubtaskList();
             tasksList.ShowDialog();
+        }
+
+        private void projectNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (projectNameTextBox.Text.Trim() == "") SetProjNamePlaceholder();
+
+        }
+
+        private void projectNameTextBox_Leave(object sender, EventArgs e)
+        {
+            if (projectNameTextBox.Text.Trim() == "") SetProjNamePlaceholder();
+        }
+
+        private void projectNameTextBox_Click(object sender, EventArgs e)
+        {
+            Match match = regex.Match(projectNameTextBox.Text.Trim());
+            if (match.Success) EraseProjNamePlaceholder();
+        }
+
+        private void employeesTable_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            return;
         }
     }
 }
