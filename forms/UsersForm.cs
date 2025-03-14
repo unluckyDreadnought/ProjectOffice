@@ -21,7 +21,8 @@ namespace ProjectOffice.forms
 
         private async Task<(DataTable, Exception)> GetUserList()
         {
-            string query = $@"select UserID, UserPhoto, usermode.UserModeTitle, concat(UserSurname, ' ', substring(UserName, 1, 1), '. ', substring(UserPatronymic,1,1)), UserLogin from {Db.Name}.user
+            string query = $@"select UserID, UserPhoto, usermode.UserModeTitle, 
+concat(UserSurname, ' ', substring(UserName, 1, 1), '. ', case when UserPatronymic is null then '' else substring(UserPatronymic, 1, 1) end)  as 'Name', UserLogin from {Db.Name}.user
 inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where UserID != {AppUser.Id};";
             return await _db.ExecuteReaderAsync(query);
         }

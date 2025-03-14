@@ -312,8 +312,9 @@ namespace ProjectOffice.forms
         {
             int rows = -1;
             Exception e = null;
+            string patronymic = GetPatronymic() == "null" ? "null" : $"'{GetPatronymic()}'";
             string query = $@"insert into {Db.Name}.user  
-value (null,{roleCombo.SelectedIndex},{GetSpecialization()},'{surnameTextBox.Text.Trim()}','{nameTextBox.Text.Trim()}','{GetPatronymic()}','{loginTextBox.Text.Trim()}','{GetPassWord()}',";
+value (null,{roleCombo.SelectedIndex},{GetSpecialization()},'{surnameTextBox.Text.Trim()}','{nameTextBox.Text.Trim()}',{patronymic},'{loginTextBox.Text.Trim()}','{GetPassWord()}',";
             if (fieldsFilled[0] != false)
             {
                 query += "@image";
@@ -356,7 +357,8 @@ value (null,{roleCombo.SelectedIndex},{GetSpecialization()},'{surnameTextBox.Tex
             }
             if (storedValues[5].ToString() != patronymicTextBox.Text.Trim())
             {
-                query += $"UserPatronymic = '{GetPatronymic()}', ";
+                string patronymic = GetPatronymic() == "null" ? "null" : $"'{GetPatronymic()}'";
+                query += $"UserPatronymic = {patronymic}, ";
             }
             if (storedValues[6].ToString() != loginTextBox.Text.Trim())
             {

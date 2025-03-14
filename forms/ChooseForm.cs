@@ -17,107 +17,9 @@ namespace ProjectOffice.forms
         private Db _db = new Db();
         private ChooseMode _mode;
         private DataGridViewColumnCollection _columns;
+        private string[][] _recover = null;
         public string Title = "";
         public List<string[]> SelectedIndexes { get; private set; } = new List<string[]>();
-
-        public ChooseForm(ChooseMode mode)
-        {
-            InitializeComponent();
-            _mode = mode;
-            _columns = new DataGridViewColumnCollection(chooseObjectsTable);
-            ResolveChooseMode();
-        }
-
-        private async Task<DataTable> GetClients()
-        {
-            string query = $@"select  
-ClientID, case when ClientOrgTypeID is null then ClientName else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientAddress 
-from {Db.Name}.client where ClientID > 1;";
-            var task = _db.ExecuteReaderAsync(query);
-            DataTable dt = await Common.GetAsyncResult(task);
-            return dt;
-        }
-
-        private async Task<DataTable> GetEmployees()
-        {
-            string query = $@"select UserID, concat(UserSurname, ' ', substring(UserName, 1, 1), '.')  as 'Name',
-specialization.SpecializationTitle
-from {Db.Name}.user
-inner join {Db.Name}.specialization on `user`.UserSpecializationID = specialization.SpecializationID
-where `user`.UserSpecializationID != 0
-order by UserSurname ASC;";
-            var task = _db.ExecuteReaderAsync(query);
-            DataTable dt = await Common.GetAsyncResult(task);
-            return dt;
-        }
-
-        private async Task UpdateList()
-        {
-            DataTable dt = new DataTable();
-            switch (_mode)
-            {
-                case ChooseMode.Client: 
-                    {
-                        dt = await GetClients();
-                        int r = 0;
-                        while (r < dt.Rows.Count)
-                        {
-                            int indx = chooseObjectsTable.Rows.Add();
-                            int c = 0;
-                            while (c < dt.Columns.Count)
-                            {
-                                if (c == 1)
-                                {
-                                    string nameValue = dt.Rows[r][c].ToString();
-                                    string[] nameParts = (nameValue.Contains("'")) ? new string[] { nameValue } : nameValue.Split(' ');
-                                    int i = 0;
-                                    while (i < nameParts.Length)
-                                    {
-                                        nameParts[i] = (i == 0) ? nameParts[i] : nameParts[i][0].ToString();
-                                        i++;
-                                    }
-                                    nameValue = string.Join(". ", nameParts);
-                                    chooseObjectsTable.Rows[indx].Cells[c].Value = nameValue;
-                                }
-                                else if (c == 3)
-                                {
-                                    string[] addrParts = dt.Rows[r][c].ToString().Split(',');
-                                    chooseObjectsTable.Rows[indx].Cells[c].Value = $"{addrParts[0]},{addrParts[1]}";
-                                }
-                                else
-                                {
-                                    chooseObjectsTable.Rows[indx].Cells[c].Value = dt.Rows[r][c].ToString();
-                                }
-                                c++;
-                            }
-                            r++;
-                        }
-                        break; 
-                    }
-                case ChooseMode.Employee:
-                    {
-                        // string[] titles = { "id", "ФИО", "Специальность", "Участие", "Ответственный" };
-                        dt = await GetEmployees();
-                        int r = 0;
-                        while (r < dt.Rows.Count)
-                        {
-                            int indx = chooseObjectsTable.Rows.Add();
-                            int c = 0;
-                            while (c < dt.Columns.Count)
-                            {
-                                chooseObjectsTable.Rows[indx].Cells[c].Value = dt.Rows[r][c].ToString();
-                                c++;
-                            }
-                            r++;
-                        }
-                        break;
-                    }
-                case ChooseMode.Stages:
-                    {
-                        break;
-                    }
-            }
-        }
 
         private void ResolveChooseMode()
         {
@@ -186,10 +88,148 @@ order by UserSurname ASC;";
             }
         }
 
-        private void cancelBtn_Click(object sender, EventArgs e)
+        public ChooseForm(ChooseMode mode)
         {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            InitializeComponent();
+            _mode = mode;
+            _columns = new DataGridViewColumnCollection(chooseObjectsTable);
+            ResolveChooseMode();
+        }
+
+        public ChooseForm(ChooseMode mode, string[][] recoverData)
+        {
+            InitializeComponent();
+            _mode = mode;
+            _columns = new DataGridViewColumnCollection(chooseObjectsTable);
+            ResolveChooseMode();
+            _recover = recoverData;
+        }
+
+        private async Task<DataTable> GetClients()
+        {
+            string query = $@"select  
+ClientID, case when ClientOrgTypeID is null then ClientName else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientAddress 
+from {Db.Name}.client where ClientID > 1;";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            return dt;
+        }
+
+        private async Task<DataTable> GetEmployees()
+        {
+            string query = $@"select UserID, concat(UserSurname, ' ', substring(UserName, 1, 1), '. ', case when UserPatronymic is null then '' else substring(UserPatronymic, 1, 1) end)  as 'Name',
+specialization.SpecializationTitle
+from {Db.Name}.`user`
+inner join {Db.Name}.specialization on `user`.UserSpecializationID = specialization.SpecializationID
+where `user`.UserSpecializationID != 0
+order by UserSurname ASC;";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            return dt;
+        }
+
+        private async Task<DataTable> GetStages()
+        {
+            string query = $"select * from {Db.Name}.stage order by StageTitle ASC;";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            return dt;
+        }
+
+        private void InsertRowsInTable(DataTable dt)
+        {
+            int r = 0;
+            while (r < dt.Rows.Count)
+            {
+                int indx = chooseObjectsTable.Rows.Add();
+                int c = 0;
+                while (c < dt.Columns.Count)
+                {
+                    chooseObjectsTable.Rows[indx].Cells[c].Value = dt.Rows[r][c].ToString();
+                    c++;
+                }
+                r++;
+            }
+        }
+
+        private async Task UpdateList()
+        {
+            DataTable dt = new DataTable();
+            switch (_mode)
+            {
+                case ChooseMode.Client:
+                    {
+                        dt = await GetClients();
+                        int r = 0;
+                        while (r < dt.Rows.Count)
+                        {
+                            int indx = chooseObjectsTable.Rows.Add();
+                            int c = 0;
+                            while (c < dt.Columns.Count)
+                            {
+                                if (c == 1)
+                                {
+                                    string nameValue = dt.Rows[r][c].ToString();
+                                    string[] nameParts = (nameValue.Contains("'")) ? new string[] { nameValue } : nameValue.Split(' ');
+                                    int i = 0;
+                                    while (i < nameParts.Length)
+                                    {
+                                        nameParts[i] = (i == 0) ? nameParts[i] : nameParts[i][0].ToString();
+                                        i++;
+                                    }
+                                    nameValue = string.Join(". ", nameParts);
+                                    chooseObjectsTable.Rows[indx].Cells[c].Value = nameValue;
+                                }
+                                else if (c == 3)
+                                {
+                                    string[] addrParts = dt.Rows[r][c].ToString().Split(',');
+                                    chooseObjectsTable.Rows[indx].Cells[c].Value = $"{addrParts[0]},{addrParts[1]}";
+                                }
+                                else
+                                {
+                                    chooseObjectsTable.Rows[indx].Cells[c].Value = dt.Rows[r][c].ToString();
+                                }
+                                c++;
+                            }
+                            r++;
+                        }
+                        break;
+                    }
+                case ChooseMode.Employee:
+                    {
+                        dt = await GetEmployees();
+                        InsertRowsInTable(dt);
+                        break;
+                    }
+                case ChooseMode.Stages:
+                    {
+                        dt = await GetStages();
+                        InsertRowsInTable(dt);
+                        break;
+                    }
+            }
+        }
+
+        private void RecoverSelected(string[][] data)
+        {
+            int row = 0, rec = 0;
+            while (row < chooseObjectsTable.Rows.Count && rec < data.Length)
+            {
+                if (chooseObjectsTable.Rows[row].Cells[0].Value.ToString() == data[rec][0])
+                {
+                    if (_mode == ChooseMode.Employee)
+                    {
+                        ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[row].Cells[3]).Value = true;
+                        ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[row].Cells[4]).Value = data[rec].Length > 1;
+                    }
+                    else if (_mode == ChooseMode.Stages)
+                    {
+                        ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[row].Cells[2]).Value = true;
+                    }
+                    rec++;
+                }
+                row++;
+            }
         }
 
         private void chooseBtn_Click(object sender, EventArgs e)
@@ -202,6 +242,21 @@ order by UserSurname ASC;";
         {
             this.Text = $"{Resources.APP_NAME}: Выбор {Title}";
             await UpdateList();
+            if (_recover != null) RecoverSelected(_recover);
+        }
+
+        private void chooseObjectsTable_CellClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            if (chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewCheckBoxCell == false) return;
+
+            bool newValue = !Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex]).Value);
+            ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex]).Value = newValue;
+
+            if (_mode == ChooseMode.Employee)
+            {
+                if (e.ColumnIndex == chooseObjectsTable.ColumnCount - 1 && newValue) ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex - 1]).Value = newValue;
+                if (e.ColumnIndex == chooseObjectsTable.ColumnCount - 2 && !newValue) ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex + 1]).Value = newValue;
+            }
         }
 
         /// <summary>
@@ -254,30 +309,34 @@ order by UserSurname ASC;";
             }
         }
 
-        private void chooseObjectsTable_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void cancelBtn_Click(object sender, EventArgs e)
         {
-            int row = e.RowIndex;
-            if (row < 0) return;
-            if (_mode == ChooseMode.Client)
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        private void ChooseForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            int row = 0;
+            while (row < chooseObjectsTable.Rows.Count)
             {
-                SelectedIndexes.Clear();
-                SelectedIndexes.Add(new string[] { chooseObjectsTable.Rows[row].Cells[0].Value.ToString() });
-            }
-            else if (_mode == ChooseMode.Employee)
-            {
-                if (chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewCheckBoxCell)
+                if (_mode == ChooseMode.Client)
                 {
-                    bool newValue = !Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex]).Value);
-                    ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex]).Value = newValue;
-                    if (e.ColumnIndex == chooseObjectsTable.ColumnCount-1 && newValue) ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex-1]).Value = newValue;
-                    if (e.ColumnIndex == chooseObjectsTable.ColumnCount-2 && !newValue) ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex+1]).Value = newValue;
+                    if (!chooseObjectsTable.Rows[row].Selected) { row++; continue; }
+                    SelectedIndexes.Clear();
+                    SelectedIndexes.Add(new string[] { chooseObjectsTable.Rows[row].Cells[0].Value.ToString() });
                 }
-                if (e.ColumnIndex == chooseObjectsTable.Columns.Count - 1) ChangeSelectedList(row, chooseObjectsTable.Columns.Count - e.ColumnIndex, true, 1);
-                else if (e.ColumnIndex == chooseObjectsTable.Columns.Count - 2) ChangeSelectedList(row, chooseObjectsTable.Columns.Count - e.ColumnIndex, true, 0);
-            }
-            else
-            {
-                ChangeSelectedList(row, chooseObjectsTable.Columns.Count - e.ColumnIndex, true);
+                else if (_mode == ChooseMode.Employee)
+                {
+                    // id fio spec part resp
+                    if (Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[row].Cells[4]).Value)) ChangeSelectedList(row, chooseObjectsTable.Columns.Count - 4, true, 1);
+                    else if (Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[row].Cells[3]).Value)) ChangeSelectedList(row, chooseObjectsTable.Columns.Count - 3, true, 0);
+                }
+                else
+                {
+                    if (Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[row].Cells[2]).Value)) ChangeSelectedList(row, chooseObjectsTable.Columns.Count - 2, false);
+                }
+                row++;
             }
         }
     }
