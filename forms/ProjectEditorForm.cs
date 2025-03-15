@@ -179,7 +179,8 @@ insert into {Db.Name}.project value (0, 1, 1, {AppUser.Id}, '{projName}', '{Date
                 }
                 else if (mode == ChooseMode.Stages)
                 {
-                    // to do
+                    string stgId = await GetStageId(dgv.Rows[r].Cells[0].Value.ToString());
+                    if (stgId != null) formatted.Add(new string[] { stgId });
                 }
                 r++;
             }
@@ -252,7 +253,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
         /// Получает идентификатор сотрудника по его сокращённому ФИО
         /// </summary>
         /// <param name="shortSnp">Сокращённое ФИО сотрудника</param>
-        /// <returns>>Возвращает асинхронную операцию, возвращающую строку - идентификатор сотрудника</returns>
+        /// <returns>Возвращает асинхронную операцию, возвращающую строку - идентификатор сотрудника</returns>
         private async Task<string> GetEmployeeID(string shortSnp)
         {
             string query = $@"select UserID from {Db.Name}.`user` where concat(UserSurname, ' ', substring(UserName, 1, 1), '. ', case when UserPatronymic is null then '' else substring(UserPatronymic, 1, 1) end) = '{shortSnp}';";
@@ -262,12 +263,20 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             return eId;
         }
 
-        private async Task<DataTable> GetUsersInProject(string projID)
+        private async Task<string[]> GetUsersInProject(string projID)
         {
             string query = $"select UserID from {Db.Name}.userproject where ProjectID = {projID};";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
-            return dt;
+            if (dt.Rows.Count <= 0) return null;
+            List<string> ids = new List<string>();
+            int n = 0;
+            while (n < dt.Rows.Count)
+            {
+                ids.Add(dt.Rows[n][0].ToString());
+                n++;
+            }
+            return ids.ToArray();
         }
 
         private async Task<(int, string)> AddUserToProject(string projID, string usrID, bool responsible)
@@ -286,6 +295,18 @@ from {Db.Name}.client where ClientID = {clientID}; ";
         private async Task<(int, string)> RemoveUserFromProject(string projID, string usrID)
         {
             string query = $@"delete from {Db.Name}.userproject where UserID = {usrID} and ProjectID = {projID};";
+            object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            if (response is string) return (-1, response.ToString());
+            else
+            {
+                tempProject = true;
+                return (Convert.ToInt32(response.ToString()), null);
+            }
+        }
+
+        private async Task<(int, string)> RemoveAllUsersFromProject(string projID)
+        {
+            string query = $@"delete from {Db.Name}.userproject where ProjectID = {projID};";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
             else
@@ -328,17 +349,70 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             return (dt.Rows.Count > 0) ? dt.Rows[0][0].ToString() : null;
         }
 
-        private async Task<DataTable> GetStagesinProject(string projectId)
+        /// <summary>
+        /// Получает идентификаторы всех включённых в проект стадий
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns></returns>
+        private async Task<string[]> GetStagesInProject(string projectId)
         {
             string query = $"select StageID from {Db.Name}.stage_in_project where ProjectID = {projectId}";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
-            return dt;
+            if (dt.Rows.Count <= 0) return null;
+            List<string> ids = new List<string>();
+            int n = 0;
+            while (n < dt.Rows.Count)
+            {
+                ids.Add(dt.Rows[n][0].ToString());
+                n++;
+            }
+            return ids.ToArray();
         }
 
-        private async Task<(int,string)> AddStageToProject(string projectId, string stageId)
+        /// <summary>
+        /// Получает идентификатор записи в связующей таблице стадий и проектов
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="stageId">Идентификатор стадии</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является массив идентификаторов при успехе, иначе - пустой массив</returns>
+        private async Task<string[]> GetStageLink(string projectId, string stageId)
         {
-            string query = $"insert into {Db.Name}.stage_in_project value ({projectId}, {stageId});";
+            string query = $"select StgLinkID from {Db.Name}.stage_in_project where ProjectID = {projectId} and StageID = {stageId};";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            return Common.DataTableToStringArray(dt);
+        }
+
+        /// <summary>
+        /// Получает идентификаторы всех стадий в связующей таблице, включённых в данный проект
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является массив идентификаторов при успехе, иначе - пустой массив</returns>
+        private async Task<string[]> GetStageLink(string projectId)
+        {
+            string query = $"select StgLinkID from {Db.Name}.stage_in_project where ProjectID = {projectId};";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            return Common.DataTableToStringArray(dt);
+        }
+
+        /// <summary>
+        /// Получает последнее значение идентификатора в связующей таблице стадий и проекта
+        /// </summary>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является последний занятый идентификатор при успехе, иначе - null</returns>
+        private async Task<string> GetLastStageLink()
+        {
+            string query = $"select StgLinkID from {Db.Name}.stage_in_project order by StgLinkID DESC limit 1;";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            if (dt.Rows.Count <= 0) return null;
+            return dt.Rows[0][0].ToString();
+        }
+
+        private async Task<(int,string)> AddStageToProject(string projectId, string stageId, string forceId = "null")
+        {
+            string query = $"insert into {Db.Name}.stage_in_project value ({forceId},{projectId}, {stageId});";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
             else
@@ -348,6 +422,12 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             }
         }
 
+        /// <summary>
+        /// Удаляет стадию из проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="stageId">Идентификатор стадии</param>
+        /// <returns>Возвращает асинхронную опрерацию, результатом которой является число удалённых записей и null в случае успеха, иначе -1 и сообщение ошибки</returns>
         private async Task<(int,string)> RemoveStageFromProject(string projectId, string stageId)
         {
             string query = $"delete from {Db.Name}.stage_in_project where ProjectID = {projectId} and StageID = {stageId};";
@@ -360,20 +440,64 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             }
         }
 
+        /// <summary>
+        /// Удаляет все стадии из проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns>Возвращает асинхронную опрерацию, результатом которой является число удалённых записей и null в случае успеха, иначе -1 и сообщение ошибки</returns>
+        private async Task<(int, string)> RemoveAllStagesFromProject(string projectId)
+        {
+            string[] linkIds = await GetStageLink(projectId);
+            if (linkIds.Length == 0) return (0, null);
+            string query = $"delete from {Db.Name}.stage_in_project where StgLinkID >= {linkIds.First()} and StgLinkID <= {linkIds.Last()};";
+            object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            if (response is string) return (-1, response.ToString());
+            else
+            {
+                tempProject = true;
+                return (Convert.ToInt32(response.ToString()), null);
+            }
+        }
+
         // Обработчик нажатия на кнопку выбора этапов проекта
         private async void chooseStagesBtn_Click(object sender, EventArgs e)
         {
-            ChooseForm chooseForm = new ChooseForm(ChooseMode.Stages);
+            ChooseForm chooseForm = null;
+            if (stagesTable.Rows.Count == 0) chooseForm = new ChooseForm(ChooseMode.Stages);
+            // альтернативный вариант выбор назначенных с прошлого раза
+            else
+            {
+                string[][] formatted = await FormatDataFromTable(ChooseMode.Stages);
+                chooseForm = new ChooseForm(ChooseMode.Stages, formatted);
+            }
+
             if (chooseForm.ShowDialog() == DialogResult.OK)
             {
                 string[][] selected = chooseForm.SelectedIndexes.ToArray();
-                if (selected.Length == 0) return;
+                if (selected.Length == 0) 
+                {
+                    int vtemp = await GetNoScalarResult(RemoveAllStagesFromProject("0"));
+                    stagesTable.Rows.Clear();
+                    return; 
+                }
+                string nStgLnkId = await GetLastStageLink();
+                int n = await GetNoScalarResult(RemoveAllStagesFromProject("0"));
                 stagesTable.Rows.Clear();
+
+                int temp = 0;
+                int.TryParse(nStgLnkId, out temp);
+                nStgLnkId = (nStgLnkId != null) ? $"{temp + 1}" : "null";
+
                 int set = 0;
+                
                 while (set < selected.Length)
                 {
-                    int n = await GetNoScalarResult(RemoveStageFromProject("0", selected[set][0]));
-                    n = await GetNoScalarResult(AddStageToProject("0", selected[set][0]));
+                    if (nStgLnkId != "null")
+                    {
+                        int.TryParse(nStgLnkId, out temp);
+                        nStgLnkId = $"{temp+set}";
+                    }
+                    n = await GetNoScalarResult(AddStageToProject("0", selected[set][0], nStgLnkId));
                     int indx = stagesTable.Rows.Add();
                     DataTable dt = await GetStageTitle(selected[set][0]);
                     if (dt.Rows.Count <= 0)
@@ -382,7 +506,6 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                         continue;
                     }
                     stagesTable.Rows[indx].Cells[0].Value = dt.Rows[0][0].ToString(); 
-                    ((DataGridViewCheckBoxCell)stagesTable.Rows[indx].Cells[0]).Value = true; 
                     set++;
                 }
                 ;
@@ -403,7 +526,13 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             if (chooseForm.ShowDialog() == DialogResult.OK)
             {
                 string[][] selected = chooseForm.SelectedIndexes.ToArray();
-                if (selected.Length == 0) return;
+                if (selected.Length == 0)
+                {
+                    int vtemp = await GetNoScalarResult(RemoveAllUsersFromProject("0"));
+                    employeesTable.Rows.Clear();
+                    return;
+                }
+                int n = await GetNoScalarResult(RemoveAllUsersFromProject("0"));
                 employeesTable.Rows.Clear();
                 int set = 0;
                 while (set < selected.Length)
@@ -415,7 +544,6 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                         set++;
                         continue;
                     }
-                    int n = await GetNoScalarResult(RemoveUserFromProject("0", tUsrId));
                     n = await GetNoScalarResult(AddUserToProject("0", tUsrId, selected[set].Length > 1));
                     int rIndx = employeesTable.Rows.Add();
                     employeesTable.Rows[rIndx].Cells[0].Value = name;
@@ -464,20 +592,8 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                     if (tempProject)
                     {
                         string project = "0";
-                        DataTable dt = await GetUsersInProject(project);
-                        int i = 0;
-                        while (i < dt.Rows.Count)
-                        {
-                            int tn = await GetNoScalarResult(RemoveUserFromProject(project, dt.Rows[i][0].ToString()));
-                            i++;
-                        }
-                        dt = await GetStagesinProject(project);
-                        i = 0;
-                        while (i < dt.Rows.Count)
-                        {
-                            int affected = await GetNoScalarResult(RemoveStageFromProject(project, dt.Rows[i][0].ToString()));
-                            i++;
-                        }
+                        int affected = await GetNoScalarResult(RemoveAllUsersFromProject(project));
+                        affected = await GetNoScalarResult(RemoveAllStagesFromProject(project));
                         await GetNoScalarResult(DeleteProject(project));
                     }
                     this.Close();

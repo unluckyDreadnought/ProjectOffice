@@ -384,5 +384,8 @@
   <ItemGroup>
     <None Include="Resources\project_office_db_dump.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\project_office_db_dump_v2.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -157,10 +157,12 @@ namespace ProjectOffice.forms
             this.chooseObjectsTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.chooseObjectsTable.Size = new System.Drawing.Size(584, 362);
             this.chooseObjectsTable.TabIndex = 3;
-            this.chooseObjectsTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.chooseObjectsTable_CellClick);
+            this.chooseObjectsTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.chooseObjectsTable_CellClick_1);
+            this.chooseObjectsTable.KeyDown += new System.Windows.Forms.KeyEventHandler(this.chooseObjectsTable_KeyDown);
             // 
             // ChooseForm
             // 
+            this.AcceptButton = this.chooseBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
@@ -172,6 +174,7 @@ namespace ProjectOffice.forms
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "ChooseForm";
             this.Text = "ChooseForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ChooseForm_FormClosing);
             this.Load += new System.EventHandler(this.ChooseForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
