@@ -19,6 +19,8 @@ namespace ProjectOffice.forms
         private DataGridViewColumnCollection _columns;
         private string[][] _recover = null;
         public string Title = "";
+        string allSelected = " [Все]";
+
         public List<string[]> SelectedIndexes { get; private set; } = new List<string[]>();
 
         private void ResolveChooseMode()
@@ -228,6 +230,12 @@ order by UserSurname ASC;";
                     }
                     rec++;
                 }
+                int col = 2;
+                while (col < chooseObjectsTable.Columns.Count)
+                {
+                    ChangeColumnHeaderText(chooseObjectsTable.Rows[row].Cells[col], allSelected);
+                    col++;
+                }
                 row++;
             }
         }
@@ -245,18 +253,89 @@ order by UserSurname ASC;";
             if (_recover != null) RecoverSelected(_recover);
         }
 
+        private (bool, bool) IsCheckValuesEqual(int columnIndex)
+        {
+            int row = 1;
+            bool result = true;
+            bool value = false;
+            if (chooseObjectsTable.Rows[0].Cells[columnIndex] is DataGridViewCheckBoxCell == false) return (false, false);
+            value = Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[0].Cells[columnIndex]).Value);
+            while (result && row < chooseObjectsTable.Rows.Count)
+            {
+                result = value == Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[row].Cells[columnIndex]).Value);
+                row++;
+            }
+            return (result, value);
+        }
+
+        private string ChangeColumnHeaderText(DataGridViewCell cell, string addition)
+        {
+            string oldText =  chooseObjectsTable.Columns[cell.ColumnIndex].HeaderText;
+            if (chooseObjectsTable.Rows[0].Cells[cell.ColumnIndex] is DataGridViewCheckBoxCell == false) return null;
+            (bool equal, bool res) = IsCheckValuesEqual(cell.ColumnIndex);
+            if (equal && res)
+            {
+                chooseObjectsTable.Columns[cell.ColumnIndex].HeaderText = oldText + addition;
+            }
+            else
+            {
+                chooseObjectsTable.Columns[cell.ColumnIndex].HeaderText = oldText.Replace(addition, "");
+            }
+            return oldText;
+        }
+
+        private void ChangeReferencedColumn(bool value, int row, int column, string headerAddition)
+        {
+            DataGridViewCell cell = null;
+            if (column == chooseObjectsTable.ColumnCount - 1 && value)
+            {
+                cell = chooseObjectsTable.Rows[row].Cells[column - 1];
+                ((DataGridViewCheckBoxCell)cell).Value = value;
+                ChangeColumnHeaderText(cell, headerAddition);
+            }
+            if (column == chooseObjectsTable.ColumnCount - 2 && !value)
+            {
+                cell = chooseObjectsTable.Rows[row].Cells[column + 1];
+                ((DataGridViewCheckBoxCell)cell).Value = value;
+                ChangeColumnHeaderText(cell, headerAddition);
+            }
+        }
+
         private void chooseObjectsTable_CellClick_1(object sender, DataGridViewCellEventArgs e)
         {
-            if (chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewCheckBoxCell == false) return;
+            bool newValue = false;
+            int r = e.RowIndex;
 
-            bool newValue = !Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex]).Value);
-            ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex]).Value = newValue;
-
-            if (_mode == ChooseMode.Employee)
+            try
             {
-                if (e.ColumnIndex == chooseObjectsTable.ColumnCount - 1 && newValue) ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex - 1]).Value = newValue;
-                if (e.ColumnIndex == chooseObjectsTable.ColumnCount - 2 && !newValue) ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[e.RowIndex].Cells[e.ColumnIndex + 1]).Value = newValue;
+                if (chooseObjectsTable.Rows[r].Cells[e.ColumnIndex] is DataGridViewCheckBoxCell == false) return;
+                newValue = !Convert.ToBoolean(((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[r].Cells[e.ColumnIndex]).Value);
+                ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[r].Cells[e.ColumnIndex]).Value = newValue;
+
+                if (_mode == ChooseMode.Employee)
+                {
+                    ChangeReferencedColumn(newValue, r, e.ColumnIndex, allSelected);
+                }
             }
+            catch (ArgumentOutOfRangeException)
+            {
+                if (e.RowIndex < 0 && chooseObjectsTable.Rows[0].Cells[e.ColumnIndex] is DataGridViewCheckBoxCell != false)
+                {
+                    newValue = !ChangeColumnHeaderText(chooseObjectsTable.Rows[0].Cells[e.ColumnIndex], allSelected).Contains(allSelected);
+                    r = 0;
+                    while (r < chooseObjectsTable.Rows.Count)
+                    {
+                        ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[r].Cells[e.ColumnIndex]).Value = newValue;
+                        if (_mode == ChooseMode.Employee)
+                        {
+                            ChangeReferencedColumn(newValue, r, e.ColumnIndex, allSelected);
+                        }
+                        r++;
+                    }
+                }
+            }
+            catch (Exception) { return; }
+            ChangeColumnHeaderText(chooseObjectsTable.Rows[0].Cells[e.ColumnIndex], allSelected);
         }
 
         /// <summary>
@@ -293,9 +372,9 @@ order by UserSurname ASC;";
             {
                 if (SelectedIndexes.Count <= 0) return;
                 var employeesGroup = SelectedIndexes.Where(item => item[0] == selectedId).ToArray();
-                if (employeesGroup.Length == 0 || employeesGroup[0].Length == 0) ;
+                if (employeesGroup.Length == 0 || employeesGroup[0].Length == 0)
                 {
-
+                    return;
                 }
                 int indx = SelectedIndexes.IndexOf(SelectedIndexes.Where(item => item[0] == selectedId).ToArray()[0]);
                 SelectedIndexes.RemoveAt(indx);
@@ -338,6 +417,11 @@ order by UserSurname ASC;";
                 }
                 row++;
             }
+        }
+
+        private void chooseObjectsTable_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) chooseBtn.PerformClick();
         }
     }
 }

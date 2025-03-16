@@ -16,13 +16,14 @@ namespace ProjectOffice.forms
     public partial class ProjectEditorForm : Form
     {
         Db _db = new Db();
-        string projId = "";
-        bool editMode = false;
         Regex regex = new Regex(@"^Проект \d+$");
 
         private bool tempProject = false;
+        bool editMode = false;
         private string clientId = "null";
 
+        string projId = "";
+        string tempId = "";
         private string projName = "";
         private string placeholderName = "";
 
@@ -31,6 +32,12 @@ namespace ProjectOffice.forms
             InitializeComponent();
             projId = projectId;
             editMode = projectId != "";
+            tempId = (editMode) ? projId : "0";
+        }
+
+        private void CheckFieldsFilling()
+        {
+
         }
 
         /// <summary>
@@ -77,11 +84,7 @@ namespace ProjectOffice.forms
 insert into {Db.Name}.project value (0, 1, 1, {AppUser.Id}, '{projName}', '{DateTime.Now.ToString("yyyy-MM-dd")}', '{DateTime.Now.ToString("yyyy-MM-dd")}', null, '0', 0);";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
-            else
-            {
-                tempProject = true;
-                return (Convert.ToInt32(response.ToString()), null);
-            }
+            else return (Convert.ToInt32(response.ToString()), null);
         }
 
         /// <summary>
@@ -97,7 +100,6 @@ insert into {Db.Name}.project value (0, 1, 1, {AppUser.Id}, '{projName}', '{Date
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
             else return (Convert.ToInt32(response.ToString()), null);
-
         }
 
         /// <summary>
@@ -188,38 +190,6 @@ insert into {Db.Name}.project value (0, 1, 1, {AppUser.Id}, '{projName}', '{Date
             
         }
 
-        // Обработчик загрузки формы редактора проекта
-        private async void ProjectEditorForm_Load(object sender, EventArgs e)
-        {
-            int number = await GetLastProjectStandardNameNumber();
-            if (editMode)
-            {
-                this.Text = $"{Resources.APP_NAME}: Редактирование проекта";
-                chooseClientPanel.Hide();
-                chooseEmployeePanel.Hide();
-                chooseStagePanel.Hide();
-                projectCostTextBox.Enabled = projectCostTextBox.Visible = false;
-            }
-            else
-            {
-                this.Text = $"{Resources.APP_NAME}: Создание проекта";
-                projId = $"{await GetLastProjID() + 1}";
-                choosenClientLbl.Text = "клиент не выбран";
-                projCostLbl.Enabled = projCostLbl.Visible = false;
-                subtaskPanel.Hide();
-                startDateLbl.Text = DateTime.Now.ToString("dd.MM.yyyy");
-                endPlanDate.MinDate = DateTime.Now.AddDays(5);
-                endPlanDate.MaxDate = DateTime.Now.AddMonths(4);
-                placeholderName = projName = $"Проект {number + 1}";
-                projectNameTextBox.Text = projName;
-                await GetNoScalarResult(CreateTempProject());
-            }
-            managerLbl.Text = AppUser.Snp;
-            startDateLbl.Text = DateTime.Now.ToString("dd.MM.yyyy");
-            projectIdLbl.Text = $"Проект #{projId}";
-
-        }
-
         /// <summary>
         /// Получает имя клиента по его идентификатору
         /// </summary>
@@ -233,7 +203,6 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             DataTable dt = await Common.GetAsyncResult(task);
             return dt.Rows[0].ItemArray[0].ToString();
         }
-
 
         /// <summary>
         /// Получает имя сотрудника по его идентификатору
@@ -285,11 +254,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             string query = $@"insert into {Db.Name}.userproject value ({usrID}, {projID}, {resp});";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
-            else
-            {
-                tempProject = true;
-                return (Convert.ToInt32(response.ToString()), null);
-            }
+            else return (Convert.ToInt32(response.ToString()), null);
         }
 
         private async Task<(int, string)> RemoveUserFromProject(string projID, string usrID)
@@ -297,11 +262,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             string query = $@"delete from {Db.Name}.userproject where UserID = {usrID} and ProjectID = {projID};";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
-            else
-            {
-                tempProject = true;
-                return (Convert.ToInt32(response.ToString()), null);
-            }
+            else return (Convert.ToInt32(response.ToString()), null);
         }
 
         private async Task<(int, string)> RemoveAllUsersFromProject(string projID)
@@ -309,28 +270,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             string query = $@"delete from {Db.Name}.userproject where ProjectID = {projID};";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
-            else
-            {
-                tempProject = true;
-                return (Convert.ToInt32(response.ToString()), null);
-            }
-        }
-
-        // Обработчик нажатия на кнопку выбора клиента-заказчика проекта
-        private async void chooseClientBtn_Click(object sender, EventArgs e)
-        {
-            ChooseForm chooseForm = new ChooseForm(ChooseMode.Client);
-            if (chooseForm.ShowDialog() == DialogResult.OK)
-            {
-                string[][] choosen = chooseForm.SelectedIndexes.ToArray();
-                clientId = choosen.Length > 0 ? choosen[0][0] : "null";
-                choosenClientLbl.Text = clientId != "null" ? $"{await GetClientName(clientId)}" : choosenClientLbl.Text;
-                if (tempProject && clientId != "null")
-                {
-                    int n = await GetNoScalarResult(UpdateProject("0", "ProjectCustomerID", clientId));
-                }
-            }
-
+            else return (Convert.ToInt32(response.ToString()), null);
         }
 
         private async Task<DataTable> GetStageTitle(string stageId)
@@ -415,11 +355,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             string query = $"insert into {Db.Name}.stage_in_project value ({forceId},{projectId}, {stageId});";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
-            else
-            {
-                tempProject = true;
-                return (Convert.ToInt32(response.ToString()), null);
-            }
+            else return (Convert.ToInt32(response.ToString()), null);
         }
 
         /// <summary>
@@ -433,11 +369,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             string query = $"delete from {Db.Name}.stage_in_project where ProjectID = {projectId} and StageID = {stageId};";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
-            else
-            {
-                tempProject = true;
-                return (Convert.ToInt32(response.ToString()), null);
-            }
+            else return (Convert.ToInt32(response.ToString()), null);
         }
 
         /// <summary>
@@ -452,10 +384,61 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             string query = $"delete from {Db.Name}.stage_in_project where StgLinkID >= {linkIds.First()} and StgLinkID <= {linkIds.Last()};";
             object response = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             if (response is string) return (-1, response.ToString());
+            else return (Convert.ToInt32(response.ToString()), null);
+        }
+
+        #region event_handlers
+
+        // Обработчик загрузки формы редактора проекта
+        private async void ProjectEditorForm_Load(object sender, EventArgs e)
+        {
+            int number = await GetLastProjectStandardNameNumber();
+            if (editMode)
+            {
+                this.Text = $"{Resources.APP_NAME}: Редактирование проекта";
+                chooseClientPanel.Hide();
+                chooseEmployeePanel.Hide();
+                chooseStagePanel.Hide();
+                projectCostTextBox.Enabled = projectCostTextBox.Visible = false;
+            }
             else
             {
-                tempProject = true;
-                return (Convert.ToInt32(response.ToString()), null);
+                this.Text = $"{Resources.APP_NAME}: Создание проекта";
+                projId = $"{await GetLastProjID() + 1}";
+                choosenClientLbl.Text = "клиент не выбран";
+                projCostLbl.Enabled = projCostLbl.Visible = false;
+                subtaskPanel.Hide();
+                startDateLbl.Text = DateTime.Now.ToString("dd.MM.yyyy");
+                endPlanDate.MinDate = DateTime.Now.AddDays(5);
+                endPlanDate.MaxDate = DateTime.Now.AddMonths(4);
+                placeholderName = projName = $"Проект {number + 1}";
+                projectNameTextBox.Text = projName;
+                await GetNoScalarResult(CreateTempProject());
+            }
+            managerLbl.Text = AppUser.Snp;
+            startDateLbl.Text = DateTime.Now.ToString("dd.MM.yyyy");
+            projectIdLbl.Text = $"Проект #{projId}";
+
+        }
+
+        // Обработчик нажатия на кнопку выбора клиента-заказчика проекта
+        private async void chooseClientBtn_Click(object sender, EventArgs e)
+        {
+            ChooseForm chooseForm = new ChooseForm(ChooseMode.Client);
+            if (chooseForm.ShowDialog() == DialogResult.OK)
+            {
+                string[][] choosen = chooseForm.SelectedIndexes.ToArray();
+                clientId = choosen.Length > 0 ? choosen[0][0] : "null";
+                choosenClientLbl.Text = clientId != "null" ? $"{await GetClientName(clientId)}" : choosenClientLbl.Text;
+                if (!editMode && clientId != "null")
+                {
+                    int n = await GetNoScalarResult(UpdateProject(tempId, "ProjectCustomerID", clientId));
+                }
+                else
+                {
+                    // возможно стоит убрать
+                    choosenClientLbl.Text = "клиент не выбран";
+                }
             }
         }
 
@@ -474,14 +457,14 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             if (chooseForm.ShowDialog() == DialogResult.OK)
             {
                 string[][] selected = chooseForm.SelectedIndexes.ToArray();
-                if (selected.Length == 0) 
+                if (selected.Length == 0)
                 {
-                    int vtemp = await GetNoScalarResult(RemoveAllStagesFromProject("0"));
+                    int vtemp = await GetNoScalarResult(RemoveAllStagesFromProject(tempId));
                     stagesTable.Rows.Clear();
-                    return; 
+                    return;
                 }
                 string nStgLnkId = await GetLastStageLink();
-                int n = await GetNoScalarResult(RemoveAllStagesFromProject("0"));
+                int n = await GetNoScalarResult(RemoveAllStagesFromProject(tempId));
                 stagesTable.Rows.Clear();
 
                 int temp = 0;
@@ -489,15 +472,15 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 nStgLnkId = (nStgLnkId != null) ? $"{temp + 1}" : "null";
 
                 int set = 0;
-                
+
                 while (set < selected.Length)
                 {
                     if (nStgLnkId != "null")
                     {
                         int.TryParse(nStgLnkId, out temp);
-                        nStgLnkId = $"{temp+set}";
+                        nStgLnkId = $"{temp + set}";
                     }
-                    n = await GetNoScalarResult(AddStageToProject("0", selected[set][0], nStgLnkId));
+                    n = await GetNoScalarResult(AddStageToProject(tempId, selected[set][0], nStgLnkId));
                     int indx = stagesTable.Rows.Add();
                     DataTable dt = await GetStageTitle(selected[set][0]);
                     if (dt.Rows.Count <= 0)
@@ -505,7 +488,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                         set++;
                         continue;
                     }
-                    stagesTable.Rows[indx].Cells[0].Value = dt.Rows[0][0].ToString(); 
+                    stagesTable.Rows[indx].Cells[0].Value = dt.Rows[0][0].ToString();
                     set++;
                 }
                 ;
@@ -528,11 +511,11 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 string[][] selected = chooseForm.SelectedIndexes.ToArray();
                 if (selected.Length == 0)
                 {
-                    int vtemp = await GetNoScalarResult(RemoveAllUsersFromProject("0"));
+                    int vtemp = await GetNoScalarResult(RemoveAllUsersFromProject(tempId));
                     employeesTable.Rows.Clear();
                     return;
                 }
-                int n = await GetNoScalarResult(RemoveAllUsersFromProject("0"));
+                int n = await GetNoScalarResult(RemoveAllUsersFromProject(tempId));
                 employeesTable.Rows.Clear();
                 int set = 0;
                 while (set < selected.Length)
@@ -544,7 +527,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                         set++;
                         continue;
                     }
-                    n = await GetNoScalarResult(AddUserToProject("0", tUsrId, selected[set].Length > 1));
+                    n = await GetNoScalarResult(AddUserToProject(tempId, tUsrId, selected[set].Length > 1));
                     int rIndx = employeesTable.Rows.Add();
                     employeesTable.Rows[rIndx].Cells[0].Value = name;
                     ((DataGridViewCheckBoxCell)employeesTable.Rows[rIndx].Cells[1]).Value = selected[set].Length > 1;
@@ -559,10 +542,19 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             tasksList.ShowDialog();
         }
 
+        private void projectNameTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((Symbols.ru_alp + Symbols.en_alp + " (-,.)").Contains(Char.ToLower(e.KeyChar)) || Char.IsDigit(e.KeyChar) || e.KeyChar == 8 || e.KeyChar == 127)
+            {
+                if (projectNameTextBox.Text.EndsWith(".") || projectNameTextBox.Text.EndsWith(". ")) e.KeyChar = Char.ToUpper(e.KeyChar);
+                return;
+            }
+            else e.Handled = true;
+        }
+
         private void projectNameTextBox_TextChanged(object sender, EventArgs e)
         {
             if (projectNameTextBox.Text.Trim() == "") SetProjNamePlaceholder();
-
         }
 
         private void projectNameTextBox_Leave(object sender, EventArgs e)
@@ -576,30 +568,47 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             if (match.Success) EraseProjNamePlaceholder();
         }
 
+        private void endPlanDate_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void employeesTable_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             return;
         }
 
+        private void projectCostTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (Char.IsDigit(e.KeyChar) || (projectCostTextBox.Text.Length != 0 && e.KeyChar == '0') || (!projectCostTextBox.Text.Contains(".") && e.KeyChar == '.') || e.KeyChar == 8 || e.KeyChar == 127)
+            {
+                return;
+            }
+            else e.Handled = true;
+        }
+
+        private void projectCostTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
         // Обработчик нажатия на кнопку выхода из редактора ("К списку")
         private async void backToProjectListBtn_Click(object sender, EventArgs e)
         {
-            if (tempProject)
+            if (!editMode)
             {
                 DialogResult msgResult = MessageBox.Show("Вы уверены, что хотите перейти к списку проектов и отменить изменения в новом проекте?", "Новый проект", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (msgResult == DialogResult.Yes)
                 {
-                    if (tempProject)
-                    {
-                        string project = "0";
-                        int affected = await GetNoScalarResult(RemoveAllUsersFromProject(project));
-                        affected = await GetNoScalarResult(RemoveAllStagesFromProject(project));
-                        await GetNoScalarResult(DeleteProject(project));
-                    }
+                    int affected = await GetNoScalarResult(RemoveAllUsersFromProject(tempId));
+                    affected = await GetNoScalarResult(RemoveAllStagesFromProject(tempId));
+                    await GetNoScalarResult(DeleteProject(tempId));
                     this.Close();
                 }
             }
             else this.Close();
         }
+
+        #endregion
     }
 }
