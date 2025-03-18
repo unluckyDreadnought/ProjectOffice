@@ -37,4 +37,28 @@
         UserError = 2,
         DatabaseNotExist = 3
     }
+
+    public enum Status
+    {
+        New = 1,
+        Work = 2,
+        Agreement = 3,
+        PreparingToEnd = 4,
+        Finish = 5,
+        Rejected = 6
+    }
+
+    public enum ProjectField
+    {
+        Id = 0,
+        Status = 1,
+        CLient = 2,
+        Creator = 3, 
+        Title = 4,
+        StartDate = 5,
+        PlanEnd = 6,
+        FactEnd = 7,
+        Coefficient = 8,
+        Cost = 9
+    }
 }

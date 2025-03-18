@@ -45,12 +45,12 @@ namespace ProjectOffice.forms
                             specCheckBtn.Visible = true;
                             break;
                         }
-                    case Dictionaries.Status:
-                        {
-                            statusCheckBtn.Enabled = true;
-                            statusCheckBtn.Visible = true;
-                            break;
-                        }
+                    //case Dictionaries.Status:
+                    //    {
+                    //        statusCheckBtn.Enabled = true;
+                    //        statusCheckBtn.Visible = true;
+                    //        break;
+                    //    }
                     case Dictionaries.Stages:
                         {
                             stagesCheckBtn.Enabled = true;

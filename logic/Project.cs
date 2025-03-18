@@ -194,6 +194,7 @@ where CntrPntLinkID in ({string.Join(",", cntrPntLinkIds)});";
     {
         private static Db _db = new Db();
         public string Id;
+        private string StageId;
         public string Title;
         public string Description;
         public List<ControlPoint> points = null;
@@ -216,6 +217,7 @@ where StgProjReferenceID = {stgsLink[0]};";
             {
                 Subtask current = new Subtask();
                 current.Id = raw[row][0];
+                current.StageId = stageId;
                 current.Title = raw[row][0];
                 current.Description = raw[row][0];
                 current.points = await ControlPoint.GetControlPoints(projectId, stageId, current.Id);
@@ -291,6 +293,8 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
             return Common.DataTableToStringArray(dt);
         }
 
+        // to do: add cp & update cp
+
         public static async Task<(object, bool)> Delete(params string[] subtaskIds)
         {
             string[] sbtskLinks = await Subtask.GetSubtaskLinkIDs(subtaskIds);
@@ -352,6 +356,7 @@ where SubtaskID in ({string.Join(",", subtaskIds)});";
     {
         private static Db _db = new Db();
         public string Id;
+        private string ProjectId;
         public string Title;
         public List<Subtask> subtasks = null;
         private bool _disposed = false;
@@ -371,6 +376,7 @@ where ProjectID = {projectId}; ";
             {
                 Stage current = new Stage();
                 current.Id = rawInfo[row][0];
+                current.ProjectId = projectId;
                 current.Title = rawInfo[row][1];
                 current.subtasks = await Subtask.GetSubtasks(projectId, current.Id);
                 result.Add(current);
@@ -412,6 +418,36 @@ where ProjectID = {projectId} and StageID in ({string.Join(",", stageIds)});";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
             return Common.DataTableToStringArray(dt);
+        }
+
+        public async Task<int> AddSubtask(string title, string description)
+        {
+            string query = $@"insert into {Db.Name}.subtask value (null, {title});
+select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+            if (res == -1) return -1;
+
+            string desc = (description != null) ? description : "null";
+            query = $"insert into {Db.Name}.subtask_in_project_stage value (null, {await GetStageLinkID(this.ProjectId, this.Id)}, {res}, {desc});";
+            var task2 = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (result, _) = await Common.GetNoScalarResult(task2);
+            res = Convert.ToInt32(result);
+            if (res == -1) return -1;
+
+            this.subtasks = await Subtask.GetSubtasks(this.ProjectId, await GetStageLinkID(this.ProjectId, this.Id));
+            return res;
+        }
+
+        public async Task<int> UpdateSubtask(string sbtskRefId, string description)
+        {
+            string query = $"update {Db.Name}.subtask_in_project_stage set SubtaskDescription = '{description}' where SbtskLinkID = {sbtskRefId};";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+            this.subtasks = await Subtask.GetSubtasks(this.ProjectId, await GetStageLinkID(this.ProjectId, this.Id));
+            return res;
         }
 
         public static async Task<(object, bool)> Delete(string projectId, params string[] stageIds)
@@ -472,6 +508,45 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
         public string Status;
         public List<Stage> Stages { get; set; }
         public string[][] EmployeesId = null;
+
+        private Project(string id, string title, string start, string endPlan, string customer, string creator, string coff, string cost, string status, List<Stage> stages, string[][] employees)
+        {
+            Id = id;
+            Title = title;
+            StartDate = start;
+            PlanEndDate = endPlan;
+            CustomerId = customer;
+            CreatorId = creator;
+            Coefficient = coff;
+            Status = status;
+            int iCost = Convert.ToInt32(cost);
+            int iCoef = Convert.ToInt32(coff);
+            Cost = $"{Math.Round((float)iCost * (1 + (iCoef / 100)), 2)}";
+            Stages = new List<Stage>();
+            EmployeesId = new string[][] { };
+        }
+
+        public async static Task<Project> InitilazeAsync()
+        {
+            string id = $"{await GetLastProjID() + 1}";
+            string title = $"Проект {await GetLastStandardNameNumber()}";
+            string start = DateTime.Now.ToString("yyyy.MM.dd");
+            string creator = AppUser.Id;
+            string coef = "0";
+            List<Stage> stgs = new List<Stage>();
+            string[][] empl = new string[][] { };
+            Project proj = new Project(id, title, start, null, null, creator, coef, null, "1", stgs, empl);
+            await Project.Add(proj);
+            return proj;
+        }
+
+        public async static Task<Project> InitilazeAsync(string id)
+        {
+            string[] info = await GetExistingProjectInfo(id);
+            List<Stage> stgs = await Stage.GetStages(id);
+            string[][] empl = await GetEmployees(id);
+            return new Project(id, title: info[0], start: info[1], endPlan: info[2], customer: info[3], creator: info[4], coff: info[5], cost: info[6], status: info[7], stgs, empl);
+        }
 
         /// <summary>
         /// Получает уникальный ключ (идентификатор) последнего проекта
@@ -539,41 +614,72 @@ from {Db.Name}.project where ProjectID = {id}; ";
             return result.ToArray();
         }
 
-        private Project(string id, string title, string start, string endPlan, string customer, string creator, string coff, string cost, string status, List<Stage> stages, string[][] employees)
+        public static string GetColumnName(ProjectField field)
         {
-            Id = id;
-            Title = title;
-            StartDate = start;
-            PlanEndDate = endPlan;
-            CustomerId = customer;
-            CreatorId = creator;
-            Coefficient = coff;
-            Status = status;
-            int iCost = Convert.ToInt32(cost);
-            int iCoef = Convert.ToInt32(coff);
-            Cost = $"{Math.Round((float)iCost * (1+(iCoef/100)),2)}";
-            Stages = new List<Stage>();
-            EmployeesId = new string[][] { };
+            string columnName = "";
+            switch (field)
+            {
+                case ProjectField.Id: columnName = "ProjectID"; break;
+                case ProjectField.Status: columnName = "ProjectStatusID"; break;
+                case ProjectField.CLient: columnName = "ProjectCustomerID"; break;
+                case ProjectField.Coefficient: columnName = "ProjectCoefficient"; break;
+                case ProjectField.Cost: columnName = "ProjectCost"; break;
+                case ProjectField.Creator: columnName = "ProjectCreatorID"; break;
+                case ProjectField.FactEnd: columnName = "ProjectFactEndDate"; break;
+                case ProjectField.PlanEnd: columnName = "ProjectPlanEndDate"; break;
+                case ProjectField.StartDate: columnName = "ProjectStartDate"; break;
+                case ProjectField.Title: columnName = "ProjectTitle"; break;
+            }
+            return columnName;
         }
 
-        public async static Task<Project> InitilazeAsync()
+        private static async Task<int> Add(Project proj)
         {
-            string id = $"{await GetLastProjID() + 1}";
-            string title = $"Проект {await GetLastStandardNameNumber()}";
-            string start = DateTime.Now.ToString("yyyy.MM.dd");
-            string creator = AppUser.Id;
-            string coef = "0";
-            List<Stage> stgs = new List<Stage>();
-            string[][] empl = new string[][] { };
-            return new Project(id, title, start, null, null, creator, coef, null, "1", stgs, empl);
+            string query = $@"insert into {Db.Name}.project value ({proj.Id}, {proj.Status}, {proj.CustomerId}, {proj.CreatorId}, '{proj.Title}', '{proj.StartDate}', null, null, '{proj.Coefficient}', 0);";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+            return res;
         }
 
-        public async static Task<Project> InitilazeAsync(string id)
+        public async Task<int> Update(ProjectField[] fields, string[] args)
         {
-            string[] info = await GetExistingProjectInfo(id);
-            List<Stage> stgs = await Stage.GetStages(id);
-            string[][] empl = await GetEmployees(id);
-            return new Project(id, title: info[0], start: info[1], endPlan: info[2], customer: info[3], creator: info[4], coff: info[5], cost: info[6], status: info[7], stgs, empl);
+            string query = $@"update {Db.Name}.project set";
+            int i = 0;
+            while (i < fields.Length && i < args.Length)
+            {
+                query += $" {GetColumnName(fields[i])} = ";
+                bool text = (new ProjectField[] { ProjectField.Coefficient, ProjectField.FactEnd, ProjectField.PlanEnd, ProjectField.StartDate, ProjectField.Title }).Contains(fields[i]);
+                query += (text) ? $"'{args[i]}'" : $"{args[i]}";
+                if (i != fields.Length - 1) query += ",";
+                i++;
+            }
+            query += $"where {GetColumnName(ProjectField.Id)} = {Id};";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+            return res;
+        }
+
+        public async Task<int> AddStage(Stage stg)
+        {
+            string query = $"insert into {Db.Name}.stage_in_project (null, {Id}, {stg.Id});";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+            if (res != -1) Stages.Add(stg);
+            return res;
+        }
+
+        public async Task<int> Delete()
+        {
+            await Stage.Delete(Id, await Stage.GetStageIDs(await Stage.GetStageLinkIDs(Id)));
+            string query = $"delete from {Db.Name} where {GetColumnName(ProjectField.Id)} = {Id};";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+            this.Dispose();
+            return res;
         }
 
         public void Dispose()

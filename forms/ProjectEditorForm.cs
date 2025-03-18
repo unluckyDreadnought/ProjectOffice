@@ -37,7 +37,7 @@ namespace ProjectOffice.forms
 
         private void CheckFieldsFilling()
         {
-
+            
         }
 
         /// <summary>

@@ -206,6 +206,7 @@
     <Compile Include="logic\Common.cs" />
     <Compile Include="logic\DataStructures.cs" />
     <Compile Include="logic\Db.cs" />
+    <Compile Include="logic\Project.cs" />
     <Compile Include="logic\Security.cs" />
     <Compile Include="logic\Сompression.cs" />
     <Compile Include="Program.cs" />
