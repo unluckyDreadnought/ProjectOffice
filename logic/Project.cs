@@ -12,6 +12,7 @@ namespace ProjectOffice.logic
     {
         private static Db _db = new Db();
         public string Id;
+        private string SubtaskId;
         public string AuthorId;
         public string CreatedTime;
         public string Title;
@@ -19,6 +20,13 @@ namespace ProjectOffice.logic
         public string StatusId;
         private bool _disposed = false;
 
+        /// <summary>
+        /// Получает все контрольные точки данной подзадачи проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="stageId">Идентификатор стадии</param>
+        /// <param name="subtaskId">Идентификатор подзадачи</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является список контольных точек</returns>
         public static async Task<List<ControlPoint>> GetControlPoints(string projectId, string stageId, string subtaskId)
         {
             string sbtskLink = await Subtask.GetSubtaskLinkID(projectId, stageId, subtaskId);
@@ -36,6 +44,7 @@ where SbtskReferenceID = {sbtskLink};";
             {
                 ControlPoint current = new ControlPoint();
                 current.Id = rawInfo[row][0];
+                current.SubtaskId = subtaskId;
                 current.CreatedTime = rawInfo[row][1];
                 current.AuthorId = rawInfo[row][2];
                 current.Title = rawInfo[row][3];
@@ -45,7 +54,7 @@ where SbtskReferenceID = {sbtskLink};";
                 row++;
             }
             return result;
-        }
+        }        
 
         /// <summary>
         /// Получает идентификатор записи в связующей таблице для конкретной контрольной точки проекта
@@ -173,6 +182,9 @@ where CntrPntLinkID in ({string.Join(",", cntrPntLinkIds)});";
             return (res0 + res1, true);
         }
 
+        /// <summary>
+        /// Очищает данные контрольной точки
+        /// </summary>
         public void Dispose()
         {
             if (!_disposed)
@@ -200,6 +212,12 @@ where CntrPntLinkID in ({string.Join(",", cntrPntLinkIds)});";
         public List<ControlPoint> points = null;
         private bool _disposed = false;
 
+        /// <summary>
+        /// Получает все подзадачи данной стадии проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="stageId">Идентификатор стадии</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является список подзадач</returns>
         public static async Task<List<Subtask>> GetSubtasks(string projectId, string stageId)
         {
             string stgsLink = await Stage.GetStageLinkID(projectId, stageId);
@@ -226,6 +244,13 @@ where StgProjReferenceID = {stgsLink[0]};";
             return result;
         }
 
+        /// <summary>
+        /// Получает идентификатор записи в связующей таблице подзадачи и стадии
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="stageId">Идентификатор стадии</param>
+        /// <param name="subtaskId">Идентификатор подзадачи</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является идентификатор соответствующей связующей записи</returns>
         public static async Task<string> GetSubtaskLinkID(string projectId, string stageId, string subtaskId)
         {
             string stgsLink = await Stage.GetStageLinkID(projectId, stageId);
@@ -274,7 +299,7 @@ where ProjectID = {projectId} and StageID = {stageId}); ";
         /// Получает все идентификаторы записей из связующей таблицы подзадач по идентификатору подзадачи
         /// </summary>
         /// <param name="subtaskIds">Идентификатор (-ы) подзадач (-и)</param>
-        /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификаторами записей</returns>
+        /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификаторами связующих записей</returns>
         public static async Task<string[]> GetSubtaskLinkIDs(params string[] subtaskIds)
         {
             string query = $@"select SbtskLinkID from {Db.Name}.subtask_in_project_stage
@@ -284,6 +309,11 @@ where SubtaskID in ({string.Join(",", subtaskIds)});";
             return Common.DataTableToStringArray(dt);
         }
 
+        /// <summary>
+        /// Получает идентификаторы подзадач соответствующие идентификаторам записей из связующей таблицы подзадач
+        /// </summary>
+        /// <param name="sbtskLinkIds">Идентификаторы записей из связующей таблицы подзадач</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификаторами подзадач</returns>
         public static async Task<string[]> GetSubtaskIDs(params string[] sbtskLinkIds)
         {
             string query = $@"select SubtaskID from {Db.Name}.subtask_in_project_stage 
@@ -293,8 +323,68 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
             return Common.DataTableToStringArray(dt);
         }
 
-        // to do: add cp & update cp
+        /// <summary>
+        /// Добавление к подзадаче проекта новой контрольной точки
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="title">Заголовок контрольной точки</param>
+        /// <param name="status">Статус выполение подзадачи</param>
+        /// <param name="description">Описание контрольной точки</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является число добавленных записей в связующую контрольные точки и подзадачи таблицу при успехе, иначе -1</returns>
+        public async Task<int> AddControlPoint(string projectId, string title, Status status, string description = null)
+        {
+            int lastCpId = -1;
+            int.TryParse(await ProjectLinked.GetLastId(_db, ProjectLinked.LinkedTables.ControlPoint), out lastCpId);
+            string idPlaceholder = lastCpId != -1 ? $"{lastCpId + 1}" : "null";
+            string desc = description != null ? $"'{description}'" : "null";
+            string query = $@"insert into {Db.Name}.{Db.GetTableName(Db.Tables.ControlPoint)} value ({idPlaceholder}, {AppUser.Id}, {status}, '{title}', {desc}, '{DateTime.Now.ToString("yyyy.MM.dd HH:mm")}');\n";
+            var task =  _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            if (Convert.ToInt32(result) == -1) return -1;
 
+            lastCpId = -1;
+            int.TryParse(await ProjectLinked.GetLastId(_db, ProjectLinked.LinkedTables.ControlPoint), out lastCpId);
+            if (lastCpId == -1) return -1;
+
+            int lastLinkId = -1;
+            int.TryParse(await ProjectLinked.GetLastId(_db, ProjectLinked.LinkedTables.ControlPointInSubtask), out lastLinkId);
+            idPlaceholder = lastLinkId != -1 ? $"{lastLinkId + 1}" : "null";
+
+            query = $"insert into {Db.Name}.{Db.GetTableName(Db.Tables.CtrlPntToSubtask)} value ({idPlaceholder}, {Subtask.GetSubtaskLinkID(projectId, this.StageId, this.Id)}, {lastCpId});";
+            task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (result, _) = await Common.GetNoScalarResult(task);
+            return Convert.ToInt32(result);
+        }
+
+        /// <summary>
+        /// Обновляет контрольную точку
+        /// </summary>
+        /// <param name="cntrPointId">Идентификатор обновляемой контрольной точки</param>
+        /// <param name="title">Заголовок конторльной точки</param>
+        /// <param name="status">Статус выполнения подзадачи</param>
+        /// <param name="description">Описание контрольной точки</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является число добавленных записей в связующую контрольные точки и подзадачи таблицу при успехе, иначе -1</returns>
+        public async Task<int> UpdateControlPoint(string cntrPointId, string title = null, Status status = Status.NotSetted, string description = null)
+        {
+            int lastCpId = -1;
+            int.TryParse(await ProjectLinked.GetLastId(_db, ProjectLinked.LinkedTables.ControlPoint), out lastCpId);
+            if (lastCpId == -1) return -1;
+            string query = $@"update {Db.Name}.{Db.GetTableName(Db.Tables.ControlPoint)} set";
+            if (title != null) query += $" ControlPointTitle = '{title}',";
+            if (status != Status.NotSetted) query += $" StatusID = {status},";
+            if (description != null) query += $" ControlPointDescription = '{description}',";
+            if (description != null) query += $" ControlPointDateTime = '{DateTime.Now.ToString("yyyy.MM.dd HH:mm")}'";
+            query += $"where ControlPointID = {cntrPointId};";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            return Convert.ToInt32(result);
+        }
+
+        /// <summary>
+        /// Удаляет подзадачу
+        /// </summary>
+        /// <param name="subtaskIds">Идентификатор (-ы) удаляемых подзадач</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является (общее количество удалённых записей | -1, флаг, является ли ответ числом)</returns>
         public static async Task<(object, bool)> Delete(params string[] subtaskIds)
         {
             string[] sbtskLinks = await Subtask.GetSubtaskLinkIDs(subtaskIds);
@@ -336,6 +426,9 @@ where SubtaskID in ({string.Join(",", subtaskIds)});";
             return (total, true);
         }
 
+        /// <summary>
+        /// Очищает данные подзадачи
+        /// </summary>
         public void Dispose()
         {
             if (!_disposed)
@@ -361,6 +454,11 @@ where SubtaskID in ({string.Join(",", subtaskIds)});";
         public List<Subtask> subtasks = null;
         private bool _disposed = false;
 
+        /// <summary>
+        /// Получает все стадии указанного проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является список стадий</returns>
         public static async Task<List<Stage>> GetStages(string projectId)
         {
             string query = $@"select stage_in_project.StageID, StageTitle from {Db.Name}.stage_in_project 
@@ -385,6 +483,12 @@ where ProjectID = {projectId}; ";
             return result;
         }
 
+        /// <summary>
+        /// Получает идентификатор записи из связующей таблицы соответствующие указанной стадии проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="stageId">Идентификатор стадии</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является идентификатор записи из связующей таблицы</returns>
         public static async Task<string> GetStageLinkID(string projectId, string stageId)
         {
             string query = $@"select StgLinkID from {Db.Name}.stage_in_project
@@ -394,6 +498,11 @@ where ProjectID = {projectId} and stage_in_project.StageID = {stageId};";
             return (dt.Rows.Count != 0) ? dt.Rows[0][0].ToString() : null;
         }
 
+        /// <summary>
+        /// Получает идентификаторы всех записей из связующей таблицы проектов и стадий
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификаторами записей связующей таблицы стадий</returns>
         public static async Task<string[]> GetStageLinkIDs(string projectId)
         {
             string query = $@"select StgLinkID from {Db.Name}.stage_in_project
@@ -403,6 +512,12 @@ where ProjectID = {projectId};";
             return Common.DataTableToStringArray(dt);
         }
 
+        /// <summary>
+        /// Получает идентификаторы всех записей из связующей таблицы проектов и стадий соответствующих идентификаторам стадий 
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="stageIds">Идентификатор стадии</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификаторами записей связующей таблицы стадий</returns>
         public static async Task<string[]> GetStageLinkIDs(string projectId, params string[] stageIds)
         {
             string query = $@"select StgLinkID from {Db.Name}.stage_in_project
@@ -412,6 +527,11 @@ where ProjectID = {projectId} and StageID in ({string.Join(",", stageIds)});";
             return Common.DataTableToStringArray(dt);
         }
 
+        /// <summary>
+        /// Получает идентификаторы стадий, включённых в связующие записи таблицы стадий и проектов
+        /// </summary>
+        /// <param name="stgLinkIds">Идентификаторы записей связующей таблицы стадий</param>
+        /// <returns>Возвращает асинхронную операциб=ю, результатом которой является массив строк с идентификаторами стадий</returns>
         public static async Task<string[]> GetStageIDs(params string[] stgLinkIds)
         {
             string query = $@"select StageID from {Db.Name}.stage_in_project where StgLinkID in ({string.Join(",", stgLinkIds)});";
@@ -420,6 +540,12 @@ where ProjectID = {projectId} and StageID in ({string.Join(",", stageIds)});";
             return Common.DataTableToStringArray(dt);
         }
 
+        /// <summary>
+        /// Добавляет подзадачу к стадии в проекте
+        /// </summary>
+        /// <param name="title">Заголовок подзадачи</param>
+        /// <param name="description">Описание подзадачи</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в связующую таблицу подзадач в случае успеха, иначе -1</returns>
         public async Task<int> AddSubtask(string title, string description)
         {
             string query = $@"insert into {Db.Name}.subtask value (null, {title});
@@ -440,6 +566,12 @@ select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
             return res;
         }
 
+        /// <summary>
+        /// Обнавляет подзадачу к стадии в проекте
+        /// </summary>
+        /// <param name="sbtskRefId">Идентификатор записи связующей таблицы со стадией</param>
+        /// <param name="description">Описание подзадачи</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в связующую таблицу подзадач в случае успеха, иначе -1</returns>
         public async Task<int> UpdateSubtask(string sbtskRefId, string description)
         {
             string query = $"update {Db.Name}.subtask_in_project_stage set SubtaskDescription = '{description}' where SbtskLinkID = {sbtskRefId};";
@@ -450,6 +582,12 @@ select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
             return res;
         }
 
+        /// <summary>
+        /// Удаляет зависимости в проектах от стадий
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="stageIds">Идентификатор (-ы) стадий</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является общее количество удалённых записей в случае успеха, иначе -1</returns>
         public static async Task<(object, bool)> Delete(string projectId, params string[] stageIds)
         {
             string[] stgLinks = await Stage.GetStageLinkIDs(projectId, stageIds);
@@ -478,6 +616,9 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
             return (total, true);
         }
 
+        /// <summary>
+        /// Очищает данные стадии
+        /// </summary>
         public void Dispose()
         {
             if (!_disposed)
@@ -509,6 +650,7 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
         public List<Stage> Stages { get; set; }
         public string[][] EmployeesId = null;
 
+        // конструктор проекта
         private Project(string id, string title, string start, string endPlan, string customer, string creator, string coff, string cost, string status, List<Stage> stages, string[][] employees)
         {
             Id = id;
@@ -526,6 +668,24 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
             EmployeesId = new string[][] { };
         }
 
+        /// <summary>
+        /// Добавляет новую запись в таблицу проектов
+        /// </summary>
+        /// <param name="proj">Экземпляр класса проекта с данными</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в случае успеха, иначе -1</returns>
+        private static async Task<int> Add(Project proj)
+        {
+            string query = $@"insert into {Db.Name}.project value ({proj.Id}, {proj.Status}, {proj.CustomerId}, {proj.CreatorId}, '{proj.Title}', '{proj.StartDate}', null, null, '{proj.Coefficient}', 0);";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+            return res;
+        }
+
+        /// <summary>
+        /// Создаёт новый проект
+        /// </summary>
+        /// <returns>Экземпляр класса <see cref="Project"/>, заполненный некоторыми шаблонными данными</returns>
         public async static Task<Project> InitilazeAsync()
         {
             string id = $"{await GetLastProjID() + 1}";
@@ -540,6 +700,11 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
             return proj;
         }
 
+        /// <summary>
+        /// Получает существующий проект
+        /// </summary>
+        /// <param name="id">Идентификатор проекта</param>
+        /// <returns>Экземпляр класса <see cref="Project"/>, заполненный данными из базы данных</returns>
         public async static Task<Project> InitilazeAsync(string id)
         {
             string[] info = await GetExistingProjectInfo(id);
@@ -597,6 +762,11 @@ from {Db.Name}.project where ProjectID = {id}; ";
             return Common.DataTableToStringArray(dt);
         }
 
+        /// <summary>
+        /// Получает всех сотрудников, закреплённых в проекте
+        /// </summary>
+        /// <param name="id">Идентификатор проекта</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является массив массивов с идентификаторами сотрудников</returns>
         private static async Task<string[][]> GetEmployees(string id)
         {
             string query = $"select UserId, IsResponsible from {Db.Name}.userproject where ProjectID = {id};";
@@ -614,6 +784,11 @@ from {Db.Name}.project where ProjectID = {id}; ";
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Получает строку с именем поля в таблице проектов
+        /// </summary>
+        /// <param name="field">Необходимое поле</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является строка с именем поля</returns>
         public static string GetColumnName(ProjectField field)
         {
             string columnName = "";
@@ -633,15 +808,12 @@ from {Db.Name}.project where ProjectID = {id}; ";
             return columnName;
         }
 
-        private static async Task<int> Add(Project proj)
-        {
-            string query = $@"insert into {Db.Name}.project value ({proj.Id}, {proj.Status}, {proj.CustomerId}, {proj.CreatorId}, '{proj.Title}', '{proj.StartDate}', null, null, '{proj.Coefficient}', 0);";
-            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
-            (object result, _) = await Common.GetNoScalarResult(task);
-            int res = Convert.ToInt32(result);
-            return res;
-        }
-
+        /// <summary>
+        /// Обновляет проект
+        /// </summary>
+        /// <param name="fields">Поля для обновления</param>
+        /// <param name="args">Значения для обновляемых полей</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество изменённых записей в случае успеха, иначе -1</returns>
         public async Task<int> Update(ProjectField[] fields, string[] args)
         {
             string query = $@"update {Db.Name}.project set";
@@ -661,6 +833,11 @@ from {Db.Name}.project where ProjectID = {id}; ";
             return res;
         }
 
+        /// <summary>
+        /// Добавляет стадию в проект
+        /// </summary>
+        /// <param name="stg">Экземпляр класса <see cref="Stage"/></param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в случае успеха, иначе -1</returns>
         public async Task<int> AddStage(Stage stg)
         {
             string query = $"insert into {Db.Name}.stage_in_project (null, {Id}, {stg.Id});";
@@ -671,6 +848,10 @@ from {Db.Name}.project where ProjectID = {id}; ";
             return res;
         }
 
+        /// <summary>
+        /// Удаляет проект
+        /// </summary>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество удалённых записей в случае успеха, иначе -1</returns>
         public async Task<int> Delete()
         {
             await Stage.Delete(Id, await Stage.GetStageIDs(await Stage.GetStageLinkIDs(Id)));
@@ -682,6 +863,9 @@ from {Db.Name}.project where ProjectID = {id}; ";
             return res;
         }
 
+        /// <summary>
+        /// Очищает данные, связанные с проектом
+        /// </summary>
         public void Dispose()
         {
             foreach (Stage stg in Stages)

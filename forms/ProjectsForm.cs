@@ -16,6 +16,7 @@ namespace ProjectOffice.forms
     {
         Db _db = null;
         bool _loading = true;
+        string selectedId = "";
 
         public ProjectsForm()
         {
@@ -174,8 +175,9 @@ where IsResponsible = 1;";
             string query = $@"select userproject.UserID from userproject
 inner join `user` on `user`.UserID = userproject.UserID
 where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', substring(`user`.UserName,1,1), '. ', substring(`user`.UserPatronymic,1,1)); ";
-            var task = _db.ExecuteNoDataResultAsync(query);
-            return await GetIntAsyncResult(task);
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            return result.ToString();
         }
 
         private async Task<string[]> GetStatuses()
@@ -196,8 +198,9 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
         private async Task<string> GetStatusID(string statusName)
         {
             string query = $"select StatusID from `status` where StatusTitle = '{statusName}';";
-            var task = _db.ExecuteNoDataResultAsync(query);
-            return await GetIntAsyncResult(task);
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query));
+            (object value, _) = await Common.GetNoScalarResult(task);
+            return value.ToString();
         }
 
         private string GetSearchPattern()
@@ -205,7 +208,6 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             string search = "";
             if (projectSearchLineTextBox.Text == "Поиск") return "";
             string sText = projectSearchLineTextBox.Text.Trim();
-            //search = (sText.Length < 3) ? "" : sText;
             search = sText;
             return search;
         }
@@ -279,16 +281,19 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             this.Close();
         }
 
-        private void addProjectBtn_Click(object sender, EventArgs e)
+        private async void addProjectBtn_Click(object sender, EventArgs e)
         {
             ProjectEditorForm projEditor = new ProjectEditorForm();
             projEditor.ShowDialog();
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
-        private void editProjectBtn_Click(object sender, EventArgs e)
+        private async void editProjectBtn_Click(object sender, EventArgs e)
         {
-            ProjectEditorForm projEditor = new ProjectEditorForm("n"); // selected project
+            if (selectedId == "") return;
+            ProjectEditorForm projEditor = new ProjectEditorForm(selectedId);
             projEditor.ShowDialog();
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
         private void projectSearchLineTextBox_Leave(object sender, EventArgs e)
@@ -306,15 +311,15 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
 
-        private void projectFilterOnCombo_SelectedIndexChanged(object sender, EventArgs e)
+        private async void projectFilterOnCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             projectFilterCombo.Items.Clear();
             projectFilterCombo.Items.Add("Отсутствует");
             switch (projectFilterOnCombo.SelectedIndex)
             {
-                case 1: projectFilterCombo.Items.AddRange(GetResponsibleEmployees().GetAwaiter().GetResult()); break;
+                case 1: projectFilterCombo.Items.AddRange(await GetResponsibleEmployees()); break;
                 case 2: break;
-                case 3: projectFilterCombo.Items.AddRange(GetStatuses().GetAwaiter().GetResult()); break;
+                case 3: projectFilterCombo.Items.AddRange(await GetStatuses()); break;
                 default: break;
             }
         }
@@ -343,6 +348,12 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
         {
             projectFilterOnCombo.SelectedIndex = 0;
             projectSortCombo.SelectedIndex = 0;
+        }
+
+        private void projectsTable_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            selectedId = projectsTable.Rows[e.RowIndex].Cells[0].Value.ToString();
         }
     }
 }

@@ -53,7 +53,7 @@ namespace ProjectOffice.logic
                 case Tables.Status: name = "status"; break;
                 case Tables.Subtask: name = "subtask"; break;
                 case Tables.SbtskInProjStg: name = "subtask_in_project_stage"; break;
-                case Tables.User: name = "user"; break;
+                case Tables.User: name = "`user`"; break;
                 case Tables.UserMode: name = "usermode"; break;
                 case Tables.UserProject: name = "userproject"; break;
             }

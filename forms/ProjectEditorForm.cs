@@ -21,11 +21,13 @@ namespace ProjectOffice.forms
         private bool tempProject = false;
         bool editMode = false;
         private string clientId = "null";
+        private bool[] fieldsFilled = new bool[6];
 
         string projId = "";
         string tempId = "";
         private string projName = "";
         private string placeholderName = "";
+        Project proj = null;
 
         public ProjectEditorForm(string projectId = "")
         {
@@ -35,9 +37,32 @@ namespace ProjectOffice.forms
             tempId = (editMode) ? projId : "0";
         }
 
+        private bool HaveResponsibleEmployees()
+        {
+            bool result = false;
+            int line = 0;
+            while (line < employeesTable.Rows.Count && !result)
+            {
+                result = Convert.ToBoolean(((DataGridViewCheckBoxCell)employeesTable.Rows[line].Cells[1]).Value);
+                line++;
+            }
+            return result;
+        }
+
+        private void ChangeAddEditBtnState()
+        {
+            saveProjectBtn.Enabled = fieldsFilled[0] && fieldsFilled[1] && fieldsFilled[2] && fieldsFilled[3] && fieldsFilled[4] && fieldsFilled[5];
+        }
+
         private void CheckFieldsFilling()
         {
-            
+            fieldsFilled[0] = projectNameTextBox.Text.Trim().Length > 0;
+            fieldsFilled[1] = choosenClientLbl.Text.Trim() != "клиент не выбран";
+            fieldsFilled[2] = endPlanDate.Value > DateTime.Now;
+            fieldsFilled[3] = stagesTable.Rows.Count > 0;
+            fieldsFilled[4] = employeesTable.Rows.Count > 0 && HaveResponsibleEmployees();
+            fieldsFilled[5] = projectCostTextBox.Text.Trim().Length > 3;
+            ChangeAddEditBtnState();
         }
 
         /// <summary>
@@ -392,6 +417,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
         // Обработчик загрузки формы редактора проекта
         private async void ProjectEditorForm_Load(object sender, EventArgs e)
         {
+            proj = await Project.InitilazeAsync(projId);
             int number = await GetLastProjectStandardNameNumber();
             if (editMode)
             {
@@ -400,6 +426,14 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 chooseEmployeePanel.Hide();
                 chooseStagePanel.Hide();
                 projectCostTextBox.Enabled = projectCostTextBox.Visible = false;
+
+                projectNameTextBox.Text = proj.Title;
+                startDateLbl.Text = proj.StartDate;
+                endPlanDate.Value = DateTime.Parse(proj.PlanEndDate);
+                choosenClientLbl.Text = proj.CustomerId;
+                managerLbl.Text = proj.CreatorId;
+                UpdateEmployeeList(proj.EmployeesId);
+                projCostLbl.Text = proj.Cost;
             }
             else
             {
@@ -414,11 +448,12 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 placeholderName = projName = $"Проект {number + 1}";
                 projectNameTextBox.Text = projName;
                 await GetNoScalarResult(CreateTempProject());
-            }
-            managerLbl.Text = AppUser.Snp;
-            startDateLbl.Text = DateTime.Now.ToString("dd.MM.yyyy");
-            projectIdLbl.Text = $"Проект #{projId}";
 
+                managerLbl.Text = AppUser.Snp;
+                startDateLbl.Text = DateTime.Now.ToString("dd.MM.yyyy");
+                projectIdLbl.Text = $"Проект #{projId}";
+            }
+            CheckFieldsFilling();
         }
 
         // Обработчик нажатия на кнопку выбора клиента-заказчика проекта
@@ -439,6 +474,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                     // возможно стоит убрать
                     choosenClientLbl.Text = "клиент не выбран";
                 }
+                CheckFieldsFilling();
             }
         }
 
@@ -493,6 +529,35 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 }
                 ;
             }
+            CheckFieldsFilling();
+        }
+
+        private async void UpdateEmployeeList(string[][] selected)
+        {
+            if (selected.Length == 0)
+            {
+                int vtemp = await GetNoScalarResult(RemoveAllUsersFromProject(tempId));
+                employeesTable.Rows.Clear();
+                return;
+            }
+            int n = await GetNoScalarResult(RemoveAllUsersFromProject(tempId));
+            employeesTable.Rows.Clear();
+            int set = 0;
+            while (set < selected.Length)
+            {
+                string tUsrId = selected[set][0];
+                string name = await GetEmployee(tUsrId);
+                if (name == null)
+                {
+                    set++;
+                    continue;
+                }
+                n = await GetNoScalarResult(AddUserToProject(tempId, tUsrId, selected[set].Length > 1));
+                int rIndx = employeesTable.Rows.Add();
+                employeesTable.Rows[rIndx].Cells[0].Value = name;
+                ((DataGridViewCheckBoxCell)employeesTable.Rows[rIndx].Cells[1]).Value = selected[set].Length > 1;
+                set++;
+            }
         }
 
         private async void chooseEmployeesBtn_Click(object sender, EventArgs e)
@@ -509,31 +574,9 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             if (chooseForm.ShowDialog() == DialogResult.OK)
             {
                 string[][] selected = chooseForm.SelectedIndexes.ToArray();
-                if (selected.Length == 0)
-                {
-                    int vtemp = await GetNoScalarResult(RemoveAllUsersFromProject(tempId));
-                    employeesTable.Rows.Clear();
-                    return;
-                }
-                int n = await GetNoScalarResult(RemoveAllUsersFromProject(tempId));
-                employeesTable.Rows.Clear();
-                int set = 0;
-                while (set < selected.Length)
-                {
-                    string tUsrId = selected[set][0];
-                    string name = await GetEmployee(tUsrId);
-                    if (name == null)
-                    {
-                        set++;
-                        continue;
-                    }
-                    n = await GetNoScalarResult(AddUserToProject(tempId, tUsrId, selected[set].Length > 1));
-                    int rIndx = employeesTable.Rows.Add();
-                    employeesTable.Rows[rIndx].Cells[0].Value = name;
-                    ((DataGridViewCheckBoxCell)employeesTable.Rows[rIndx].Cells[1]).Value = selected[set].Length > 1;
-                    set++;
-                }
+                UpdateEmployeeList(selected);
             }
+            CheckFieldsFilling();
         }
 
         private void subtaskBtn_Click(object sender, EventArgs e)
@@ -555,11 +598,13 @@ from {Db.Name}.client where ClientID = {clientID}; ";
         private void projectNameTextBox_TextChanged(object sender, EventArgs e)
         {
             if (projectNameTextBox.Text.Trim() == "") SetProjNamePlaceholder();
+            CheckFieldsFilling();
         }
 
         private void projectNameTextBox_Leave(object sender, EventArgs e)
         {
             if (projectNameTextBox.Text.Trim() == "") SetProjNamePlaceholder();
+            CheckFieldsFilling();
         }
 
         private void projectNameTextBox_Click(object sender, EventArgs e)
@@ -570,7 +615,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
 
         private void endPlanDate_ValueChanged(object sender, EventArgs e)
         {
-
+            CheckFieldsFilling();
         }
 
         private void employeesTable_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -589,7 +634,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
 
         private void projectCostTextBox_TextChanged(object sender, EventArgs e)
         {
-
+            CheckFieldsFilling();
         }
 
         // Обработчик нажатия на кнопку выхода из редактора ("К списку")
