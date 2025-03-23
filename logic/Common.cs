@@ -52,6 +52,34 @@ namespace ProjectOffice.logic
         }
 
         /// <summary>
+        /// Получает имя сотрудника по его идентификатору
+        /// </summary>
+        /// <param name="usrID">Идентификатор сотрудника</param>
+        /// <returns>Возвращает асинхронную операцию, возвращающую строку - имя сотрудника</returns>
+        public static async Task<string> GetEmployee(string usrID)
+        {
+            string query = $@"select concat(UserSurname, ' ', substring(UserName, 1, 1), '. ', case when UserPatronymic is null then '' else substring(UserPatronymic, 1, 1) end)  as 'Name' from {Db.Name}.`user` where UserID = {usrID};";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            string employeeName = (dt.Rows.Count != 0) ? dt.Rows[0][0].ToString() : null;
+            return employeeName;
+        }
+
+        /// <summary>
+        /// Получает идентификатор сотрудника по его сокращённому ФИО
+        /// </summary>
+        /// <param name="shortSnp">Сокращённое ФИО сотрудника</param>
+        /// <returns>Возвращает асинхронную операцию, возвращающую строку - идентификатор сотрудника</returns>
+        public async static Task<string> GetEmployeeID(string shortSnp)
+        {
+            string query = $@"select UserID from {Db.Name}.`user` where concat(UserSurname, ' ', substring(UserName, 1, 1), '. ', case when UserPatronymic is null then '' else substring(UserPatronymic, 1, 1) end) = '{shortSnp}';";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            string eId = (dt.Rows.Count != 0) ? dt.Rows[0][0].ToString() : null;
+            return eId;
+        }
+
+        /// <summary>
         /// Преобразует <see cref="DataTable"/> в массив строк (string[]), упаковывая значения всех строк и полей в один массив<br></br>
         /// Не рекомендуется для таблиц с числом полей более 1
         /// </summary>

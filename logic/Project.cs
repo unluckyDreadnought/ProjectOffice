@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 using ProjectOffice.logic.app;
 
@@ -30,10 +31,12 @@ namespace ProjectOffice.logic
         public static async Task<List<ControlPoint>> GetControlPoints(string projectId, string stageId, string subtaskId)
         {
             string sbtskLink = await Subtask.GetSubtaskLinkID(projectId, stageId, subtaskId);
+            if (sbtskLink == null) return new List<ControlPoint>();
             string query = $@"select control_point_to_subtask.ControlPointID, ControlPointDateTime, ControlPointAuthorID, 
 ControlPointTitle, ControlPointDescription, controlpoint.StatusID from {Db.Name}.control_point_to_subtask
 inner join controlpoint on controlpoint.ControlPointID = control_point_to_subtask.ControlPointID
-where SbtskReferenceID = {sbtskLink};";
+where SbtskReferenceID = {sbtskLink}
+order by ControlPointDateTime asc;";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
             if (dt.Rows.Count == 0) return new List<ControlPoint>();
@@ -137,6 +140,7 @@ where SbtskReferenceID = {sbtskLink};";
         /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификатором записи</returns>
         public static async Task<string[]> GetControlPointLinkIDs(params string[] controlPointIds)
         {
+            if (controlPointIds.Length == 0) return new string[] { };
             string query = $@"select CntrPntLinkID from project_office.control_point_to_subtask
 where ControlPointID in ({string.Join(",",controlPointIds)});";
             var task = _db.ExecuteReaderAsync(query);
@@ -165,8 +169,9 @@ where CntrPntLinkID in ({string.Join(",", cntrPntLinkIds)});";
         /// <returns>Возращает асинхронную операцию, результатом которой является (число изменённых строк или -1; true)</returns>
         public static async Task<(object, bool)> Delete(params string[] controlPointIds)
         {
+            if (controlPointIds.Length == 0) return (0, true);
             string[] ctnrPntsLinks = await ControlPoint.GetControlPointLinkIDs(controlPointIds);
-            if (ctnrPntsLinks.Length == 0) return (-1, true);
+            if (ctnrPntsLinks.Length == 0) return (0, true);
 
             string query = $@"delete from {Db.Name}.control_point_to_subtask where ControlPointID in ({string.Join(",", controlPointIds)});";
             var task = _db.ExecuteNoDataResultAsync(query);
@@ -224,7 +229,7 @@ where CntrPntLinkID in ({string.Join(",", cntrPntLinkIds)});";
             if (stgsLink == null) return new List<Subtask>();
             string query = $@"select subtask_in_project_stage.SubtaskId, SubtaskTitle, SubtaskDescription from {Db.Name}.subtask_in_project_stage
 inner join subtask on subtask.SubtaskID = subtask_in_project_stage.SubtaskID
-where StgProjReferenceID = {stgsLink[0]};";
+where StgProjReferenceID = {stgsLink};";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
             if (dt.Rows.Count == 0) return new List<Subtask>();
@@ -236,9 +241,10 @@ where StgProjReferenceID = {stgsLink[0]};";
                 Subtask current = new Subtask();
                 current.Id = raw[row][0];
                 current.StageId = stageId;
-                current.Title = raw[row][0];
-                current.Description = raw[row][0];
+                current.Title = raw[row][1];
+                current.Description = raw[row][2];
                 current.points = await ControlPoint.GetControlPoints(projectId, stageId, current.Id);
+                result.Add(current);
                 row++;
             }
             return result;
@@ -290,6 +296,22 @@ where ProjectID = {projectId}); ";
 where StgProjReferenceID in
 (select StgLinkID from project_office.stage_in_project
 where ProjectID = {projectId} and StageID = {stageId}); ";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            return Common.DataTableToStringArray(dt);
+        }
+
+        /// <summary>
+        /// Получает все идентификаторы записей из связующей таблицы подзадач к конкретным стадиям по идентификатору (-ам) связующей таблицы
+        /// </summary>
+        /// <param name="stgProjRefIds">Идентификатор (-ы) связующей таблицы проекта и стадии (-ий)</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификаторами записей</returns>
+        public static async Task<string[]> GetSubtaskLinkIDsByStgProjRefs(params string[] stgProjRefIds)
+        {
+            if (stgProjRefIds.Length == 0) return new string[] { };
+            string query = $@"select SbtskLinkId from {Db.Name}.subtask_in_project_stage
+where StgProjReferenceID in
+({string.Join(",", stgProjRefIds)}); ";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
             return Common.DataTableToStringArray(dt);
@@ -381,12 +403,13 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
         }
 
         /// <summary>
-        /// Удаляет подзадачу
+        /// Удаляет подзадачи из всех таблиц
         /// </summary>
         /// <param name="subtaskIds">Идентификатор (-ы) удаляемых подзадач</param>
         /// <returns>Возращает асинхронную операцию, результатом которой является (общее количество удалённых записей | -1, флаг, является ли ответ числом)</returns>
         public static async Task<(object, bool)> Delete(params string[] subtaskIds)
         {
+            if (subtaskIds.Length == 0) return (0, true);
             string[] sbtskLinks = await Subtask.GetSubtaskLinkIDs(subtaskIds);
             if (sbtskLinks.Length == 0) return (0, true);
 
@@ -398,31 +421,101 @@ where SbtskReferenceID in ({string.Join(",", sbtskLinks)});";
             string[] controlPoints = Common.DataTableToStringArray(dt);
 
             int total = 0;
-            //удаление зависимостей от контрольных точек и контрольных точек
+            int temp = 0;
+            object n = null;
+            bool isInt = false;
+
+            //удаление зависимостей от контрольных точек
             string[] cntrPtsLinks = await ControlPoint.GetControlPointLinkIDs(controlPoints);
-            (object n, bool isInt) = await ControlPoint.Delete(controlPoints);
-            int temp = Convert.ToInt32(n);
+            if (cntrPtsLinks.Length == 0)
+            {
+                query = $@"delete from {Db.Name}.{Db.GetTableName(Db.Tables.CtrlPntToSubtask)}
+where CntrPntLinkID in ({string.Join(",", cntrPtsLinks)});";
+                var task2 = _db.ExecuteNoDataResultAsync(query);
+                (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task2));
+                temp = Convert.ToInt32(n);
+                if (temp == -1) return (-1, true);
+                total += temp;
+            }
+
+            // удаление контрольных точек
+            (n, isInt) = await ControlPoint.Delete(controlPoints);
+            temp = Convert.ToInt32(n);
             if (temp == -1) return (-1, true);
             total = temp;
 
             // удаление зависимостей от подзадач
             query = $@"delete from {Db.Name}.subtask_in_project_stage
 where SbtskLinkID in ({string.Join(",", sbtskLinks)});";
-            var task2 = _db.ExecuteNoDataResultAsync(query);
-            (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task2));
+            var task3 = _db.ExecuteNoDataResultAsync(query);
+            (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task3));
             temp = Convert.ToInt32(n);
             if (temp == -1) return (-1, true);
             total += temp;
 
-            // удаление подзадач
+            // удаление зависимостей от подзадач
             query = $@"delete from {Db.Name}.subtask
 where SubtaskID in ({string.Join(",", subtaskIds)});";
-            task2 = _db.ExecuteNoDataResultAsync(query);
-            (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task2));
+            task3 = _db.ExecuteNoDataResultAsync(query);
+            (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task3));
             temp = Convert.ToInt32(n);
             if (temp == -1) return (-1, true);
-
             total += temp;
+
+            return (total, true);
+        }
+
+        /// <summary>
+        /// Открепление подзадач, связанных с идентификаторами записей из связующей таблицы проектов и стадий  
+        /// </summary>
+        /// <param name="stgProjRefIds">Идентификаторы записей из связующей таблицы проектов и стадий, от которых нужно открепить подзадачи</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является (общее количество удалённых записей | -1, флаг, является ли ответ числом)</returns>
+        public static async Task<(object, bool)> UnlinkByStgProjLinks(string[] stgProjRefIds)
+        {
+            if (stgProjRefIds.Length == 0) return (0, true);
+            string[] sbtskLinks = await Subtask.GetSubtaskLinkIDsByStgProjRefs(stgProjRefIds);
+            if (sbtskLinks.Length == 0) return (0, true);
+
+            // получение идентификаторов записей связующей таблицы контрольных точек с проектом
+            string query = $@"select ControlPointID from {Db.Name}.control_point_to_subtask
+where SbtskReferenceID in ({string.Join(",", sbtskLinks)});";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            string[] controlPoints = Common.DataTableToStringArray(dt);
+
+            int total = 0;
+            int temp = 0;
+            object n = null;
+            bool isInt = false;
+
+            //удаление зависимостей от контрольных точек
+            string[] cntrPtsLinks = await ControlPoint.GetControlPointLinkIDs(controlPoints);
+            if (cntrPtsLinks.Length != 0)
+            {
+                query = $@"delete from {Db.Name}.{Db.GetTableName(Db.Tables.CtrlPntToSubtask)}
+where CntrPntLinkID in ({string.Join(",", cntrPtsLinks)});";
+                var task2 = _db.ExecuteNoDataResultAsync(query);
+                (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task2));
+                temp = Convert.ToInt32(n);
+                if (temp == -1) return (-1, true);
+                total += temp;
+            }
+
+            // удаление контрольных точек
+            (n, isInt) = await ControlPoint.Delete(controlPoints);
+            temp = Convert.ToInt32(n);
+            if (temp == -1) return (-1, true);
+            total = temp;
+
+            // удаление зависимостей от подзадач
+            query = $@"delete from {Db.Name}.subtask_in_project_stage
+where SbtskLinkID in ({string.Join(",", sbtskLinks)});";
+            var task3 = _db.ExecuteNoDataResultAsync(query);
+            (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task3));
+            temp = Convert.ToInt32(n);
+            if (temp == -1) return (-1, true);
+            total += temp;
+
             return (total, true);
         }
 
@@ -449,10 +542,28 @@ where SubtaskID in ({string.Join(",", subtaskIds)});";
     {
         private static Db _db = new Db();
         public string Id;
-        private string ProjectId;
+        public string ProjectId { private get; set; }
         public string Title;
         public List<Subtask> subtasks = null;
         private bool _disposed = false;
+
+        /// <summary>
+        /// Получает существующую стадию по идентификатору
+        /// </summary>
+        /// <param name="stgId">Идентификатор стадии</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является экземпляр класса <see cref="Stage"/></returns>
+        public static async Task<Stage> GetById(string stgId)
+        {
+            string query = $@"select * from {Db.Name}.{Db.GetTableName(Db.Tables.Stage)} where StageID = {stgId};";
+            var task = _db.ExecuteReaderAsync(query);
+            string[] stgFields = Common.DataTableToStringArray(await Common.GetAsyncResult(task));
+            if (stgFields.Length == 0) return null;
+            Stage stg = new Stage();
+            stg.Id = stgFields[0];
+            stg.Title = stgFields[1];
+            stg.subtasks = new List<Subtask>();
+            return stg;
+        }
 
         /// <summary>
         /// Получает все стадии указанного проекта
@@ -520,6 +631,7 @@ where ProjectID = {projectId};";
         /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификаторами записей связующей таблицы стадий</returns>
         public static async Task<string[]> GetStageLinkIDs(string projectId, params string[] stageIds)
         {
+            if (stageIds.Length == 0) return Common.DataTableToStringArray(new DataTable());
             string query = $@"select StgLinkID from {Db.Name}.stage_in_project
 where ProjectID = {projectId} and StageID in ({string.Join(",", stageIds)});";
             var task = _db.ExecuteReaderAsync(query);
@@ -534,6 +646,7 @@ where ProjectID = {projectId} and StageID in ({string.Join(",", stageIds)});";
         /// <returns>Возвращает асинхронную операциб=ю, результатом которой является массив строк с идентификаторами стадий</returns>
         public static async Task<string[]> GetStageIDs(params string[] stgLinkIds)
         {
+            if (stgLinkIds.Length == 0) return Common.DataTableToStringArray(new DataTable());
             string query = $@"select StageID from {Db.Name}.stage_in_project where StgLinkID in ({string.Join(",", stgLinkIds)});";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
@@ -590,27 +703,20 @@ select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
         /// <returns>Возвращает асинхронную операцию, результатом которой является общее количество удалённых записей в случае успеха, иначе -1</returns>
         public static async Task<(object, bool)> Delete(string projectId, params string[] stageIds)
         {
+            if (stageIds.Length == 0) return (0, true);
             string[] stgLinks = await Stage.GetStageLinkIDs(projectId, stageIds);
-            if (stgLinks.Length == 0) return (-1, true);
+            if (stgLinks.Length == 0) return (0, true);
 
-            string query = $@"select SubtaskID from {Db.Name}.subtask_in_project_stage
-where StgProjReferenceID in ({string.Join(",", stgLinks)});";
-            var task = _db.ExecuteReaderAsync(query);
-            DataTable dt = await Common.GetAsyncResult(task);
-            string[] subtasksIds = Common.DataTableToStringArray(dt);
-
-            (object affected, bool isInt) = await Subtask.Delete(subtasksIds);
+            (object affected, bool isInt) = await Subtask.UnlinkByStgProjLinks(stgLinks);
             int temp = Convert.ToInt32(affected);
-
-            if (temp != -1) return (-1, true);
+            if (temp == -1) return (-1, true);
             int total = temp;
 
-            query = $@"delete from {Db.Name}.stage_in_project where StgLinkId in ({string.Join(",", stgLinks)});";
+            string query = $@"delete from {Db.Name}.stage_in_project where StgLinkId in ({string.Join(",", stgLinks)});";
             var taks2 = _db.ExecuteNoDataResultAsync(query);
             (affected, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(taks2));
             temp = Convert.ToInt32(affected);
-
-            if (temp != -1) return (-1, true);
+            if (temp == -1) return (-1, true);
             total += temp;
 
             return (total, true);
@@ -625,8 +731,11 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
             {
                 Id = null;
                 Title = null;
-                subtasks.Clear();
-                subtasks = null;
+                if (subtasks != null)
+                {
+                    subtasks.Clear();
+                    subtasks = null;
+                }
                 GC.SuppressFinalize(this);
                 _disposed = true;
             }
@@ -640,23 +749,29 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
         public string Id;
         public string Title;
         public string StartDate { get; private set; }
-        public string PlanEndDate { get; private set; }
+        public string PlanEndDate { get; set; }
         public string EndDate { get; private set; }
-        public string CustomerId { get; private set; }
-        public string CreatorId { get; private set; }
-        public string Coefficient { get; private set; }
-        public string Cost { get; private set; }
+        public string CustomerId { get; set; }
+        public string CreatorId { get; set; }
+        public string Coefficient { get; set; }
+        public string Cost { get; set; }
         public string Status;
         public List<Stage> Stages { get; set; }
         public string[][] EmployeesId = null;
 
         // конструктор проекта
-        private Project(string id, string title, string start, string endPlan, string customer, string creator, string coff, string cost, string status, List<Stage> stages, string[][] employees)
+        private Project(string id, string title, string start, string endPlan, string customer, string creator, string coff, string cost, string status, List<Stage> stages, string[][] employees, string end = "not-end")
         {
             Id = id;
             Title = title;
             StartDate = start;
             PlanEndDate = endPlan;
+            if (end != "not-end")
+            {
+                if (status != ((int)logic.Status.Rejected).ToString()) EndDate = end == null ? PlanEndDate : end;
+                else EndDate = StartDate;
+            }
+            else EndDate = null;
             CustomerId = customer;
             CreatorId = creator;
             Coefficient = coff;
@@ -664,8 +779,8 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
             int iCost = Convert.ToInt32(cost);
             int iCoef = Convert.ToInt32(coff);
             Cost = $"{Math.Round((float)iCost * (1 + (iCoef / 100)), 2)}";
-            Stages = new List<Stage>();
-            EmployeesId = new string[][] { };
+            Stages = stages;
+            EmployeesId = employees;
         }
 
         /// <summary>
@@ -675,7 +790,8 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
         /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в случае успеха, иначе -1</returns>
         private static async Task<int> Add(Project proj)
         {
-            string query = $@"insert into {Db.Name}.project value ({proj.Id}, {proj.Status}, {proj.CustomerId}, {proj.CreatorId}, '{proj.Title}', '{proj.StartDate}', null, null, '{proj.Coefficient}', 0);";
+            string customer = (proj.CustomerId == null) ? "null" : proj.CustomerId;
+            string query = $@"insert into {Db.Name}.project value ({proj.Id}, {proj.Status}, {customer}, {proj.CreatorId}, '{proj.Title}', '{proj.StartDate}', '{proj.PlanEndDate}', null, '{proj.Coefficient}', 0);";
             var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (object result, _) = await Common.GetNoScalarResult(task);
             int res = Convert.ToInt32(result);
@@ -685,19 +801,20 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
         /// <summary>
         /// Создаёт новый проект
         /// </summary>
-        /// <returns>Экземпляр класса <see cref="Project"/>, заполненный некоторыми шаблонными данными</returns>
-        public async static Task<Project> InitilazeAsync()
+        /// <returns>Экземпляр класса <see cref="Project"/>, заполненный некоторыми шаблонными данными и булевое значение, символизирующие был ли создан проект или нет</returns>
+        public async static Task<(Project, bool)> InitilazeAsync()
         {
             string id = $"{await GetLastProjID() + 1}";
             string title = $"Проект {await GetLastStandardNameNumber()}";
             string start = DateTime.Now.ToString("yyyy.MM.dd");
+            string planEnd = DateTime.Parse(start).AddDays(5).ToString("yyyy.MM.dd");
             string creator = AppUser.Id;
             string coef = "0";
             List<Stage> stgs = new List<Stage>();
             string[][] empl = new string[][] { };
-            Project proj = new Project(id, title, start, null, null, creator, coef, null, "1", stgs, empl);
-            await Project.Add(proj);
-            return proj;
+            Project proj = new Project(id, title, start, planEnd, null, creator, coef, null, "1", stgs, empl);
+            int n = await Project.Add(proj);
+            return (proj, n != -1);
         }
 
         /// <summary>
@@ -710,7 +827,14 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
             string[] info = await GetExistingProjectInfo(id);
             List<Stage> stgs = await Stage.GetStages(id);
             string[][] empl = await GetEmployees(id);
-            return new Project(id, title: info[0], start: info[1], endPlan: info[2], customer: info[3], creator: info[4], coff: info[5], cost: info[6], status: info[7], stgs, empl);
+            if (info[7] == ((int)logic.Status.Finish).ToString() || info[7] == ((int)logic.Status.Rejected).ToString())
+            {
+                return new Project(id, title: info[0], start: info[1], endPlan: info[2], customer: info[3], creator: info[4], coff: info[5], cost: info[6], status: info[7], stgs, empl, end: info[8]);
+            }
+            else
+            {
+                return new Project(id, title: info[0], start: info[1], endPlan: info[2], customer: info[3], creator: info[4], coff: info[5], cost: info[6], status: info[7], stgs, empl);
+            }
         }
 
         /// <summary>
@@ -755,8 +879,8 @@ where StgProjReferenceID in ({string.Join(",", stgLinks)});";
         {
             string query = $@"select 
 ProjectTitle, ProjectStartDate, ProjectPlanEndDate, ProjectCustomerID, 
-ProjectCreatorID, ProjectCoefficient, ProjectCost, ProjectStatusID
-from {Db.Name}.project where ProjectID = {id}; ";
+ProjectCreatorID, ProjectCoefficient, ProjectCost, ProjectStatusID,
+ProjectFactEndDate from {Db.Name}.project where ProjectID = {id}; ";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
             return Common.DataTableToStringArray(dt);
@@ -809,6 +933,117 @@ from {Db.Name}.project where ProjectID = {id}; ";
         }
 
         /// <summary>
+        /// Добавляет стадию в проект
+        /// </summary>
+        /// <param name="stg">Экземпляр класса <see cref="Stage"/></param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в случае успеха, иначе -1</returns>
+        public async Task<int> AddStage(Stage stg)
+        {
+            stg.ProjectId = this.Id;
+            string query = $"select StgLinkID from {Db.Name}.{Db.GetTableName(Db.Tables.StgInProj)} order by StgLinkID desc limit 1";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int link = Convert.ToInt32(result) + 1;
+
+            query = $@"insert into {Db.Name}.stage_in_project value ({link},{Id}, {stg.Id});";
+            task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+
+            return res;
+        }
+
+        /// <summary>
+        /// Удаляет все прикрепленные к проекту стадии
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> RemoveAllStages()
+        {
+            (object result, _) = await Stage.Delete(Id, await Stage.GetStageIDs(await Stage.GetStageLinkIDs(Id)));
+            return Convert.ToInt32(result);
+        }
+
+        /// <summary>
+        /// Удаляет всех прикреплённых к проекту сотрудников
+        /// </summary>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в случае успеха, иначе -1</returns>
+        public async Task<int> RemoveAllEmployees()
+        {
+            string query = $@"delete from {Db.Name}.{Db.GetTableName(Db.Tables.UserProject)} where ProjectID = {Id};";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            EmployeesId = await Project.GetEmployees(Id);
+            return Convert.ToInt32(result);
+        }
+
+        /// <summary>
+        /// Перезаписывает список прикреплённых к проекту сотрудников новыми
+        /// </summary>
+        /// <param name="employees">
+        /// Массив массивов сотрудников, где каждый отдельный массив имеет вид { EmployeeID, [1] }<br></br>
+        ///это запись о сотруднике, содержащая его идентификатор и, если является ответственным - 1.
+        /// </param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в случае успеха, иначе -1</returns>
+        public async Task<int> AddEmployees(string[][] employees)
+        {
+            await this.RemoveAllEmployees();
+            string query = $@"insert into {Db.Name}.{Db.GetTableName(Db.Tables.UserProject)} values ";
+
+            int indx = 0;
+            while (indx < employees.Length)
+            {
+                string resp = (employees[indx].Length > 1) ? "1" : "null";
+                query += $"({employees[indx][0]}, {Id}, {resp})";
+                if (indx != employees.Length - 1) query += ",";
+                indx++;
+            }
+            query += ";";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            EmployeesId = await Project.GetEmployees(Id);
+            return Convert.ToInt32(result);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="proj"></param>
+        /// <returns>Возвращает true, проекты идентичны (за исключением Id), иначе - false</returns>
+        public bool CompareWith(Project proj)
+        {
+            bool equals = true;
+            equals = Id == proj.Id;
+            if (equals) equals = Title == proj.Title;
+            if (equals) equals = StartDate == proj.StartDate;
+            if (equals) equals = PlanEndDate == proj.PlanEndDate;
+            if (equals) equals = CustomerId == proj.CustomerId;
+            if (equals) equals = CreatorId == proj.CreatorId;
+            if (equals) equals = Cost == proj.Cost;
+
+            bool stageEquals = Stages.Count == proj.Stages.Count;
+            int stgIndx = 0;
+            while (stageEquals && stgIndx < Stages.Count)
+            {
+                stageEquals = Stages[stgIndx].Id == proj.Stages[stgIndx].Id;
+                if (stageEquals) stageEquals = Stages[stgIndx].Title == proj.Stages[stgIndx].Title;
+                if (stageEquals) stageEquals = Stages[stgIndx].subtasks.Count == proj.Stages[stgIndx].subtasks.Count;
+                stgIndx++;
+            }
+            if (equals) equals = stageEquals;
+
+            bool emplEquals = EmployeesId.Length == proj.EmployeesId.Length;
+            int emplIndx = 0;
+            while (emplEquals && emplIndx < EmployeesId.Length)
+            {
+                emplEquals = EmployeesId[emplIndx].Length == proj.EmployeesId[emplIndx].Length;
+                if (emplEquals) emplEquals = EmployeesId[emplIndx][0] == proj.EmployeesId[emplIndx][0];
+                emplIndx++;
+            }
+            if (equals) equals = emplEquals;
+            return equals;
+        }
+
+        /// <summary>
         /// Обновляет проект
         /// </summary>
         /// <param name="fields">Поля для обновления</param>
@@ -826,7 +1061,7 @@ from {Db.Name}.project where ProjectID = {id}; ";
                 if (i != fields.Length - 1) query += ",";
                 i++;
             }
-            query += $"where {GetColumnName(ProjectField.Id)} = {Id};";
+            query += $" where {GetColumnName(ProjectField.Id)} = {Id};";
             var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (object result, _) = await Common.GetNoScalarResult(task);
             int res = Convert.ToInt32(result);
@@ -834,18 +1069,63 @@ from {Db.Name}.project where ProjectID = {id}; ";
         }
 
         /// <summary>
-        /// Добавляет стадию в проект
+        /// Сохраняет изменения в текущем экземпляре <see cref="Project"/> в запись в БД
         /// </summary>
-        /// <param name="stg">Экземпляр класса <see cref="Stage"/></param>
-        /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в случае успеха, иначе -1</returns>
-        public async Task<int> AddStage(Stage stg)
+        /// <param name="existInDb">Флаг, определяющий новый ли это проект. По умолчанию - true</param>
+        /// <param name="force">Флаг принудительного удаления стадий. По умолчанию - false</param>
+        /// <returns>
+        /// Возвращает асинхронную операцию, результатом которой являются (1, 2):<br></br>
+        /// 1. Массив экземпляров <see cref="Stage"/>, которые должны быть удалены, для определения действия над ними<br></br>
+        /// 2. Число удалённых стадий
+        /// </returns>
+        public async Task<(Stage[], int)> Save(bool existInDb = false, bool force = false)
         {
-            string query = $"insert into {Db.Name}.stage_in_project (null, {Id}, {stg.Id});";
-            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
-            (object result, _) = await Common.GetNoScalarResult(task);
-            int res = Convert.ToInt32(result);
-            if (res != -1) Stages.Add(stg);
-            return res;
+            int n = 0;
+            if (!existInDb)
+            {
+                n = await this.Update(new ProjectField[] { ProjectField.Title, ProjectField.PlanEnd, ProjectField.CLient, ProjectField.Cost }, new string[] { this.Title, this.PlanEndDate, this.CustomerId, this.Cost });
+            }
+            else
+            {
+                n = await this.Update(new ProjectField[] { ProjectField.Coefficient, ProjectField.Status, ProjectField.Title }, new string[] { this.Coefficient, this.Status, this.Title });
+            }
+            n = await this.AddEmployees(EmployeesId);
+            int indx = 0;
+
+            List<string> listStgIds = new List<string>();
+            List<Stage> storedDb = new List<Stage>();
+            foreach (Stage s in (await Stage.GetStages(this.Id)))
+            {
+                listStgIds.Add(s.Id);
+                storedDb.Add(s);
+            }
+
+            // стадии, которые остаются в проекте
+            string[] keep = this.Stages.Where(stg => listStgIds.Contains(stg.Id)).Select(stg => stg.Id).ToArray();
+
+            // стадии, которые должны быть добавлены в проект
+            Stage[] notLinked = this.Stages.Where(stg => !listStgIds.Contains(stg.Id)).ToArray();
+
+            // получение стадий, которые должны быть удалены, и их возврат для решения об их удалении
+            string[] notLinkedStr = notLinked.Select(stg => stg.Id).ToArray();
+            Stage[] toDelete = storedDb.Where(storedStg => !keep.Contains(storedStg.Id) && !notLinkedStr.Contains(storedStg.Id)).ToArray();
+            if (!force && toDelete.Length != 0) return (toDelete, -1);
+
+            // добавление стадий в проект
+            int id = 0;
+            while (id < notLinked.Length)
+            {
+                n = await this.AddStage(notLinked[id]);
+                id++;
+            }
+
+            if (force)
+            {
+                (object result, _) = await Stage.Delete(this.Id, toDelete.Select(delStg => delStg.Id).ToArray());
+                return (toDelete, Convert.ToInt32(result));
+            }
+
+            return (toDelete, 0);
         }
 
         /// <summary>
@@ -854,8 +1134,9 @@ from {Db.Name}.project where ProjectID = {id}; ";
         /// <returns>Возвращает асинхронную операцию, результатом которой является количество удалённых записей в случае успеха, иначе -1</returns>
         public async Task<int> Delete()
         {
-            await Stage.Delete(Id, await Stage.GetStageIDs(await Stage.GetStageLinkIDs(Id)));
-            string query = $"delete from {Db.Name} where {GetColumnName(ProjectField.Id)} = {Id};";
+            await this.RemoveAllEmployees();
+            await this.RemoveAllStages();
+            string query = $"delete from {Db.Name}.{Db.GetTableName(Db.Tables.Project)} where {GetColumnName(ProjectField.Id)} = {Id};";
             var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (object result, _) = await Common.GetNoScalarResult(task);
             int res = Convert.ToInt32(result);
@@ -870,8 +1151,18 @@ from {Db.Name}.project where ProjectID = {id}; ";
         {
             foreach (Stage stg in Stages)
             {
+                if (stg.subtasks == null)
+                {
+                    stg.Dispose();
+                    continue;
+                }
                 foreach (Subtask sbtsk in stg.subtasks)
                 {
+                    if (sbtsk.points == null)
+                    {
+                        sbtsk.Dispose();
+                        continue;
+                    }
                     foreach (ControlPoint cp in sbtsk.points) { cp.Dispose(); }
                     sbtsk.Dispose();
                 }

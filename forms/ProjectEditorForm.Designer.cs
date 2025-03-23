@@ -29,8 +29,8 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.stagesTable = new System.Windows.Forms.DataGridView();
             this.Stage = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.employeesTable = new System.Windows.Forms.DataGridView();
@@ -47,7 +47,6 @@ namespace ProjectOffice.forms
             this.managerLbl = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.choosenClientLbl = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.projectIdLbl = new System.Windows.Forms.Label();
@@ -60,6 +59,9 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel13 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.planDateEditLbl = new System.Windows.Forms.Label();
             this.subtaskPanel = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -72,6 +74,10 @@ namespace ProjectOffice.forms
             this.panel10 = new System.Windows.Forms.Panel();
             this.panel11 = new System.Windows.Forms.Panel();
             this.panel14 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.factEndDateLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.stagesTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.employeesTable)).BeginInit();
             this.panel1.SuspendLayout();
@@ -80,6 +86,8 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1.SuspendLayout();
             this.panel13.SuspendLayout();
             this.panel4.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.subtaskPanel.SuspendLayout();
             this.panel9.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -90,6 +98,7 @@ namespace ProjectOffice.forms
             this.panel10.SuspendLayout();
             this.panel11.SuspendLayout();
             this.panel14.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // stagesTable
@@ -98,15 +107,16 @@ namespace ProjectOffice.forms
             this.stagesTable.AllowUserToDeleteRows = false;
             this.stagesTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.stagesTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
+            this.stagesTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.stagesTable.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.stagesTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.stagesTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.stagesTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.stagesTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Stage});
@@ -135,15 +145,16 @@ namespace ProjectOffice.forms
             this.employeesTable.AllowUserToDeleteRows = false;
             this.employeesTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.employeesTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
+            this.employeesTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.employeesTable.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.employeesTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.employeesTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.employeesTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.employeesTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.fio,
@@ -178,13 +189,13 @@ namespace ProjectOffice.forms
             // 
             // endPlanDate
             // 
-            this.endPlanDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.endPlanDate.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.endPlanDate.CalendarMonthBackground = System.Drawing.Color.WhiteSmoke;
+            this.endPlanDate.Dock = System.Windows.Forms.DockStyle.Top;
             this.endPlanDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.endPlanDate.Location = new System.Drawing.Point(176, 6);
+            this.endPlanDate.Location = new System.Drawing.Point(0, 0);
             this.endPlanDate.Name = "endPlanDate";
-            this.endPlanDate.Size = new System.Drawing.Size(185, 30);
+            this.endPlanDate.Size = new System.Drawing.Size(235, 30);
             this.endPlanDate.TabIndex = 26;
             this.endPlanDate.ValueChanged += new System.EventHandler(this.endPlanDate_ValueChanged);
             // 
@@ -261,6 +272,7 @@ namespace ProjectOffice.forms
             this.saveProjectBtn.TabIndex = 18;
             this.saveProjectBtn.Text = "Сохранить";
             this.saveProjectBtn.UseVisualStyleBackColor = false;
+            this.saveProjectBtn.Click += new System.EventHandler(this.saveProjectBtn_Click);
             // 
             // label8
             // 
@@ -300,16 +312,6 @@ namespace ProjectOffice.forms
             this.label2.Size = new System.Drawing.Size(136, 29);
             this.label2.TabIndex = 11;
             this.label2.Text = "№ проекта";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(0, 6);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(176, 25);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "Окончание (план)";
             // 
             // choosenClientLbl
             // 
@@ -368,6 +370,8 @@ namespace ProjectOffice.forms
             // 
             // projCostLbl
             // 
+            this.projCostLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.projCostLbl.Location = new System.Drawing.Point(3, 3);
             this.projCostLbl.Name = "projCostLbl";
             this.projCostLbl.Size = new System.Drawing.Size(358, 35);
@@ -454,13 +458,51 @@ namespace ProjectOffice.forms
             // panel4
             // 
             this.panel4.AutoSize = true;
-            this.panel4.Controls.Add(this.endPlanDate);
-            this.panel4.Controls.Add(this.label3);
+            this.panel4.Controls.Add(this.tableLayoutPanel3);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(372, 147);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(364, 100);
             this.panel4.TabIndex = 27;
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.79121F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 66.20879F));
+            this.tableLayoutPanel3.Controls.Add(this.panel5, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.panel6, 0, 0);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(364, 100);
+            this.tableLayoutPanel3.TabIndex = 27;
+            this.tableLayoutPanel3.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel3_Paint);
+            // 
+            // panel5
+            // 
+            this.panel5.AutoSize = true;
+            this.panel5.Controls.Add(this.factEndDateLbl);
+            this.panel5.Controls.Add(this.planDateEditLbl);
+            this.panel5.Controls.Add(this.endPlanDate);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel5.Location = new System.Drawing.Point(126, 3);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(235, 94);
+            this.panel5.TabIndex = 11;
+            // 
+            // planDateEditLbl
+            // 
+            this.planDateEditLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.planDateEditLbl.Location = new System.Drawing.Point(1, 0);
+            this.planDateEditLbl.Name = "planDateEditLbl";
+            this.planDateEditLbl.Size = new System.Drawing.Size(232, 42);
+            this.planDateEditLbl.TabIndex = 27;
+            this.planDateEditLbl.Text = "label1";
+            this.planDateEditLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // subtaskPanel
             // 
@@ -501,18 +543,19 @@ namespace ProjectOffice.forms
             // 
             this.panel7.Controls.Add(this.choosenClientLbl);
             this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel7.Location = new System.Drawing.Point(3, 53);
+            this.panel7.Location = new System.Drawing.Point(3, 54);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(357, 44);
             this.panel7.TabIndex = 34;
             // 
             // chooseClientPanel
             // 
+            this.chooseClientPanel.AutoSize = true;
             this.chooseClientPanel.Controls.Add(this.chooseClientBtn);
             this.chooseClientPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chooseClientPanel.Location = new System.Drawing.Point(3, 3);
             this.chooseClientPanel.Name = "chooseClientPanel";
-            this.chooseClientPanel.Size = new System.Drawing.Size(357, 44);
+            this.chooseClientPanel.Size = new System.Drawing.Size(357, 45);
             this.chooseClientPanel.TabIndex = 34;
             // 
             // chooseEmployeePanel
@@ -593,6 +636,49 @@ namespace ProjectOffice.forms
             this.panel14.Size = new System.Drawing.Size(363, 49);
             this.panel14.TabIndex = 34;
             // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.label1);
+            this.panel6.Controls.Add(this.label3);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel6.Location = new System.Drawing.Point(3, 3);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(117, 94);
+            this.panel6.TabIndex = 12;
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label3.Location = new System.Drawing.Point(2, 3);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(113, 50);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Окончание (план)";
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.Location = new System.Drawing.Point(4, 64);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(110, 25);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Завершено";
+            // 
+            // factEndDateLbl
+            // 
+            this.factEndDateLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.factEndDateLbl.Location = new System.Drawing.Point(4, 51);
+            this.factEndDateLbl.Name = "factEndDateLbl";
+            this.factEndDateLbl.Size = new System.Drawing.Size(229, 42);
+            this.factEndDateLbl.TabIndex = 28;
+            this.factEndDateLbl.Text = "label4";
+            this.factEndDateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // ProjectEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
@@ -618,11 +704,14 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1.PerformLayout();
             this.panel13.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
+            this.panel5.ResumeLayout(false);
             this.subtaskPanel.ResumeLayout(false);
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.panel7.ResumeLayout(false);
             this.chooseClientPanel.ResumeLayout(false);
             this.chooseEmployeePanel.ResumeLayout(false);
@@ -631,6 +720,7 @@ namespace ProjectOffice.forms
             this.panel10.PerformLayout();
             this.panel11.ResumeLayout(false);
             this.panel14.ResumeLayout(false);
+            this.panel6.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -650,7 +740,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Label managerLbl;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label choosenClientLbl;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label projectIdLbl;
@@ -678,5 +767,12 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.DataGridViewTextBoxColumn fio;
         private System.Windows.Forms.DataGridViewCheckBoxColumn otvet;
         private System.Windows.Forms.DataGridViewTextBoxColumn Stage;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Label planDateEditLbl;
+        private System.Windows.Forms.Label factEndDateLbl;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label3;
     }
 }

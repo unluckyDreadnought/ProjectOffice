@@ -123,7 +123,7 @@ from {Db.Name}.client where ClientID > 1;";
 specialization.SpecializationTitle
 from {Db.Name}.`user`
 inner join {Db.Name}.specialization on `user`.UserSpecializationID = specialization.SpecializationID
-where `user`.UserSpecializationID != 0
+where `user`.UserSpecializationID != 0 and `user`.UserModeID != 2
 order by UserSurname ASC;";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
@@ -212,12 +212,42 @@ order by UserSurname ASC;";
             }
         }
 
+        /// <summary>
+        /// Получает индекс искомого значения в массиве массивов
+        /// </summary>
+        /// <param name="needed">Строковое искомое значение</param>
+        /// <param name="source">Массив массивов - источник поиска</param>
+        /// <param name="onlyFirst">Флаг, определяющий будет ли проверяться только первое значение каждого массива. По умолчанию - true</param>
+        /// <returns>Возвращает (индекс массива, индекс элемента массива) в случае обнаружения искомого значения. Иначе (-1, -1)</returns>
+        private (int, int) FindIndexOf(string needed, string[][] source, bool onlyFirst = true)
+        {
+            int[] address = new int[] { -1, -1 };
+            int arrIndx = 0;
+            while (address.Contains(-1) && arrIndx < source.Length)
+            {
+                int elemIndx = 0;
+                while (elemIndx < source[arrIndx].Length)
+                {
+                    if (source[arrIndx][elemIndx] == needed) address = new int[] { arrIndx, elemIndx };
+                    if (onlyFirst) break;
+                    else elemIndx++;
+                }
+                arrIndx++;
+            }
+            return (address[0], address[1]);
+        }
+
+        /// <summary>
+        /// Восстанавливает выбранные ранее позиции
+        /// </summary>
+        /// <param name="data">Массив массивов строк - источник информации о более раннем выборе</param>
         private void RecoverSelected(string[][] data)
         {
-            int row = 0, rec = 0;
-            while (row < chooseObjectsTable.Rows.Count && rec < data.Length)
+            int row = 0;
+            while (row < chooseObjectsTable.Rows.Count)
             {
-                if (chooseObjectsTable.Rows[row].Cells[0].Value.ToString() == data[rec][0])
+                (int rec, _) = FindIndexOf(chooseObjectsTable.Rows[row].Cells[0].Value.ToString(), data);
+                if (rec != -1)
                 {
                     if (_mode == ChooseMode.Employee)
                     {
@@ -228,7 +258,6 @@ order by UserSurname ASC;";
                     {
                         ((DataGridViewCheckBoxCell)chooseObjectsTable.Rows[row].Cells[2]).Value = true;
                     }
-                    rec++;
                 }
                 int col = 2;
                 while (col < chooseObjectsTable.Columns.Count)

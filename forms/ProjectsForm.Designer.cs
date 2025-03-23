@@ -270,6 +270,8 @@ namespace ProjectOffice.forms
             // 
             // projectsTable
             // 
+            this.projectsTable.AllowUserToAddRows = false;
+            this.projectsTable.AllowUserToDeleteRows = false;
             this.projectsTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.projectsTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.projectsTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
@@ -292,6 +294,7 @@ namespace ProjectOffice.forms
             this.projStatus});
             this.tableLayoutPanel1.SetColumnSpan(this.projectsTable, 4);
             this.projectsTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.projectsTable.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.projectsTable.EnableHeadersVisualStyles = false;
             this.projectsTable.Location = new System.Drawing.Point(2, 133);
             this.projectsTable.Margin = new System.Windows.Forms.Padding(2);
@@ -300,9 +303,9 @@ namespace ProjectOffice.forms
             this.projectsTable.RowHeadersWidth = 51;
             this.tableLayoutPanel1.SetRowSpan(this.projectsTable, 3);
             this.projectsTable.RowTemplate.Height = 24;
+            this.projectsTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.projectsTable.Size = new System.Drawing.Size(1014, 383);
             this.projectsTable.TabIndex = 1;
-            this.projectsTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.projectsTable_CellClick);
             // 
             // projId
             // 
@@ -310,6 +313,7 @@ namespace ProjectOffice.forms
             this.projId.HeaderText = "№";
             this.projId.MinimumWidth = 6;
             this.projId.Name = "projId";
+            this.projId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // projName
             // 
@@ -317,6 +321,7 @@ namespace ProjectOffice.forms
             this.projName.HeaderText = "Название проекта";
             this.projName.MinimumWidth = 10;
             this.projName.Name = "projName";
+            this.projName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // projResp
             // 
@@ -324,6 +329,7 @@ namespace ProjectOffice.forms
             this.projResp.HeaderText = "Ответственный";
             this.projResp.MinimumWidth = 6;
             this.projResp.Name = "projResp";
+            this.projResp.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // projEndDate
             // 
@@ -331,6 +337,7 @@ namespace ProjectOffice.forms
             this.projEndDate.HeaderText = "Дата окончания";
             this.projEndDate.MinimumWidth = 6;
             this.projEndDate.Name = "projEndDate";
+            this.projEndDate.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // projCost
             // 
@@ -338,6 +345,7 @@ namespace ProjectOffice.forms
             this.projCost.HeaderText = "Итоговая стоимость  | Возвращено";
             this.projCost.MinimumWidth = 6;
             this.projCost.Name = "projCost";
+            this.projCost.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // projStatus
             // 
@@ -345,6 +353,7 @@ namespace ProjectOffice.forms
             this.projStatus.HeaderText = "Статус";
             this.projStatus.MinimumWidth = 6;
             this.projStatus.Name = "projStatus";
+            this.projStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // panel2
             // 
@@ -411,6 +420,7 @@ namespace ProjectOffice.forms
             this.deleteProjectBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.deleteProjectBtn.Size = new System.Drawing.Size(29, 28);
             this.deleteProjectBtn.Text = "Удалить";
+            this.deleteProjectBtn.Click += new System.EventHandler(this.deleteProjectBtn_Click);
             // 
             // toolsDisplayModeCombo
             // 
@@ -455,7 +465,7 @@ namespace ProjectOffice.forms
             this.ControlBox = false;
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.Margin = new System.Windows.Forms.Padding(5);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ProjectsForm";

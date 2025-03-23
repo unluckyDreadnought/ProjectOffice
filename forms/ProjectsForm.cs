@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.Properties;
 using ProjectOffice.logic;
+using ProjectOffice.logic.app;
 
 namespace ProjectOffice.forms
 {
@@ -16,7 +17,6 @@ namespace ProjectOffice.forms
     {
         Db _db = null;
         bool _loading = true;
-        string selectedId = "";
 
         public ProjectsForm()
         {
@@ -260,6 +260,11 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
         private async void ProjectsForm_Load(object sender, EventArgs e)
         {
+            if (AppUser.Role != UserRole.Manager) 
+            {
+                toolStrip1.Hide();
+                projectReportBtn.Hide();
+            }
             _loading = true;
             this.Text = $"{Resources.APP_NAME}: Учёт проектов";
             this.Icon = Resources.PROJECT_OFFICE_ICON;
@@ -290,6 +295,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
         private async void editProjectBtn_Click(object sender, EventArgs e)
         {
+            string selectedId = GetSelectedProjectId();
             if (selectedId == "") return;
             ProjectEditorForm projEditor = new ProjectEditorForm(selectedId);
             projEditor.ShowDialog();
@@ -350,10 +356,31 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             projectSortCombo.SelectedIndex = 0;
         }
 
-        private void projectsTable_CellClick(object sender, DataGridViewCellEventArgs e)
+        private string GetSelectedProjectId()
         {
-            if (e.RowIndex < 0) return;
-            selectedId = projectsTable.Rows[e.RowIndex].Cells[0].Value.ToString();
+            string selectedId = "";
+            int rIndx = projectsTable.CurrentCell.RowIndex;
+            if (rIndx < -1) return selectedId;
+            selectedId = projectsTable.Rows[rIndx].Cells[0].Value.ToString();
+            return selectedId;
+        }
+
+        private async void deleteProjectBtn_Click(object sender, EventArgs e)
+        {
+            string selectedId = GetSelectedProjectId();
+            if (selectedId == "")
+            {
+                MessageBox.Show("Проект не выбран", "Удаление проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (DialogResult.Yes == MessageBox.Show("Вы уверены, что хотите удалить выделенный проект? Вы не сможете восстановить запись после удаления. При удалении удалятся также все связанные записи.", "", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+            {
+                Project temp = await Project.InitilazeAsync(selectedId);
+                int n = await temp.Delete();
+                if (n != -1) MessageBox.Show($"Проект (#{selectedId}) был удалён", "Удаление проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else MessageBox.Show($"Удаление проекта (#{selectedId}) было прервано", "Удаление проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
         }
     }
 }

@@ -29,94 +29,141 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Подзадача_1");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Подзадача_2");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Подзадача_3");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Этап_1", new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3});
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Подзадача_6");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Подзадача_7");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Этап_2", new System.Windows.Forms.TreeNode[] {
-            treeNode5,
-            treeNode6});
             this.label1 = new System.Windows.Forms.Label();
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.projectTree = new System.Windows.Forms.TreeView();
+            this.backBtn = new System.Windows.Forms.Button();
+            this.employeePanel = new System.Windows.Forms.Panel();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.addBtn = new System.Windows.Forms.ToolStripButton();
+            this.editBtn = new System.Windows.Forms.ToolStripButton();
+            this.deleteBtn = new System.Windows.Forms.ToolStripButton();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.employeePanel.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(354, 29);
+            this.label1.Size = new System.Drawing.Size(736, 29);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Активные этапы и подзадачи";
+            this.label1.Text = "Этапы, подзадачи, контрольные точки";
             // 
-            // treeView1
+            // projectTree
             // 
-            this.treeView1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.treeView1.Location = new System.Drawing.Point(12, 45);
-            this.treeView1.Name = "treeView1";
-            treeNode1.Name = "Подзадача_1";
-            treeNode1.Text = "Подзадача_1";
-            treeNode2.Name = "Node2";
-            treeNode2.Text = "Подзадача_2";
-            treeNode3.Name = "Node3";
-            treeNode3.Text = "Подзадача_3";
-            treeNode4.Name = "Этап_1";
-            treeNode4.Text = "Этап_1";
-            treeNode5.Name = "Node5";
-            treeNode5.Text = "Подзадача_6";
-            treeNode6.Name = "Node6";
-            treeNode6.Text = "Подзадача_7";
-            treeNode7.Name = "Этап_2";
-            treeNode7.Text = "Этап_2";
-            this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode4,
-            treeNode7});
-            this.treeView1.Size = new System.Drawing.Size(730, 226);
-            this.treeView1.TabIndex = 1;
+            this.projectTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.projectTree.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.projectTree.Location = new System.Drawing.Point(3, 32);
+            this.projectTree.Name = "projectTree";
+            this.projectTree.Size = new System.Drawing.Size(736, 240);
+            this.projectTree.TabIndex = 1;
             // 
-            // button1
+            // backBtn
             // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            this.button1.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(355, 277);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(387, 36);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Добавить контрольную точку";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.backBtn.Location = new System.Drawing.Point(6, 348);
+            this.backBtn.Name = "backBtn";
+            this.backBtn.Size = new System.Drawing.Size(178, 36);
+            this.backBtn.TabIndex = 2;
+            this.backBtn.Text = "К проекту";
+            this.backBtn.UseVisualStyleBackColor = true;
+            this.backBtn.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button2
+            // employeePanel
             // 
-            this.button2.Location = new System.Drawing.Point(12, 348);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(167, 36);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "К проекту";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.employeePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.employeePanel.BackColor = System.Drawing.Color.White;
+            this.employeePanel.Controls.Add(this.toolStrip1);
+            this.employeePanel.Location = new System.Drawing.Point(3, 284);
+            this.employeePanel.Name = "employeePanel";
+            this.employeePanel.Size = new System.Drawing.Size(742, 43);
+            this.employeePanel.TabIndex = 3;
             // 
-            // button3
+            // toolStrip1
             // 
-            this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            this.button3.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Location = new System.Drawing.Point(12, 277);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(296, 36);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "Добавить подзадачу";
-            this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.toolStrip1.AllowMerge = false;
+            this.toolStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.toolStrip1.AutoSize = false;
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addBtn,
+            this.editBtn,
+            this.deleteBtn});
+            this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            this.toolStrip1.Location = new System.Drawing.Point(303, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(107, 40);
+            this.toolStrip1.TabIndex = 3;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // addBtn
+            // 
+            this.addBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.addBtn.Image = global::ProjectOffice.Properties.Resources.ADD_BTN_PICTURE;
+            this.addBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.addBtn.Name = "addBtn";
+            this.addBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.addBtn.Size = new System.Drawing.Size(29, 37);
+            this.addBtn.Text = "toolStripButton1";
+            this.addBtn.Click += new System.EventHandler(this.addBtn_Click);
+            // 
+            // editBtn
+            // 
+            this.editBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.editBtn.Image = global::ProjectOffice.Properties.Resources.EDIT_BTN_PICTURE;
+            this.editBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.editBtn.Name = "editBtn";
+            this.editBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.editBtn.Size = new System.Drawing.Size(29, 37);
+            this.editBtn.Text = "toolStripButton2";
+            // 
+            // deleteBtn
+            // 
+            this.deleteBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.deleteBtn.Image = global::ProjectOffice.Properties.Resources.BASKET_BTN_PICTURE;
+            this.deleteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.deleteBtn.Name = "deleteBtn";
+            this.deleteBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.deleteBtn.Size = new System.Drawing.Size(29, 37);
+            this.deleteBtn.Text = "toolStripButton3";
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.label1);
+            this.panel2.Controls.Add(this.projectTree);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(3, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(742, 275);
+            this.panel2.TabIndex = 4;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.employeePanel, 0, 1);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 12);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(748, 330);
+            this.tableLayoutPanel1.TabIndex = 5;
             // 
             // SubtaskList
             // 
@@ -124,27 +171,33 @@ namespace ProjectOffice.forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.ClientSize = new System.Drawing.Size(754, 396);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.treeView1);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.tableLayoutPanel1);
+            this.Controls.Add(this.backBtn);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "SubtaskList";
             this.Text = "Список задач:";
             this.Load += new System.EventHandler(this.SubtaskList_Load);
+            this.employeePanel.ResumeLayout(false);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TreeView projectTree;
+        private System.Windows.Forms.Button backBtn;
+        private System.Windows.Forms.Panel employeePanel;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripButton addBtn;
+        private System.Windows.Forms.ToolStripButton editBtn;
+        private System.Windows.Forms.ToolStripButton deleteBtn;
     }
 }
