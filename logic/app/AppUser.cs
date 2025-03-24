@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.forms;
@@ -14,6 +16,7 @@ namespace ProjectOffice.logic.app
         public static string Snp = "<ФИО не указано>";
         public static UserRole Role = UserRole.Employee;
         public static bool confirmAccessToSettings = false;
+        public static Bitmap Photo = null;
 
         public static string GetUserMode()
         {

@@ -304,19 +304,20 @@ namespace ProjectOffice.logic
             }
         }
 
-        public async Task<string[]> FindUser(string login, string passwd)
+        public async Task<(string[], DataTable)> FindUser(string login, string passwd)
         {
-            string query = $"select concat(UserSurname, ' ', substring(UserName, 1, 1), '.', substring(UserPatronymic, 1, 1)) as snf, UserModeID, UserID from `{AppSettings.dbName}`.`user` where UserLogin = @login and UserPassword = @pswd;";
+            string query = $@"select concat(UserSurname, ' ', substring(UserName, 1, 1), '.', substring(UserPatronymic, 1, 1)) as snf, UserModeID, UserID, UserPhoto 
+from `{AppSettings.dbName}`.`user` where UserLogin = @login and UserPassword = @pswd;";
 
             var task = ExecuteReaderAsync(query, login, passwd);
             DataTable result = await Common.GetAsyncResult(task);
-            if (result == null) return null; 
+            if (result == null) return (null, null); 
 
             if (result.Rows.Count == 0)
             {
-                return new string[] { "Пользователь с такими учётными данными не найден." };
+                return (new string[] { "Пользователь с такими учётными данными не найден." }, null);
             }
-            return new string[] { result.Rows[0][0].ToString(), result.Rows[0][1].ToString(), result.Rows[0][2].ToString() };
+            return (new string[] { result.Rows[0][0].ToString(), result.Rows[0][1].ToString(), result.Rows[0][2].ToString() }, result);
         }
     }
 }

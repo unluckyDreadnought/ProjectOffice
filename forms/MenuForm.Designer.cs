@@ -33,7 +33,7 @@ namespace ProjectOffice.forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MenuForm));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.userDataPanel = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.userPhotoPic = new System.Windows.Forms.PictureBox();
             this.usrSnpLbl = new System.Windows.Forms.Label();
             this.picturePanel = new System.Windows.Forms.Panel();
             this.splashPicture = new System.Windows.Forms.PictureBox();
@@ -41,7 +41,7 @@ namespace ProjectOffice.forms
             this.userModeTip = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.userDataPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.userPhotoPic)).BeginInit();
             this.picturePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splashPicture)).BeginInit();
             this.SuspendLayout();
@@ -66,7 +66,7 @@ namespace ProjectOffice.forms
             // userDataPanel
             // 
             this.userDataPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.userDataPanel.Controls.Add(this.pictureBox1);
+            this.userDataPanel.Controls.Add(this.userPhotoPic);
             this.userDataPanel.Controls.Add(this.usrSnpLbl);
             this.userDataPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userDataPanel.Location = new System.Drawing.Point(399, 3);
@@ -75,16 +75,16 @@ namespace ProjectOffice.forms
             this.userDataPanel.Size = new System.Drawing.Size(391, 100);
             this.userDataPanel.TabIndex = 0;
             // 
-            // pictureBox1
+            // userPhotoPic
             // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.Image = global::ProjectOffice.Properties.Resources.USR_PLUG_PICTURE;
-            this.pictureBox1.Location = new System.Drawing.Point(349, 3);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(39, 39);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 4;
-            this.pictureBox1.TabStop = false;
+            this.userPhotoPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.userPhotoPic.Image = global::ProjectOffice.Properties.Resources.USR_PLUG_PICTURE;
+            this.userPhotoPic.Location = new System.Drawing.Point(349, 3);
+            this.userPhotoPic.Name = "userPhotoPic";
+            this.userPhotoPic.Size = new System.Drawing.Size(39, 39);
+            this.userPhotoPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.userPhotoPic.TabIndex = 4;
+            this.userPhotoPic.TabStop = false;
             // 
             // usrSnpLbl
             // 
@@ -143,7 +143,7 @@ namespace ProjectOffice.forms
             this.Load += new System.EventHandler(this.MenuForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.userDataPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.userPhotoPic)).EndInit();
             this.picturePanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splashPicture)).EndInit();
             this.ResumeLayout(false);
@@ -158,7 +158,7 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Panel picturePanel;
         private System.Windows.Forms.PictureBox splashPicture;
         private System.Windows.Forms.Panel buttonsPanel;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox userPhotoPic;
         private System.Windows.Forms.ToolTip userModeTip;
     }
 }

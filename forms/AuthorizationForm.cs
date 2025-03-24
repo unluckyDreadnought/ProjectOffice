@@ -28,7 +28,7 @@ namespace ProjectOffice.forms
         {
             InitializeComponent();
             _db = new Db();
-            LoginDebug("manager"); // admin  manager
+            LoginDebug("employee"); // admin  manager employee
         }
 
         // Функция, управляющая доступностью кнопки входа в зависимости от заполненности полей
@@ -73,7 +73,7 @@ namespace ProjectOffice.forms
             string login = LoginTextBox_nec.Text.Trim();
             string pass = Security.HashSha512(PswdTextBox_nec.Text.Trim());
             // Поиск пользователя по логину и хэшированному паролю среди записанных в базе данных
-            string[] result = await _db.FindUser(login, pass);
+            (string[] result, DataTable dt) = await _db.FindUser(login, pass);
             if (result == null)
             {
                 MessageBox.Show("Ошибка обращения к базе данных", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -83,6 +83,16 @@ namespace ProjectOffice.forms
             {
                 MessageBox.Show(result[0], "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
+            }
+
+            AppUser.Photo = null;
+            if (dt.Rows[0].ItemArray[3] as byte[] != null)
+            {
+                byte[] bytes = Сompressor.DecompressBytes((byte[])dt.Rows[0].ItemArray[3]);
+                using (MemoryStream ms = new MemoryStream(bytes))
+                {
+                    AppUser.Photo = new Bitmap(ms);
+                }
             }
             AppUser.Id = result[2];
             AppUser.Snp = result[0];

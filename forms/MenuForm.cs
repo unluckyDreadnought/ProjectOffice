@@ -207,6 +207,7 @@ namespace ProjectOffice.forms
             this.Text = $"{Resources.APP_NAME}";
             usrSnpLbl.Text = AppUser.Snp;
             userModeTip.SetToolTip(usrSnpLbl, AppUser.GetUserMode());
+            userPhotoPic.Image = AppUser.Photo;
             splashPicture.Image = Resources.PLUG_PICTURE;
         }
     }

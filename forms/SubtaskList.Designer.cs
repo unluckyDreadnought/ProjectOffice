@@ -65,6 +65,7 @@ namespace ProjectOffice.forms
             this.projectTree.Name = "projectTree";
             this.projectTree.Size = new System.Drawing.Size(736, 240);
             this.projectTree.TabIndex = 1;
+            this.projectTree.MouseClick += new System.Windows.Forms.MouseEventHandler(this.projectTree_MouseClick);
             // 
             // backBtn
             // 
