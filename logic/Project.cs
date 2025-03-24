@@ -891,7 +891,7 @@ ProjectFactEndDate from {Db.Name}.project where ProjectID = {id}; ";
         /// </summary>
         /// <param name="id">Идентификатор проекта</param>
         /// <returns>Возвращает асинхронную операцию, результатом которой является массив массивов с идентификаторами сотрудников</returns>
-        private static async Task<string[][]> GetEmployees(string id)
+        public static async Task<string[][]> GetEmployees(string id)
         {
             string query = $"select UserId, IsResponsible from {Db.Name}.userproject where ProjectID = {id};";
             var task = _db.ExecuteReaderAsync(query);
@@ -902,7 +902,7 @@ ProjectFactEndDate from {Db.Name}.project where ProjectID = {id}; ";
             while (r < raw.Length)
             {
                 if (raw[r][1] == "1") result.Add(raw[r]);
-                else result.Add(new string[] { raw[r][0] });
+                else result.Add(new string[] {raw[r][0]});
                 r++;
             }
             return result.ToArray();

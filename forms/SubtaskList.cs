@@ -37,7 +37,6 @@ namespace ProjectOffice.forms
                 int subtaskIndx = 0;
                 while (subtaskIndx < proj.Stages[stgIndx].subtasks.Count)
                 {
-                    bool closed = false;
                     TreeNode subtaskNode = new TreeNode();
                     subtaskNode.Text = proj.Stages[stgIndx].subtasks[subtaskIndx].Title;
                     subtaskNode.ToolTipText = proj.Stages[stgIndx].subtasks[subtaskIndx].Title;
@@ -53,13 +52,11 @@ namespace ProjectOffice.forms
                         cpNode.Text = $"{proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].Title} ({author})";
                         cpNode.ToolTipText = proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].Title;
                         cpNode.Name = $"cp_{proj.Stages[stgIndx].subtasks[subtaskIndx].Id}";
-                        closed = proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].StatusId == ((int)logic.Status.Finish).ToString();
                         subtaskNode.Nodes.Add(cpNode);
                         cpIndx++;
                     }
 
                     subtaskIndx++;
-                    if (closed) subtaskNode.Nodes[subtaskNode.Nodes.Count - 1].ForeColor = Color.Gray;
                 }
                 stgIndx++;
                 projectTree.Nodes.Add(stageNode);
@@ -69,22 +66,49 @@ namespace ProjectOffice.forms
 
         private void ColorNodes()
         {
+            List<Stage> stages = proj.Stages;
+            List<Stage> started = stages.Where(
+                stg => stg.subtasks.Count > 0 && stg.subtasks.Where(sbtsk => sbtsk.points.Count > 0).ToArray().Length > 0
+            ).ToList();
+            if (started.Count == 0) return;
+            List<List<Subtask>> subtasks = started.Select(stg => stg.subtasks).ToList();
+            int stgIndx = 0;
+            while (stgIndx < subtasks.Count)
+            {
+                subtasks[stgIndx] = subtasks[stgIndx].Where(stsk => stsk.points.Where(p => p.StatusId == ((int)Status.Finish).ToString()).ToArray().Length > 0).ToList();
+                stgIndx++;
+            }
+
             int level0 = 0;
             while (level0 < projectTree.Nodes.Count)
             {
-                Color color = Color.Black;
-                if (projectTree.Nodes[level0].LastNode.Nodes.Count > 0)
+                if (projectTree.Nodes[level0].Nodes.Count == 0) continue;
+                int level1 = 0;
+                int completedSbtsk = 0;
+                while (level1 < projectTree.Nodes[level0].Nodes.Count)
                 {
-                    color = projectTree.Nodes[level0].LastNode.LastNode.ForeColor;
-                    projectTree.Nodes[level0].LastNode.ForeColor = color;
+                    if (subtasks[level0].Select(s => s.Title).ToArray().Contains(projectTree.Nodes[level0].Nodes[level1].Text))
+                    {
+                        projectTree.Nodes[level0].Nodes[level1].ForeColor = Color.Gray;
+                        int cpCount = 0;
+                        while (cpCount < projectTree.Nodes[level0].Nodes[level1].Nodes.Count)
+                        {
+                            projectTree.Nodes[level0].Nodes[level1].Nodes[cpCount].ForeColor = Color.Gray;
+                            if (cpCount == projectTree.Nodes[level0].Nodes[level1].Nodes.Count - 1)
+                            {
+                                projectTree.Nodes[level0].Nodes[level1].Nodes[cpCount].BackColor = Color.LightGray;
+                            }
+                            cpCount++;
+                        }
+                        completedSbtsk++;
+                    }
+                    level1++;
                 }
-                else
+                if (completedSbtsk == projectTree.Nodes[level0].Nodes.Count)
                 {
-                    color = projectTree.Nodes[level0].LastNode.ForeColor;
+                    projectTree.Nodes[level0].ForeColor = Color.Gray;
                 }
-                projectTree.Nodes[level0].ForeColor = color;
                 level0++;
-                ;
             }
         }
 

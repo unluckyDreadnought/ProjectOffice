@@ -24,6 +24,7 @@ namespace ProjectOffice.forms
             _db = new Db();
         }
 
+        // для менеджера
         private async Task<(DataTable, Exception)> GetProjectsData(string searchPattern = "", string filter = "", string orderRule = "", string dateRange = "")
         {
             string query = $@"select project.ProjectID, ProjectTitle, concat(UserSurname, ' ', substring(UserName, 1,1), '.', substring(UserPatronymic, 1,1)) as 'fio', StatusTitle,
@@ -56,6 +57,22 @@ where ProjectTitle like '%{searchPattern}%' ";
             return await task;
         }
 
+        // для сотрудника 
+        private async Task<(DataTable, Exception)> GetEmployeeProjectsData(string searchPattern = "")
+        {
+            string query = $@"select 
+ProjectID, '' as '№', ProjectTitle as 'Наименование и назначение',  '' as 'Сотрудники',
+concat(date_format(ProjectStartDate, '%d.%m.%Y'), ' - ',  date_format(ProjectPlanEndDate, '%d.%m.%Y')) as 'Сроки выполнения',
+StatusTitle as 'Статус'
+from project_office.project
+inner join project_office.`status` on `status`.StatusID = project.ProjectStatusID
+where project.ProjectStatusID not in (5,6) and ({AppUser.Id}) in (select UserID from project_office.userproject)
+and ProjectTitle like '%{searchPattern}%' ";
+            query += $"order by ProjectPlanEndDate asc;";
+            var task = _db.ExecuteReaderAsync(query);
+            return await task;
+        }
+
         private async void UpdateProjectsTable(string searchPattern = "", string filter = "", string orderRule = "", string dateRange = "")
         {
             object res = await _db.GetAsyncReaderResult(GetProjectsData(searchPattern, filter, orderRule, dateRange));
@@ -80,7 +97,77 @@ where ProjectTitle like '%{searchPattern}%' ";
                 columns["projStatus"].Value = rowData[3].ToString();
                 i++;
             }
+        }
 
+        private async Task<string> PrintEmployees(string  projectId)
+        {
+            string emplList = "";
+            string[][] emplIds = await Project.GetEmployees(projectId);
+            List<string> employees = new List<string>();
+            string[] resps = emplIds.Where(arr => arr.Length > 1).Select(elem => elem[0]).ToArray().OrderBy(elem => elem).ToArray();
+            if (resps.Length != 0) resps[resps.Length - 1] += "\n";
+            else resps = new string[] { "-\n" };
+            employees.AddRange(resps);
+            string[] slaves = emplIds.Where(arr => arr.Length == 1).Select(elem => elem[0]).ToArray().OrderBy(elem => elem).ToArray();
+            employees.AddRange(slaves);
+            int indx = 0;
+            while (indx < employees.Count)
+            {
+                if (employees[indx] == "-\n")
+                {
+                    indx++;
+                    continue;
+                }
+                string temp = await Common.GetEmployee(employees[indx]);
+                employees[indx] = employees[indx].Contains("\n") ? temp + "\n" : temp;
+                indx++;
+            }
+            emplList = $"Ответственные\n{string.Join("\n", employees)}";
+            return emplList;
+        }
+
+        private async void UpdateEmployeeProjectTable(string searchPattern = "")
+        {
+            object res = await _db.GetAsyncReaderResult(GetEmployeeProjectsData(searchPattern));
+            employeeProjectTable.Rows.Clear();
+            if (res is DataTable == false)
+            {
+                if (res != null) MessageBox.Show((string)res, "Обновление данных о проектах", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            DataTable dt = (DataTable)res;
+            DataTable dtClone = dt.Clone();
+            int col = 0;
+            while (col < dtClone.Columns.Count)
+            {
+                dtClone.Columns[col].DataType = typeof(string);
+                dtClone.Columns[col].MaxLength = 256;
+                col++;
+            }
+            int row = 0;
+            while (row < dt.Rows.Count)
+            {
+                dtClone.ImportRow(dt.Rows[row]);
+                row++;
+            }
+
+            employeeProjectTable.DataSource = dtClone;
+            // 0id 1# 2title 3empl 4dates 5status
+            employeeProjectTable.Columns[0].Visible = false;
+            //employeeProjectTable.Columns[0].FillWeight = 0;
+            employeeProjectTable.Columns[1].FillWeight = 1;
+            employeeProjectTable.Columns[2].FillWeight = 5;
+            employeeProjectTable.Columns[3].FillWeight = 3;
+            employeeProjectTable.Columns[4].FillWeight = 2;
+            employeeProjectTable.Columns[5].FillWeight = 2;
+
+            row = 0;
+            while (row < employeeProjectTable.Rows.Count)
+            {
+                employeeProjectTable.Rows[row].Cells[1].Value = $"{row+1}";
+                employeeProjectTable.Rows[row].Cells[3].Value = await PrintEmployees(employeeProjectTable.Rows[row].Cells[0].Value.ToString());
+                row++;
+            }
         }
 
         private void SetSearchLinePlaceholder()
@@ -258,26 +345,81 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             return sort;
         }
 
+        private async Task UpdateTable()
+        {
+            if (AppUser.Role == UserRole.Manager)
+            {
+                UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            }
+            else if (AppUser.Role == UserRole.Employee)
+            {
+                UpdateEmployeeProjectTable(GetSearchPattern());
+            }
+        }
+
+        private void HideTable(bool projMngr, bool projEmpl)
+        {
+            TableLayoutRowStyleCollection styles = projectTablesLayout.RowStyles;
+            styles[0].SizeType = SizeType.Percent;
+            styles[1].SizeType = SizeType.Percent;
+
+            if (!projMngr) styles[0].Height = 50;
+            else styles[0].Height = 0;
+
+            if (!projEmpl) styles[1].Height = 50;
+            else styles[1].Height = 0;
+        }
+
+        private void HideDateFilters()
+        {
+            TableLayoutRowStyleCollection styles = searchLayout.RowStyles;
+            styles[0].SizeType = SizeType.Percent;
+            styles[1].SizeType = SizeType.Percent;
+
+            if (styles[0].Height > 0) styles[0].Height = 0;
+            else styles[0].Height = 50;
+        }
+
         private async void ProjectsForm_Load(object sender, EventArgs e)
         {
-            if (AppUser.Role != UserRole.Manager) 
+            if (AppUser.Role == UserRole.Employee) 
             {
                 toolStrip1.Hide();
                 projectReportBtn.Hide();
+                projectsTable.Hide();
+                employeeProjectTable.Show();
+                HideTable(projMngr: true, projEmpl: false);
+                HideDateFilters();
+                groupBox1.Hide();
+                label1.Hide();
+                projectSortCombo.Hide();
+                projectResetFilterBtn.Hide();
+                employeeProjectTable.Show();
+            }
+            else if (AppUser.Role == UserRole.Manager)
+            {
+                toolStrip1.Show();
+                projectReportBtn.Show();
+                projectsTable.Show();
+                employeeProjectTable.Hide();
+                HideTable(projMngr: false, projEmpl: true);
+ 
+                DateTime minDateValue = DateTime.MinValue;
+                var minDateTask = GetEarlyStartDate();
+                minDateValue = await minDateTask;
+                projectStartRangeDatePicker.Value = projectStartRangeDatePicker.MinDate;
+                projectEndDatePicker.Value = projectEndDatePicker.MinDate;
+                projectStartRangeDatePicker.MaxDate = DateTime.Now;
+                projectEndDatePicker.MinDate = await GetLastDate();
+                projectStartRangeDatePicker.MinDate = minDateValue;
             }
             _loading = true;
             this.Text = $"{Resources.APP_NAME}: Учёт проектов";
             this.Icon = Resources.PROJECT_OFFICE_ICON;
             this.WindowState = FormWindowState.Maximized;
-            DateTime minDateValue = DateTime.MinValue;
-            var minDateTask = GetEarlyStartDate();
-            minDateValue = await minDateTask;
-            projectStartRangeDatePicker.Value = projectStartRangeDatePicker.MinDate;
-            projectEndDatePicker.MinDate = DateTime.Now;
-            projectEndDatePicker.Value = projectEndDatePicker.MinDate;
+            
             SetSearchLinePlaceholder();
-            projectStartRangeDatePicker.MinDate = minDateValue;
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            await UpdateTable();
             _loading = false;
         }
 
@@ -290,7 +432,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
         {
             ProjectEditorForm projEditor = new ProjectEditorForm();
             projEditor.ShowDialog();
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            await UpdateTable();
         }
 
         private async void editProjectBtn_Click(object sender, EventArgs e)
@@ -299,7 +441,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             if (selectedId == "") return;
             ProjectEditorForm projEditor = new ProjectEditorForm(selectedId);
             projEditor.ShowDialog();
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            await UpdateTable();
         }
 
         private void projectSearchLineTextBox_Leave(object sender, EventArgs e)
@@ -314,7 +456,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
         private async void projectSearchLineTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) await UpdateTable();
         }
 
         private async void projectFilterOnCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -332,22 +474,22 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
         private async void projectFilterCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) await UpdateTable();
         }
 
         private async void projectSortCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) await UpdateTable();
         }
 
         private async void projectStartRangeDatePicker_ValueChanged(object sender, EventArgs e)
         {
-            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) await UpdateTable();
         }
 
         private async void projectEndDatePicker_ValueChanged(object sender, EventArgs e)
         {
-            if (!_loading) UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            if (!_loading) await UpdateTable();
         }
 
         private void projectResetFilterBtn_Click(object sender, EventArgs e)
@@ -380,7 +522,20 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
                 if (n != -1) MessageBox.Show($"Проект (#{selectedId}) был удалён", "Удаление проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else MessageBox.Show($"Удаление проекта (#{selectedId}) было прервано", "Удаление проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            UpdateProjectsTable(GetSearchPattern(), await GetFilterCondition(), GetSortingCondition(), GetFilterDateRange());
+            await UpdateTable();
+        }
+
+        private async void employeeProjectTable_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex == -1) return;
+            if (e.Button == MouseButtons.Left)
+            {
+                employeeProjectTable.ClearSelection();
+                employeeProjectTable.CurrentCell = employeeProjectTable.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                Project proj = await Project.InitilazeAsync(employeeProjectTable.Rows[e.RowIndex].Cells[0].Value.ToString());
+                SubtaskList tasksList = new SubtaskList(proj);
+                tasksList.ShowDialog();
+            }
         }
     }
 }
