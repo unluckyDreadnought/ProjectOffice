@@ -47,8 +47,15 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
             return res;
         }
 
+        private void HideObjectToAddCombo(bool visible = false)
+        {
+            objAddCombo.Enabled = objAddCombo.Visible = visible;
+            objAddCombo.SelectedIndex = !visible ? -1 : 0;
+        }
+
         private async Task CheckUserResponsibility(string clickedNodeName = "")
         {
+            HideObjectToAddCombo(false);
             if (clickedNodeName == "")
             {
                 isResponsible = await IsCurrentUserResponsible();
@@ -60,12 +67,17 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                 else
                 {
                     MessageBox.Show("Взаимодействие со стадиями доступно только сотрудникам, назначенным ответственными.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ChangeBtnsClickability(add: false, edit: false, delete: false);
                     return;
                 }
             }
             else if (clickedNodeName.Contains("sbtsk"))
             {
-                if (isResponsible) ChangeBtnsClickability(add: true, edit: true, delete: true);
+                if (isResponsible)
+                {
+                    HideObjectToAddCombo(true);
+                    ChangeBtnsClickability(add: true, edit: false, delete: true);
+                }
                 else
                 {
                     ChangeBtnsClickability(add: true);
@@ -88,18 +100,28 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                     }
                 }
             }
+            if (proj.Status == ((int)Status.Finish).ToString() || proj.Status == ((int)Status.Rejected).ToString())
+            {
+                ChangeBtnsClickability(add: false, edit: false, delete: false);
+            }
 
         }
 
         private void ChangeBtnsClickability(bool add = false, bool edit = false, bool delete = false)
         {
             addBtn.Enabled = add;
+            addBtn.Visible = add;
             editBtn.Enabled = edit;
+            editBtn.Visible = edit;
             deleteBtn.Enabled = delete;
+            deleteBtn.Visible = delete;
         }
 
         private async Task LoadProjectTree()
         {
+            HideObjectToAddCombo(false);
+            SetDescriptionVisibility();
+            projectTree.Nodes.Clear();
             proj.Stages = await Stage.GetStages(proj.Id);
             int stgIndx = 0; ;
             while (stgIndx < proj.Stages.Count)
@@ -115,8 +137,13 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                 {
                     TreeNode subtaskNode = new TreeNode();
                     subtaskNode.Text = proj.Stages[stgIndx].subtasks[subtaskIndx].Title;
-                    subtaskNode.ToolTipText = proj.Stages[stgIndx].subtasks[subtaskIndx].Title;
-                    subtaskNode.Name = $"stsk_{proj.Stages[stgIndx].subtasks[subtaskIndx].Id}";
+                    string sbtskDesc = proj.Stages[stgIndx].subtasks[subtaskIndx].Description;
+                    if (sbtskDesc != "" && sbtskDesc != null) 
+                    {
+                        subtaskNode.ToolTipText = sbtskDesc;
+                    }
+                    else subtaskNode.ToolTipText = proj.Stages[stgIndx].subtasks[subtaskIndx].Title;
+                    subtaskNode.Name = $"sbtsk_{proj.Stages[stgIndx].subtasks[subtaskIndx].Id}";
                     subtaskNode.Checked = false;
                     stageNode.Nodes.Add(subtaskNode);
                     
@@ -158,7 +185,11 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
             int level0 = 0;
             while (level0 < projectTree.Nodes.Count)
             {
-                if (projectTree.Nodes[level0].Nodes.Count == 0) continue;
+                if (projectTree.Nodes[level0].Nodes.Count == 0)
+                {
+                    level0++;
+                    continue;
+                }
                 int level1 = 0;
                 int completedSbtsk = 0;
                 while (level1 < projectTree.Nodes[level0].Nodes.Count)
@@ -201,28 +232,20 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
             await CheckUserResponsibility();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void SetDescriptionVisibility(bool visible = false)
         {
-            this.Close();
-        }
+            TableLayoutColumnStyleCollection styles = nodesDescLayout.ColumnStyles;
+            styles[0].SizeType = SizeType.Percent;
+            styles[1].SizeType = SizeType.Percent;
 
-        private async void addBtn_Click(object sender, EventArgs e)
-        {
-            Form form = null;
-            TreeNode node = projectTree.SelectedNode;
-            if (node == null) return;
-            switch (node.Level)
-            {
-                case 0: form = new SubtaskEditor(ref proj, projectTree.SelectedNode.Name.Split('_')[1]); break;
-                case 1: form = new ControlPointEditor(); break;
-                default: return;
-            }
-            if (form != null) form.ShowDialog();
-            await LoadProjectTree();
+            styles[0].Width = 65;
+            styles[1].Width = visible ? 35 : 0;
+            if (!visible) descLbl.Text = "";
         }
 
         private async void projectTree_MouseClick(object sender, MouseEventArgs e)
         {
+            SetDescriptionVisibility();
             TreeViewHitTestInfo info = projectTree.HitTest(e.X, e.Y);
             if (info.Location == TreeViewHitTestLocations.PlusMinus) return;
             if (info.Node.Name.Contains("stg"))
@@ -236,6 +259,11 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                 pointId = "";
                 subtaskId = info.Node.Name.Split('_')[1];
                 stageId = info.Node.Parent.Name.Split('_')[1];
+                if (info.Node.ToolTipText != info.Node.Text)
+                {
+                    descLbl.Text = info.Node.ToolTipText;
+                    SetDescriptionVisibility(true);
+                }
             }
             else if (info.Node.Name.Contains("cp"))
             {
@@ -248,5 +276,126 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
             ;
         }
 
+        private async void addBtn_Click(object sender, EventArgs e)
+        {
+            Form form = null;
+            TreeNode node = projectTree.SelectedNode;
+            if (node == null) return;
+            switch (node.Level)
+            {
+                case 0:
+                    {
+                        if (isResponsible)
+                        {
+                            form = new SubtaskEditor(ref proj, stageId);
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        if (isResponsible && objAddCombo.SelectedIndex == 0)
+                        {
+                            form = new SubtaskEditor(ref proj, stageId);
+                        }
+                        else
+                        {
+                            form = new ControlPointEditor(ref proj, stageId, subtaskId);
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        form = new ControlPointEditor(ref proj, stageId, subtaskId);
+                        break;
+                    }
+                default: return;
+            }
+            if (form != null) form.ShowDialog();
+            await LoadProjectTree();
+        }
+
+        private async void editBtn_Click(object sender, EventArgs e)
+        {
+            Form form = null;
+            TreeNode node = projectTree.SelectedNode;
+            if (node == null) return;
+            switch (node.Level)
+            {
+                case 2:
+                    {
+                        form = new ControlPointEditor(ref proj, stageId, subtaskId, pointId);
+                        break;
+                    }
+                default: return;
+            }
+            if (form != null) form.ShowDialog();
+            await LoadProjectTree();
+        }
+
+        private async void deleteBtn_Click(object sender, EventArgs e)
+        {
+            if (projectTree.SelectedNode == null)
+            {
+                MessageBox.Show("Выберите объект для удаления из проекта", "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            switch (projectTree.SelectedNode.Level)
+            {
+                case 1:
+                    {
+                        string delMsg = $"Вы действительно хотите удалить узел '{projectTree.SelectedNode.Text}'.";
+                        if (projectTree.SelectedNode.Nodes.Count > 0 )
+                        {
+                            delMsg += "\nЕсли узел содержал дочерние объекты, последние будут безвозвратно стёрты.";
+                        }
+                            
+                        if (DialogResult.OK == MessageBox.Show(delMsg, "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning))
+                        {
+                            (object result, _) = await Subtask.UnlinkByStgProjLinks(await Stage.GetStageLinkID(proj.Id, stageId));
+                            int r = Convert.ToInt32(result);
+                            if (r == 0) 
+                            {
+                                MessageBox.Show($"Удаление узела из проекта '{projectTree.SelectedNode.Text}' не было произведено", 
+                                    "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                            else if (r > 0)
+                            {
+                                MessageBox.Show($"Удаление произведено успешно.\nИз проекта удалено {r} объектов", 
+                                    "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        string delMsg = $"Вы действительно хотите удалить узел '{projectTree.SelectedNode.Text}'.";
+
+                        if (DialogResult.OK == MessageBox.Show(delMsg, "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning))
+                        {
+                            (object result, _) = await ControlPoint.Delete(pointId);
+                            int r = Convert.ToInt32(result);
+                            if (r == 0)
+                            {
+                                MessageBox.Show($"Удаление узела из проекта '{projectTree.SelectedNode.Text}' не было произведено",
+                                    "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                            else if (r > 0)
+                            {
+                                MessageBox.Show($"Удаление произведено успешно.\nИз проекта удалено {r} объектов",
+                                    "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                        }
+                        break;
+                    }
+                default: break;
+            }
+            await LoadProjectTree();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

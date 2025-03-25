@@ -399,7 +399,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
 
         private void subtaskBtn_Click(object sender, EventArgs e)
         {
-            SubtaskList tasksList = new SubtaskList(proj);
+            SubtaskList tasksList = new SubtaskList(ref proj);
             tasksList.ShowDialog();
         }
 

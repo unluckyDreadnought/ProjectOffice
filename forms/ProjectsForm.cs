@@ -376,8 +376,8 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             styles[0].SizeType = SizeType.Percent;
             styles[1].SizeType = SizeType.Percent;
 
-            if (styles[0].Height > 0) styles[0].Height = 0;
-            else styles[0].Height = 50;
+            styles[0].Height = 0;
+            styles[1].Height = 50;
         }
 
         private async void ProjectsForm_Load(object sender, EventArgs e)
@@ -533,7 +533,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
                 employeeProjectTable.ClearSelection();
                 employeeProjectTable.CurrentCell = employeeProjectTable.Rows[e.RowIndex].Cells[e.ColumnIndex];
                 Project proj = await Project.InitilazeAsync(employeeProjectTable.Rows[e.RowIndex].Cells[0].Value.ToString());
-                SubtaskList tasksList = new SubtaskList(proj);
+                SubtaskList tasksList = new SubtaskList(ref proj);
                 tasksList.ShowDialog();
             }
         }

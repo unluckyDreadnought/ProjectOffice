@@ -22,6 +22,30 @@ namespace ProjectOffice.logic
         private bool _disposed = false;
 
         /// <summary>
+        /// Получение экземпляра <see cref="ControlPoint"/>, заполненого данными из БД
+        /// </summary>
+        /// <param name="pointId">Идентификатор контрольной точки</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является экземпляр <see cref="ControlPoint"/> в случае успеха, иначе <see cref="null"/></returns>
+        public static async Task<ControlPoint> GetById(string pointId)
+        {
+            string query = $@"select 
+ControlPointAuthorID, StatusID, ControlPointTitle, ControlPointDescription, ControlPointDateTime 
+from {Db.Name}.controlpoint where ControlPointID = {pointId};";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            if (dt.Rows.Count == 0) return null;
+            string[] info = Common.DataTableToStringArray(dt);
+            ControlPoint point = new ControlPoint();
+            point.Id = pointId;
+            point.AuthorId = info[0];
+            point.StatusId = info[1];
+            point.Title = info[2];
+            point.Description = info[3];
+            point.CreatedTime = info[4];
+            return point;
+        }
+
+        /// <summary>
         /// Получает все контрольные точки данной подзадачи проекта
         /// </summary>
         /// <param name="projectId">Идентификатор проекта</param>
@@ -359,7 +383,8 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
             int.TryParse(await ProjectLinked.GetLastId(_db, ProjectLinked.LinkedTables.ControlPoint), out lastCpId);
             string idPlaceholder = lastCpId != -1 ? $"{lastCpId + 1}" : "null";
             string desc = description != null ? $"'{description}'" : "null";
-            string query = $@"insert into {Db.Name}.{Db.GetTableName(Db.Tables.ControlPoint)} value ({idPlaceholder}, {AppUser.Id}, {status}, '{title}', {desc}, '{DateTime.Now.ToString("yyyy.MM.dd HH:mm")}');\n";
+            string t = title.Length == 0 ? "null" : $"'{title}'";
+            string query = $@"insert into {Db.Name}.{Db.GetTableName(Db.Tables.ControlPoint)} value ({idPlaceholder}, {AppUser.Id}, {((int)status)}, {t}, {desc}, '{DateTime.Now.ToString("yyyy.MM.dd HH:mm")}');";
             var task =  _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (object result, _) = await Common.GetNoScalarResult(task);
             if (Convert.ToInt32(result) == -1) return -1;
@@ -372,7 +397,7 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
             int.TryParse(await ProjectLinked.GetLastId(_db, ProjectLinked.LinkedTables.ControlPointInSubtask), out lastLinkId);
             idPlaceholder = lastLinkId != -1 ? $"{lastLinkId + 1}" : "null";
 
-            query = $"insert into {Db.Name}.{Db.GetTableName(Db.Tables.CtrlPntToSubtask)} value ({idPlaceholder}, {Subtask.GetSubtaskLinkID(projectId, this.StageId, this.Id)}, {lastCpId});";
+            query = $"insert into {Db.Name}.{Db.GetTableName(Db.Tables.CtrlPntToSubtask)} value ({idPlaceholder}, {await Subtask.GetSubtaskLinkID(projectId, this.StageId, this.Id)}, {lastCpId});";
             task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (result, _) = await Common.GetNoScalarResult(task);
             return Convert.ToInt32(result);
@@ -470,7 +495,7 @@ where SubtaskID in ({string.Join(",", subtaskIds)});";
         /// </summary>
         /// <param name="stgProjRefIds">Идентификаторы записей из связующей таблицы проектов и стадий, от которых нужно открепить подзадачи</param>
         /// <returns>Возращает асинхронную операцию, результатом которой является (общее количество удалённых записей | -1, флаг, является ли ответ числом)</returns>
-        public static async Task<(object, bool)> UnlinkByStgProjLinks(string[] stgProjRefIds)
+        public static async Task<(object, bool)> UnlinkByStgProjLinks(params string[] stgProjRefIds)
         {
             if (stgProjRefIds.Length == 0) return (0, true);
             string[] sbtskLinks = await Subtask.GetSubtaskLinkIDsByStgProjRefs(stgProjRefIds);
@@ -659,16 +684,29 @@ where ProjectID = {projectId} and StageID in ({string.Join(",", stageIds)});";
         /// <param name="title">Заголовок подзадачи</param>
         /// <param name="description">Описание подзадачи</param>
         /// <returns>Возвращает асинхронную операцию, результатом которой является количество добавленных записей в связующую таблицу подзадач в случае успеха, иначе -1</returns>
-        public async Task<int> AddSubtask(string title, string description)
+        public async Task<int> AddSubtask(string title, string description = null)
         {
-            string query = $@"insert into {Db.Name}.subtask value (null, {title});
-select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
+            string query = $@"select SubtaskID from subtask where SubtaskTitle = '{title}';";
             var task = _db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query));
             (object result, _) = await Common.GetNoScalarResult(task);
-            int res = Convert.ToInt32(result);
+            int res = 0;
+            if (result != null)
+            {
+                res = Convert.ToInt32(result);
+            }
             if (res == -1) return -1;
+            
+            if (res == 0)
+            {
+                query = $@"insert into {Db.Name}.subtask value (null, '{title}');
+select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
+                task = _db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query));
+                (result, _) = await Common.GetNoScalarResult(task);
+                res = Convert.ToInt32(result);
+                if (res == -1) return -1;
+            }
 
-            string desc = (description != null) ? description : "null";
+            string desc = (description != null) ? $"'{description}'" : "null";
             query = $"insert into {Db.Name}.subtask_in_project_stage value (null, {await GetStageLinkID(this.ProjectId, this.Id)}, {res}, {desc});";
             var task2 = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (result, _) = await Common.GetNoScalarResult(task2);
