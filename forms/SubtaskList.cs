@@ -154,7 +154,7 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                         string author = await Common.GetEmployee(proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].AuthorId);
                         cpNode.Text = $"{proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].Title} ({author})";
                         cpNode.ToolTipText = proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].Title;
-                        cpNode.Name = $"cp_{proj.Stages[stgIndx].subtasks[subtaskIndx].Id}";
+                        cpNode.Name = $"cp_{proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].Id}";
                         subtaskNode.Nodes.Add(cpNode);
                         cpIndx++;
                     }
@@ -344,15 +344,15 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
             {
                 case 1:
                     {
-                        string delMsg = $"Вы действительно хотите удалить узел '{projectTree.SelectedNode.Text}'.";
+                        string delMsg = $"Вы действительно хотите удалить узел '{projectTree.SelectedNode.Text}'?";
                         if (projectTree.SelectedNode.Nodes.Count > 0 )
                         {
                             delMsg += "\nЕсли узел содержал дочерние объекты, последние будут безвозвратно стёрты.";
                         }
                             
-                        if (DialogResult.OK == MessageBox.Show(delMsg, "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning))
+                        if (DialogResult.Yes == MessageBox.Show(delMsg, "Операция удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
                         {
-                            (object result, _) = await Subtask.UnlinkByStgProjLinks(await Stage.GetStageLinkID(proj.Id, stageId));
+                            (object result, _) = await Subtask.UnlinkSubtaskIds(proj.Id, subtaskId);
                             int r = Convert.ToInt32(result);
                             if (r == 0) 
                             {
@@ -369,9 +369,9 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                     }
                 case 2:
                     {
-                        string delMsg = $"Вы действительно хотите удалить узел '{projectTree.SelectedNode.Text}'.";
+                        string delMsg = $"Вы действительно хотите удалить узел '{projectTree.SelectedNode.Text}'?";
 
-                        if (DialogResult.OK == MessageBox.Show(delMsg, "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning))
+                        if (DialogResult.Yes == MessageBox.Show(delMsg, "Операция удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
                         {
                             (object result, _) = await ControlPoint.Delete(pointId);
                             int r = Convert.ToInt32(result);

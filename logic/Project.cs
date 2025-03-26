@@ -356,6 +356,22 @@ where SubtaskID in ({string.Join(",", subtaskIds)});";
         }
 
         /// <summary>
+        /// Получает все идентификаторы записей из связующей таблицы подзадач по идентификатору подзадачи и иденфикатору проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="subtaskIds">Идентификатор (-ы) подзадач (-и)</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является массив строк с идентификаторами связующих записей</returns>
+        public static async Task<string[]> GetSubtaskLinkIDs(string projectId, params string[] subtaskIds)
+        {
+            string query = $@"select SbtskLinkID from {Db.Name}.subtask_in_project_stage
+where StgProjReferenceID in
+(select StgLinkID from {Db.Name}.stage_in_project where ProjectID = {projectId}) and SubtaskID in ({string.Join(",", subtaskIds)});;";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            return Common.DataTableToStringArray(dt);
+        }
+
+        /// <summary>
         /// Получает идентификаторы подзадач соответствующие идентификаторам записей из связующей таблицы подзадач
         /// </summary>
         /// <param name="sbtskLinkIds">Идентификаторы записей из связующей таблицы подзадач</param>
@@ -418,7 +434,7 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
             if (lastCpId == -1) return -1;
             string query = $@"update {Db.Name}.{Db.GetTableName(Db.Tables.ControlPoint)} set";
             if (title != null) query += $" ControlPointTitle = '{title}',";
-            if (status != Status.NotSetted) query += $" StatusID = {status},";
+            if (status != Status.NotSetted) query += $" StatusID = {((int)status).ToString()},";
             if (description != null) query += $" ControlPointDescription = '{description}',";
             if (description != null) query += $" ControlPointDateTime = '{DateTime.Now.ToString("yyyy.MM.dd HH:mm")}'";
             query += $"where ControlPointID = {cntrPointId};";
@@ -499,6 +515,61 @@ where SubtaskID in ({string.Join(",", subtaskIds)});";
         {
             if (stgProjRefIds.Length == 0) return (0, true);
             string[] sbtskLinks = await Subtask.GetSubtaskLinkIDsByStgProjRefs(stgProjRefIds);
+            if (sbtskLinks.Length == 0) return (0, true);
+
+            // получение идентификаторов записей связующей таблицы контрольных точек с проектом
+            string query = $@"select ControlPointID from {Db.Name}.control_point_to_subtask
+where SbtskReferenceID in ({string.Join(",", sbtskLinks)});";
+            var task = _db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            string[] controlPoints = Common.DataTableToStringArray(dt);
+
+            int total = 0;
+            int temp = 0;
+            object n = null;
+            bool isInt = false;
+
+            //удаление зависимостей от контрольных точек
+            string[] cntrPtsLinks = await ControlPoint.GetControlPointLinkIDs(controlPoints);
+            if (cntrPtsLinks.Length != 0)
+            {
+                query = $@"delete from {Db.Name}.{Db.GetTableName(Db.Tables.CtrlPntToSubtask)}
+where CntrPntLinkID in ({string.Join(",", cntrPtsLinks)});";
+                var task2 = _db.ExecuteNoDataResultAsync(query);
+                (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task2));
+                temp = Convert.ToInt32(n);
+                if (temp == -1) return (-1, true);
+                total += temp;
+            }
+
+            // удаление контрольных точек
+            (n, isInt) = await ControlPoint.Delete(controlPoints);
+            temp = Convert.ToInt32(n);
+            if (temp == -1) return (-1, true);
+            total = temp;
+
+            // удаление зависимостей от подзадач
+            query = $@"delete from {Db.Name}.subtask_in_project_stage
+where SbtskLinkID in ({string.Join(",", sbtskLinks)});";
+            var task3 = _db.ExecuteNoDataResultAsync(query);
+            (n, isInt) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(task3));
+            temp = Convert.ToInt32(n);
+            if (temp == -1) return (-1, true);
+            total += temp;
+
+            return (total, true);
+        }
+
+        /// <summary>
+        /// Открепление подзадач из проекта по их идентификаторам  
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="subtaskIds">Идентификатор (-ы) подзадач, которые нужно открепить</param>
+        /// <returns>Возращает асинхронную операцию, результатом которой является (общее количество удалённых записей | -1, флаг, является ли ответ числом)</returns>
+        public static async Task<(object, bool)> UnlinkSubtaskIds(string projectId, params string[] subtaskIds)
+        {
+            if (subtaskIds.Length == 0) return (0, true);
+            string[] sbtskLinks = await Subtask.GetSubtaskLinkIDs(projectId, subtaskIds);
             if (sbtskLinks.Length == 0) return (0, true);
 
             // получение идентификаторов записей связующей таблицы контрольных точек с проектом

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.logic;
+using ProjectOffice.logic.app;
 using ProjectOffice.Properties;
 
 namespace ProjectOffice.forms
@@ -100,6 +101,8 @@ namespace ProjectOffice.forms
         {
             this.Text = $"{Resources.APP_NAME}: Справочники";
             this.Icon = Resources.PROJECT_OFFICE_ICON;
+            userPhotoPic.Image = AppUser.Photo;
+            usrSnpLbl.Text = AppUser.Snp;
         }
 
         private void ClearTable()
@@ -138,7 +141,20 @@ namespace ProjectOffice.forms
         }
 
         private async Task<DataTable> GetDictionaryRows(string table, string orderColumn) {
-            string query = $"select * from {table} order by {orderColumn};";
+            string query = $"desc {table};";
+            DataTable dt = await Common.GetAsyncResult(_db.ExecuteReaderAsync(query));
+            int row = 0;
+            string idCol = "";
+            while (row < dt.Rows.Count)
+            {
+                if (dt.Rows[row][0].ToString().Contains("ID") || dt.Rows[row][0].ToString().Contains("Id"))
+                {
+                    idCol = dt.Rows[row][0].ToString();
+                    break;
+                }
+                row++;
+            }
+            query = $"select * from {table} where {idCol} != 0 order by {orderColumn};";
             var task = _db.ExecuteReaderAsync(query);
             return await Common.GetAsyncResult(task);
         }
@@ -226,9 +242,35 @@ namespace ProjectOffice.forms
         private async void DeleteRow(string table, string idColumn)
         {
             int temp = 0;
-            string key = (int.TryParse(objectTable.SelectedRows[0].Cells[0].Value.ToString(), out temp)) ? objectTable.SelectedRows[0].Cells[0].Value.ToString() : $"'{objectTable.SelectedRows[0].Cells[0].Value.ToString()}'";
-            string query = $"delete from {Db.Name}.{table} where {idColumn} = {key};";
-            object res = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            string key = (int.TryParse(objectTable.SelectedRows[0].Cells[0].Value.ToString(), out temp)) ? 
+                objectTable.SelectedRows[0].Cells[0].Value.ToString() : $"'{objectTable.SelectedRows[0].Cells[0].Value.ToString()}'";
+            object res = null;
+            if (table == "subtask")
+            {
+                (res, _) = await Subtask.Delete(key);
+            }
+            else if (table == "stage")
+            {
+                string query = $"select ProjectID from stage_in_project where StageID = {key};";
+                string[] projIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+                int indx = 0;
+                while (indx < projIds.Length)
+                {
+                    (res, _) = await Stage.Delete(projIds[indx], key);
+                    if (Convert.ToInt32(res) == -1) break;
+                    indx++;
+                }
+                if (Convert.ToInt32(res) != -1)
+                {
+                    query = $"delete from {Db.Name}.{table} where {idColumn} = {key};";
+                    res = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+                }
+            }
+            else
+            {
+                string query = $"delete from {Db.Name}.{table} where {idColumn} = {key};";
+                res = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            }
             if (res == null) return;
             if (res is int && (int)res > 0) MessageBox.Show("Запись успешно удалена", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else if (res is string) MessageBox.Show((string)res, $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -355,10 +397,10 @@ namespace ProjectOffice.forms
             }
         }
 
-        private void deleteObject_Click(object sender, EventArgs e)
+        private async void deleteObject_Click(object sender, EventArgs e)
         {
             if (objectTable.SelectedRows.Count == 0) return;
-            if (MessageBox.Show("Вы уверены, что хотите удалить запись?", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show("Вы уверены, что хотите удалить запись?\nЕсли значение где-то применено, связанные записи тоже будут удалены.", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 DeleteRow(table, columnIdName);
                 UpdateTable();
