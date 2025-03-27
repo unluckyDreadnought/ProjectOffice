@@ -91,14 +91,14 @@ namespace ProjectOffice.forms
         }
         private async void OrganizationSettings_Click(object sender, EventArgs e)
         {
-            OrganizationClientEditorForm orgForm = await OrganizationClientEditorForm.OpenOrganizationEditor("0");
+            ClientEditorForm orgForm = await ClientEditorForm.OpenOrganizationEditor("0");
             ChangeVisibilityToOpenNewForm(orgForm);
             await SetSplashLogo();
         }
 
         private async Task SetSplashLogo()
         {
-            object[] compInfo = await Common.GetClientInfo("0");
+            object[] compInfo = await Common.GetOrgClientInfo("0");
             if (compInfo.Length > 0 && compInfo[11] != DBNull.Value)
             {
                 splashPicture.Image = (compInfo[11] != DBNull.Value) ? logic.Сompressor.DecomoressBytesToBitmap((byte[])compInfo[11]) : Resources.PROJECT_OFFICE_LOGO;

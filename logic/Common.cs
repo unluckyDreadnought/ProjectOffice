@@ -146,7 +146,19 @@ namespace ProjectOffice.logic
             return hash1 != hash2;
         }
 
-        public static async Task<object[]> GetClientInfo(string clientId)
+        public static async Task<object[]> GetPersonClientInfo(string clientId)
+        {
+            Db db = new Db();
+            string query = $@"select
+ClientName, ClientAddress, ClientBankAccount, ClientBank, ClientPhone, ClientEmail, ClientPhoto
+from project_office.client where ClientID = {clientId};";
+            var task = db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            if (dt.Rows.Count == 0) return new object[] { };
+            else return dt.Rows[0].ItemArray;
+        }
+
+        public static async Task<object[]> GetOrgClientInfo(string clientId)
         {
             Db db = new Db();
             string query = $@"select ClientOrgTypeID, ClientName, ClientAddress, ClientBankAccount, ClientBank, 

@@ -147,11 +147,11 @@
     <Compile Include="forms\AppSettingsForm.Designer.cs">
       <DependentUpon>AppSettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="forms\OrganizationClientEditorForm.cs">
+    <Compile Include="forms\ClientEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\OrganizationClientEditorForm.Designer.cs">
-      <DependentUpon>OrganizationClientEditorForm.cs</DependentUpon>
+    <Compile Include="forms\ClientEditorForm.Designer.cs">
+      <DependentUpon>ClientEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="forms\PlannigForm.cs">
       <SubType>Form</SubType>
@@ -244,8 +244,8 @@
     <EmbeddedResource Include="forms\MenuForm.resx">
       <DependentUpon>MenuForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\OrganizationClientEditorForm.resx">
-      <DependentUpon>OrganizationClientEditorForm.cs</DependentUpon>
+    <EmbeddedResource Include="forms\ClientEditorForm.resx">
+      <DependentUpon>ClientEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\PlannigForm.resx">
       <DependentUpon>PlannigForm.cs</DependentUpon>

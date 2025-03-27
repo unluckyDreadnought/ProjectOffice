@@ -15,9 +15,10 @@ namespace ProjectOffice.forms
 {
     public partial class ClientsForm : Form
     {
-        OrganizationClientEditorForm orgEdit;
+        ClientEditorForm formEdit;
         Db _db = null;
         string clientId = "";
+        string clientContext = "";
 
         public ClientsForm()
         {
@@ -86,52 +87,19 @@ from client where ClientID > 1; ";
         {
             this.Text = $"{Resources.APP_NAME}: Клиенты";
             this.Icon = Resources.PROJECT_OFFICE_ICON;
-            fizClientEditorPanel.Hide();
             userModelbl.Text = AppUser.GetUserMode();
             userSnpLbl.Text = AppUser.Snp;
             UpdateClientsTable();
         }
 
-        private async Task OpenEditor(string id = "")
+        private async Task OpenEditor(string id = "", bool org = true)
         {
-            if (fizSwitchBtn.Checked)
-            {
-                fizClientEditorPanel.Show();
-            }
-            else
-            {
-                fizClientEditorPanel.Hide();
-                orgEdit = await OrganizationClientEditorForm.OpenOrganizationEditor(id);
-                orgEdit.ShowDialog();
-            }
+            if (org) formEdit = await ClientEditorForm.OpenOrganizationEditor(id);
+            else formEdit = await ClientEditorForm.OpenPersonEditor(id);
+            formEdit.ShowDialog();
             UpdateClientsTable();
         }
 
-        private void fizSwitchBtn_Click(object sender, EventArgs e)
-        {
-            if (!fizSwitchBtn.Checked)
-            {
-                fizClientEditorPanel.Hide();
-                urSwitchBtn.Checked = true;
-            }
-            else
-            {
-                urSwitchBtn.Checked = false;
-            }
-        }
-
-        private void urSwitchBtn_Click(object sender, EventArgs e)
-        {
-            if (!urSwitchBtn.Checked)
-            {
-                fizSwitchBtn.Checked = true;
-            }
-            else
-            {
-                fizClientEditorPanel.Hide();
-                fizSwitchBtn.Checked = false;
-            }
-        }
 
         private async void addClientBtn_Click(object sender, EventArgs e)
         {
@@ -144,14 +112,8 @@ from client where ClientID > 1; ";
                 MessageBox.Show("Сначала выберите запись для редактирования", "Редактирование клиента", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return; 
             };
-            await OpenEditor(clientId);
-        }
-
-        private void hideEditorPanelBtn_Click(object sender, EventArgs e)
-        {
-            fizClientEditorPanel.Hide();
-            urSwitchBtn.Checked = false;
-            fizSwitchBtn.Checked = true;
+            bool isOrg = clientContext.Contains("'");
+            await OpenEditor(clientId, isOrg);
         }
 
         private void backToMenuBtn_Click(object sender, EventArgs e)
@@ -164,9 +126,11 @@ from client where ClientID > 1; ";
             if (e.RowIndex == -1)
             {
                 clientId = "";
+                clientContext = "";
                 return;
             }
             clientId = clientsTable.Rows[e.RowIndex].Cells[0].Value.ToString();
+            clientContext = clientsTable.Rows[e.RowIndex].Cells[2].Value.ToString();
         }
 
         private async void deleteClientBtn_Click(object sender, EventArgs e)
