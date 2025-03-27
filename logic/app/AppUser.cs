@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.forms;
+using ProjectOffice.Properties;
 
 namespace ProjectOffice.logic.app
 {
@@ -16,7 +17,19 @@ namespace ProjectOffice.logic.app
         public static string Snp = "<ФИО не указано>";
         public static UserRole Role = UserRole.Employee;
         public static bool confirmAccessToSettings = false;
-        public static Bitmap Photo = null;
+        private static Bitmap _photo = null;
+        public static Bitmap Photo
+        {
+            get
+            {
+                if (_photo == null) _photo = Resources.USR_PLUG_PICTURE;
+                return _photo;
+            }
+            set
+            {
+                _photo = value;
+            }
+        }
 
         public static string GetUserMode()
         {

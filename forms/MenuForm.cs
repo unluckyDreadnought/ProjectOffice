@@ -89,6 +89,22 @@ namespace ProjectOffice.forms
             AppSettingsForm settingsForm = new AppSettingsForm();
             ChangeVisibilityToOpenNewForm(settingsForm);
         }
+        private async void OrganizationSettings_Click(object sender, EventArgs e)
+        {
+            OrganizationClientEditorForm orgForm = await OrganizationClientEditorForm.OpenOrganizationEditor("0");
+            ChangeVisibilityToOpenNewForm(orgForm);
+            await SetSplashLogo();
+        }
+
+        private async Task SetSplashLogo()
+        {
+            object[] compInfo = await Common.GetClientInfo("0");
+            if (compInfo.Length > 0 && compInfo[11] != DBNull.Value)
+            {
+                splashPicture.Image = (compInfo[11] != DBNull.Value) ? logic.Сompressor.DecomoressBytesToBitmap((byte[])compInfo[11]) : Resources.PROJECT_OFFICE_LOGO;
+            }
+            else splashPicture.Image = Resources.PROJECT_OFFICE_LOGO;
+        }
 
         // common
         private void LogoutBtn_Click(object sender, EventArgs e)
@@ -118,6 +134,7 @@ namespace ProjectOffice.forms
                 case "Статистика": handler = StatsBtn_Click; break;
                 case "Проекты": handler = ShowProjects_Click; break;
                 case "Настройки": handler = SettingsBtn_Click; break;
+                case "Настройка организации": handler = OrganizationSettings_Click; break;
                 case "Покинуть личный кабинет": handler = LogoutBtn_Click; break;
                 case "Выход": handler = ExitBtn_Click; break;
             }
@@ -136,7 +153,7 @@ namespace ProjectOffice.forms
                     }
                 case UserRole.Manager:
                     {
-                        btnTexts = new string[] { "Учёт проектов", "Сотрудники", "Справочники", "Статистика", "Покинуть личный кабинет", "Выход" };
+                        btnTexts = new string[] { "Учёт проектов", "Сотрудники", "Справочники", "Настройка организации", "Статистика", "Покинуть личный кабинет", "Выход" };
                         break;
                     }
                 case UserRole.Employee:
@@ -201,14 +218,14 @@ namespace ProjectOffice.forms
             InitializeComponent();
         }
 
-        private void MenuForm_Load(object sender, EventArgs e)
+        private async void MenuForm_Load(object sender, EventArgs e)
         {
             CenterHorizontally(CreateButtonsAccordingToRole(), buttonsPanel, 30);
             this.Text = $"{Resources.APP_NAME}";
             usrSnpLbl.Text = AppUser.Snp;
             userModeTip.SetToolTip(usrSnpLbl, AppUser.GetUserMode());
             userPhotoPic.Image = AppUser.Photo;
-            splashPicture.Image = Resources.PLUG_PICTURE;
+            await SetSplashLogo();
         }
     }
 }

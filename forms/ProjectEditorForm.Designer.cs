@@ -61,7 +61,11 @@ namespace ProjectOffice.forms
             this.panel4 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.factEndDateLbl = new System.Windows.Forms.Label();
             this.planDateEditLbl = new System.Windows.Forms.Label();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.subtaskPanel = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -74,10 +78,6 @@ namespace ProjectOffice.forms
             this.panel10 = new System.Windows.Forms.Panel();
             this.panel11 = new System.Windows.Forms.Panel();
             this.panel14 = new System.Windows.Forms.Panel();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.factEndDateLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.stagesTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.employeesTable)).BeginInit();
             this.panel1.SuspendLayout();
@@ -88,6 +88,7 @@ namespace ProjectOffice.forms
             this.panel4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.subtaskPanel.SuspendLayout();
             this.panel9.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -98,7 +99,6 @@ namespace ProjectOffice.forms
             this.panel10.SuspendLayout();
             this.panel11.SuspendLayout();
             this.panel14.SuspendLayout();
-            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // stagesTable
@@ -479,7 +479,6 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(364, 100);
             this.tableLayoutPanel3.TabIndex = 27;
-            this.tableLayoutPanel3.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel3_Paint);
             // 
             // panel5
             // 
@@ -493,6 +492,17 @@ namespace ProjectOffice.forms
             this.panel5.Size = new System.Drawing.Size(235, 94);
             this.panel5.TabIndex = 11;
             // 
+            // factEndDateLbl
+            // 
+            this.factEndDateLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.factEndDateLbl.Location = new System.Drawing.Point(4, 51);
+            this.factEndDateLbl.Name = "factEndDateLbl";
+            this.factEndDateLbl.Size = new System.Drawing.Size(229, 42);
+            this.factEndDateLbl.TabIndex = 28;
+            this.factEndDateLbl.Text = "label4";
+            this.factEndDateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // planDateEditLbl
             // 
             this.planDateEditLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -503,6 +513,38 @@ namespace ProjectOffice.forms
             this.planDateEditLbl.TabIndex = 27;
             this.planDateEditLbl.Text = "label1";
             this.planDateEditLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.label1);
+            this.panel6.Controls.Add(this.label3);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel6.Location = new System.Drawing.Point(3, 3);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(117, 94);
+            this.panel6.TabIndex = 12;
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.Location = new System.Drawing.Point(4, 64);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(110, 25);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Завершено";
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label3.Location = new System.Drawing.Point(2, 3);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(113, 50);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Окончание (план)";
             // 
             // subtaskPanel
             // 
@@ -636,49 +678,6 @@ namespace ProjectOffice.forms
             this.panel14.Size = new System.Drawing.Size(363, 49);
             this.panel14.TabIndex = 34;
             // 
-            // panel6
-            // 
-            this.panel6.Controls.Add(this.label1);
-            this.panel6.Controls.Add(this.label3);
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(3, 3);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(117, 94);
-            this.panel6.TabIndex = 12;
-            // 
-            // label3
-            // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(2, 3);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(113, 50);
-            this.label3.TabIndex = 11;
-            this.label3.Text = "Окончание (план)";
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(4, 64);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(110, 25);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "Завершено";
-            // 
-            // factEndDateLbl
-            // 
-            this.factEndDateLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.factEndDateLbl.Location = new System.Drawing.Point(4, 51);
-            this.factEndDateLbl.Name = "factEndDateLbl";
-            this.factEndDateLbl.Size = new System.Drawing.Size(229, 42);
-            this.factEndDateLbl.TabIndex = 28;
-            this.factEndDateLbl.Text = "label4";
-            this.factEndDateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // ProjectEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
@@ -691,6 +690,7 @@ namespace ProjectOffice.forms
             this.MinimumSize = new System.Drawing.Size(716, 756);
             this.Name = "ProjectEditorForm";
             this.Text = "ProjectEditorForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProjectEditorForm_FormClosing);
             this.Load += new System.EventHandler(this.ProjectEditorForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.stagesTable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.employeesTable)).EndInit();
@@ -707,6 +707,7 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             this.panel5.ResumeLayout(false);
+            this.panel6.ResumeLayout(false);
             this.subtaskPanel.ResumeLayout(false);
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
@@ -720,7 +721,6 @@ namespace ProjectOffice.forms
             this.panel10.PerformLayout();
             this.panel11.ResumeLayout(false);
             this.panel14.ResumeLayout(false);
-            this.panel6.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

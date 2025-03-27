@@ -100,7 +100,7 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                     }
                 }
             }
-            if (proj.Status == ((int)Status.Finish).ToString() || proj.Status == ((int)Status.Rejected).ToString())
+            if (proj.Status == ((int)Status.Finish).ToString() || proj.Status == ((int)Status.Rejected).ToString() || proj.Status == ((int)Status.PreparingToEnd).ToString())
             {
                 ChangeBtnsClickability(add: false, edit: false, delete: false);
             }

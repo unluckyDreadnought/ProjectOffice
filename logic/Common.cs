@@ -129,5 +129,89 @@ namespace ProjectOffice.logic
             }
             return result.ToArray();
         }
+
+        /// <summary>
+        /// Проверяет наличие отличий между двумя массивами байт между собой
+        /// </summary>
+        /// <param name="arr1">Массив байт 1</param>
+        /// <param name="arr2">Массив байт 2</param>
+        /// <returns>Возвращает <see cref="true"/>, если массивы различны, иначе <see cref="false"/></returns>
+        public static bool IsImageBytesDifference(byte[] arr1, byte[] arr2)
+        {
+            if (arr1 == null && arr2 == null) return false;
+            else if (arr1 == null) return true;
+            else if (arr2 == null) return true;
+            string hash1 = Security.hashMd5(BitConverter.ToString(arr1, 0), "");
+            string hash2 = Security.hashMd5(BitConverter.ToString(arr2, 0), "");
+            return hash1 != hash2;
+        }
+
+        public static async Task<object[]> GetClientInfo(string clientId)
+        {
+            Db db = new Db();
+            string query = $@"select ClientOrgTypeID, ClientName, ClientAddress, ClientBankAccount, ClientBank, 
+ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBIK, ClientPhoto from client where ClientID = {clientId};";
+            var task = db.ExecuteReaderAsync(query);
+            DataTable dt = await Common.GetAsyncResult(task);
+            if (dt.Rows.Count == 0) return new object[] { };
+            else return dt.Rows[0].ItemArray;
+        }
+
+        /// <summary>
+        /// Удаляет запись о клиенте из БД
+        /// </summary>
+        /// <param name="clientId">Идентификатор клиента</param>
+        /// <param name="force">Флаг подтверждения удаления</param>
+        /// <returns>(количество удалённых записей; флаг возврата из-за обнаруженных связей)</returns>
+        public static async Task<(int, bool)> DeleteClient(string clientId, bool force = false)
+        {
+            string query = $"select ProjectID from {Db.Name}.project where ProjectCustomerID = {clientId};";
+            string[] projectIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+            if (!force && projectIds.Length > 0)
+            {
+                return (-1, true);
+            }
+
+            int total = 0;
+            int projIndx = 0;
+            while (projIndx < projectIds.Length)
+            {
+                Project temp = await Project.InitilazeAsync(projectIds[projIndx]);
+                int deleted = Convert.ToInt32(await temp.Delete());
+                if (deleted == -1)
+                {
+                    return (-1, false);
+                }
+                total += deleted;
+                projIndx++;
+            }
+            query = $"delete from {Db.Name}.`client` where ClientID = {clientId}";
+            (object n, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
+            total += Convert.ToInt32(n);
+            return (total, false);
+        }
+
+        public static void SetSizeForImageRow(ref DataGridView table, string imgColName, int imgColWidth = 80, int rowHeight = 100)
+        {
+            table.Columns[imgColName].Width = imgColWidth;
+            int row = 0;
+            while (row < table.Rows.Count)
+            {
+                table.Rows[row].MinimumHeight = 20;
+                table.Rows[row].Height = rowHeight;
+                row++;
+            }
+        }
+
+        public static void SetSizeForImageRow(ref DataGridView table, int imgColIndx, int imgColWidth = 80, int rowHeight = 100)
+        {
+            table.Columns[imgColIndx].Width = imgColWidth;
+            int row = 0;
+            while (row < table.Rows.Count)
+            {
+                table.Rows[row].MinimumHeight = 20;
+                table.Rows[row].Height = rowHeight;
+            }
+        }
     }
 }

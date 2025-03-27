@@ -28,7 +28,7 @@ namespace ProjectOffice.forms
         {
             InitializeComponent();
             _db = new Db();
-            LoginDebug("employee"); // admin  manager employee
+            LoginDebug("manager"); // admin  manager employee
         }
 
         // Функция, управляющая доступностью кнопки входа в зависимости от заполненности полей

@@ -29,9 +29,8 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
 
         private async void UpdateUserList()
         {
-            usersTable.RowTemplate.Height = 40;
+            Common.SetSizeForImageRow(ref usersTable, "userAvatar");
             usersTable.Rows.Clear();
-            
             DataTable dt = await Common.GetAsyncResult(GetUserList());
             int i = 0;
             while (i < dt.Rows.Count)
@@ -107,6 +106,11 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
 
         private void editUserBtn_Click(object sender, EventArgs e)
         {
+            if (userId == "" || userId == null || userId == "-1")
+            {
+                MessageBox.Show("Выберите пользователя для редактирования", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             UserEditor uEdit = new UserEditor(edit: true, user: true, userId);
             uEdit.ShowDialog();
             UpdateUserList();
@@ -114,6 +118,7 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
 
         private void usersTable_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0) return;
             userId = usersTable.Rows[e.RowIndex].Cells[0].Value.ToString();
         }
 

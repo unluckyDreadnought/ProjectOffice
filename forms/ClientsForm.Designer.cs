@@ -29,7 +29,7 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClientsForm));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -56,7 +56,6 @@ namespace ProjectOffice.forms
             this.addClientBtn = new System.Windows.Forms.ToolStripButton();
             this.editClientBtn = new System.Windows.Forms.ToolStripButton();
             this.deleteClientBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolsDisplayMode = new System.Windows.Forms.ToolStripComboBox();
             this.backToMenuBtn = new System.Windows.Forms.Button();
             this.fizClientEditorPanel = new System.Windows.Forms.Panel();
             this.clientBirthDatePicker = new System.Windows.Forms.DateTimePicker();
@@ -74,11 +73,11 @@ namespace ProjectOffice.forms
             this.clientEmailTextBox = new System.Windows.Forms.TextBox();
             this.clientBank = new System.Windows.Forms.TextBox();
             this.saveClientBtn = new System.Windows.Forms.Button();
-            this.clientId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clientIdCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clientImgCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.clientName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.clientPhone = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.clientEmail = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dop = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -120,16 +119,16 @@ namespace ProjectOffice.forms
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(587, 47);
+            this.panel1.Size = new System.Drawing.Size(584, 47);
             this.panel1.TabIndex = 0;
             // 
             // userSnpLbl
             // 
             this.userSnpLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.userSnpLbl.AutoSize = true;
-            this.userSnpLbl.Location = new System.Drawing.Point(264, 6);
+            this.userSnpLbl.Location = new System.Drawing.Point(261, 6);
             this.userSnpLbl.Name = "userSnpLbl";
-            this.userSnpLbl.Size = new System.Drawing.Size(60, 24);
+            this.userSnpLbl.Size = new System.Drawing.Size(79, 29);
             this.userSnpLbl.TabIndex = 0;
             this.userSnpLbl.Text = "label1";
             // 
@@ -137,9 +136,9 @@ namespace ProjectOffice.forms
             // 
             this.userModelbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.userModelbl.AutoSize = true;
-            this.userModelbl.Location = new System.Drawing.Point(432, 6);
+            this.userModelbl.Location = new System.Drawing.Point(429, 6);
             this.userModelbl.Name = "userModelbl";
-            this.userModelbl.Size = new System.Drawing.Size(60, 24);
+            this.userModelbl.Size = new System.Drawing.Size(79, 29);
             this.userModelbl.TabIndex = 0;
             this.userModelbl.Text = "label1";
             // 
@@ -153,28 +152,31 @@ namespace ProjectOffice.forms
             this.panel2.Location = new System.Drawing.Point(3, 56);
             this.panel2.Name = "panel2";
             this.tableLayoutPanel1.SetRowSpan(this.panel2, 2);
-            this.panel2.Size = new System.Drawing.Size(587, 454);
+            this.panel2.Size = new System.Drawing.Size(584, 454);
             this.panel2.TabIndex = 1;
             // 
             // clientsTable
             // 
+            this.clientsTable.AllowUserToAddRows = false;
+            this.clientsTable.AllowUserToDeleteRows = false;
             this.clientsTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.clientsTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.clientsTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.clientsTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.clientsTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.clientsTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.clientsTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.clientId,
+            this.clientIdCol,
+            this.clientImgCol,
             this.clientName,
             this.clientPhone,
-            this.clientEmail,
-            this.dop});
+            this.clientEmail});
             this.clientsTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.clientsTable.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.clientsTable.EnableHeadersVisualStyles = false;
@@ -184,8 +186,9 @@ namespace ProjectOffice.forms
             this.clientsTable.RowHeadersWidth = 51;
             this.clientsTable.RowTemplate.Height = 24;
             this.clientsTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.clientsTable.Size = new System.Drawing.Size(587, 410);
+            this.clientsTable.Size = new System.Drawing.Size(584, 410);
             this.clientsTable.TabIndex = 6;
+            this.clientsTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.clientsTable_CellClick);
             // 
             // dataGridView1
             // 
@@ -211,7 +214,7 @@ namespace ProjectOffice.forms
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(587, 410);
+            this.dataGridView1.Size = new System.Drawing.Size(584, 410);
             this.dataGridView1.TabIndex = 5;
             // 
             // type
@@ -286,7 +289,7 @@ namespace ProjectOffice.forms
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel3.Location = new System.Drawing.Point(0, 410);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(587, 44);
+            this.panel3.Size = new System.Drawing.Size(584, 44);
             this.panel3.TabIndex = 2;
             // 
             // toolStrip1
@@ -300,13 +303,12 @@ namespace ProjectOffice.forms
             this.urSwitchBtn,
             this.addClientBtn,
             this.editClientBtn,
-            this.deleteClientBtn,
-            this.toolsDisplayMode});
+            this.deleteClientBtn});
             this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.toolStrip1.Location = new System.Drawing.Point(109, 3);
+            this.toolStrip1.Location = new System.Drawing.Point(230, 3);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.Size = new System.Drawing.Size(297, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(173, 27);
             this.toolStrip1.Stretch = true;
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
@@ -321,7 +323,7 @@ namespace ProjectOffice.forms
             this.fizSwitchBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.fizSwitchBtn.Name = "fizSwitchBtn";
             this.fizSwitchBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.fizSwitchBtn.Size = new System.Drawing.Size(35, 24);
+            this.fizSwitchBtn.Size = new System.Drawing.Size(43, 24);
             this.fizSwitchBtn.Text = "Физ.";
             this.fizSwitchBtn.ToolTipText = "Редактирование физ. лиц";
             this.fizSwitchBtn.Click += new System.EventHandler(this.fizSwitchBtn_Click);
@@ -334,7 +336,7 @@ namespace ProjectOffice.forms
             this.urSwitchBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.urSwitchBtn.Name = "urSwitchBtn";
             this.urSwitchBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.urSwitchBtn.Size = new System.Drawing.Size(33, 24);
+            this.urSwitchBtn.Size = new System.Drawing.Size(40, 24);
             this.urSwitchBtn.Text = "Юр.";
             this.urSwitchBtn.ToolTipText = "Редактирование юр. лиц";
             this.urSwitchBtn.Click += new System.EventHandler(this.urSwitchBtn_Click);
@@ -345,7 +347,7 @@ namespace ProjectOffice.forms
             this.addClientBtn.Image = global::ProjectOffice.Properties.Resources.ADD_BTN_PICTURE;
             this.addClientBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addClientBtn.Name = "addClientBtn";
-            this.addClientBtn.Size = new System.Drawing.Size(24, 24);
+            this.addClientBtn.Size = new System.Drawing.Size(29, 24);
             this.addClientBtn.Text = "Добавить";
             this.addClientBtn.Click += new System.EventHandler(this.addClientBtn_Click);
             // 
@@ -355,7 +357,7 @@ namespace ProjectOffice.forms
             this.editClientBtn.Image = global::ProjectOffice.Properties.Resources.EDIT_BTN_PICTURE;
             this.editClientBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editClientBtn.Name = "editClientBtn";
-            this.editClientBtn.Size = new System.Drawing.Size(24, 24);
+            this.editClientBtn.Size = new System.Drawing.Size(29, 24);
             this.editClientBtn.Text = "Удалить";
             this.editClientBtn.Click += new System.EventHandler(this.editClientBtn_Click);
             // 
@@ -365,20 +367,9 @@ namespace ProjectOffice.forms
             this.deleteClientBtn.Image = global::ProjectOffice.Properties.Resources.BASKET_BTN_PICTURE;
             this.deleteClientBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteClientBtn.Name = "deleteClientBtn";
-            this.deleteClientBtn.Size = new System.Drawing.Size(24, 24);
+            this.deleteClientBtn.Size = new System.Drawing.Size(29, 24);
             this.deleteClientBtn.Text = "Редактировать";
-            // 
-            // toolsDisplayMode
-            // 
-            this.toolsDisplayMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolsDisplayMode.Items.AddRange(new object[] {
-            "Иконка",
-            "Текст",
-            "Совместный"});
-            this.toolsDisplayMode.Name = "toolsDisplayMode";
-            this.toolsDisplayMode.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolsDisplayMode.Size = new System.Drawing.Size(121, 27);
-            this.toolsDisplayMode.ToolTipText = "Режим отображения";
+            this.deleteClientBtn.Click += new System.EventHandler(this.deleteClientBtn_Click);
             // 
             // backToMenuBtn
             // 
@@ -411,10 +402,10 @@ namespace ProjectOffice.forms
             this.fizClientEditorPanel.Controls.Add(this.saveClientBtn);
             this.fizClientEditorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fizClientEditorPanel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.fizClientEditorPanel.Location = new System.Drawing.Point(596, 3);
+            this.fizClientEditorPanel.Location = new System.Drawing.Point(593, 3);
             this.fizClientEditorPanel.Name = "fizClientEditorPanel";
             this.tableLayoutPanel1.SetRowSpan(this.fizClientEditorPanel, 4);
-            this.fizClientEditorPanel.Size = new System.Drawing.Size(213, 563);
+            this.fizClientEditorPanel.Size = new System.Drawing.Size(216, 563);
             this.fizClientEditorPanel.TabIndex = 3;
             // 
             // clientBirthDatePicker
@@ -422,7 +413,7 @@ namespace ProjectOffice.forms
             this.clientBirthDatePicker.CalendarMonthBackground = System.Drawing.Color.WhiteSmoke;
             this.clientBirthDatePicker.Location = new System.Drawing.Point(10, 130);
             this.clientBirthDatePicker.Name = "clientBirthDatePicker";
-            this.clientBirthDatePicker.Size = new System.Drawing.Size(190, 26);
+            this.clientBirthDatePicker.Size = new System.Drawing.Size(190, 30);
             this.clientBirthDatePicker.TabIndex = 6;
             // 
             // clientPhoneMTextBox
@@ -431,7 +422,7 @@ namespace ProjectOffice.forms
             this.clientPhoneMTextBox.Location = new System.Drawing.Point(23, 382);
             this.clientPhoneMTextBox.Mask = "+7 (999) 000-0000";
             this.clientPhoneMTextBox.Name = "clientPhoneMTextBox";
-            this.clientPhoneMTextBox.Size = new System.Drawing.Size(180, 26);
+            this.clientPhoneMTextBox.Size = new System.Drawing.Size(180, 30);
             this.clientPhoneMTextBox.TabIndex = 5;
             // 
             // hideEditorPanelBtn
@@ -452,7 +443,7 @@ namespace ProjectOffice.forms
             this.clientDepartmentCodeTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientDepartmentCodeTextBox.Location = new System.Drawing.Point(36, 202);
             this.clientDepartmentCodeTextBox.Name = "clientDepartmentCodeTextBox";
-            this.clientDepartmentCodeTextBox.Size = new System.Drawing.Size(168, 26);
+            this.clientDepartmentCodeTextBox.Size = new System.Drawing.Size(171, 30);
             this.clientDepartmentCodeTextBox.TabIndex = 1;
             this.clientDepartmentCodeTextBox.Text = "Подразделение";
             // 
@@ -463,7 +454,7 @@ namespace ProjectOffice.forms
             this.clientDepartmentTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientDepartmentTextBox.Location = new System.Drawing.Point(36, 166);
             this.clientDepartmentTextBox.Name = "clientDepartmentTextBox";
-            this.clientDepartmentTextBox.Size = new System.Drawing.Size(168, 26);
+            this.clientDepartmentTextBox.Size = new System.Drawing.Size(171, 30);
             this.clientDepartmentTextBox.TabIndex = 1;
             this.clientDepartmentTextBox.Text = "Кем Выдан";
             // 
@@ -474,7 +465,7 @@ namespace ProjectOffice.forms
             this.clientPatronymicTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientPatronymicTextBox.Location = new System.Drawing.Point(36, 94);
             this.clientPatronymicTextBox.Name = "clientPatronymicTextBox";
-            this.clientPatronymicTextBox.Size = new System.Drawing.Size(168, 26);
+            this.clientPatronymicTextBox.Size = new System.Drawing.Size(171, 30);
             this.clientPatronymicTextBox.TabIndex = 1;
             this.clientPatronymicTextBox.Text = "Иванович";
             // 
@@ -485,7 +476,7 @@ namespace ProjectOffice.forms
             this.clientNameTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientNameTextBox.Location = new System.Drawing.Point(36, 58);
             this.clientNameTextBox.Name = "clientNameTextBox";
-            this.clientNameTextBox.Size = new System.Drawing.Size(168, 26);
+            this.clientNameTextBox.Size = new System.Drawing.Size(171, 30);
             this.clientNameTextBox.TabIndex = 1;
             this.clientNameTextBox.Text = "Иван";
             // 
@@ -496,7 +487,7 @@ namespace ProjectOffice.forms
             this.clientPaspSeriesTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientPaspSeriesTextBox.Location = new System.Drawing.Point(36, 238);
             this.clientPaspSeriesTextBox.Name = "clientPaspSeriesTextBox";
-            this.clientPaspSeriesTextBox.Size = new System.Drawing.Size(88, 26);
+            this.clientPaspSeriesTextBox.Size = new System.Drawing.Size(91, 30);
             this.clientPaspSeriesTextBox.TabIndex = 1;
             this.clientPaspSeriesTextBox.Text = "2203";
             // 
@@ -507,7 +498,7 @@ namespace ProjectOffice.forms
             this.clientPaspNumberTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientPaspNumberTextBox.Location = new System.Drawing.Point(123, 238);
             this.clientPaspNumberTextBox.Name = "clientPaspNumberTextBox";
-            this.clientPaspNumberTextBox.Size = new System.Drawing.Size(88, 26);
+            this.clientPaspNumberTextBox.Size = new System.Drawing.Size(91, 30);
             this.clientPaspNumberTextBox.TabIndex = 1;
             this.clientPaspNumberTextBox.Text = "959614";
             // 
@@ -518,7 +509,7 @@ namespace ProjectOffice.forms
             this.clientSurnameTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientSurnameTextBox.Location = new System.Drawing.Point(36, 22);
             this.clientSurnameTextBox.Name = "clientSurnameTextBox";
-            this.clientSurnameTextBox.Size = new System.Drawing.Size(168, 26);
+            this.clientSurnameTextBox.Size = new System.Drawing.Size(171, 30);
             this.clientSurnameTextBox.TabIndex = 1;
             this.clientSurnameTextBox.Text = "Иванов";
             // 
@@ -529,7 +520,7 @@ namespace ProjectOffice.forms
             this.clientBankAccountTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientBankAccountTextBox.Location = new System.Drawing.Point(42, 310);
             this.clientBankAccountTextBox.Name = "clientBankAccountTextBox";
-            this.clientBankAccountTextBox.Size = new System.Drawing.Size(168, 26);
+            this.clientBankAccountTextBox.Size = new System.Drawing.Size(171, 30);
             this.clientBankAccountTextBox.TabIndex = 1;
             this.clientBankAccountTextBox.Text = "Расч./счёт";
             // 
@@ -540,7 +531,7 @@ namespace ProjectOffice.forms
             this.clientPaspAddressTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientPaspAddressTextBox.Location = new System.Drawing.Point(40, 346);
             this.clientPaspAddressTextBox.Name = "clientPaspAddressTextBox";
-            this.clientPaspAddressTextBox.Size = new System.Drawing.Size(168, 26);
+            this.clientPaspAddressTextBox.Size = new System.Drawing.Size(171, 30);
             this.clientPaspAddressTextBox.TabIndex = 1;
             this.clientPaspAddressTextBox.Text = "Адрес";
             // 
@@ -551,7 +542,7 @@ namespace ProjectOffice.forms
             this.clientEmailTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientEmailTextBox.Location = new System.Drawing.Point(42, 418);
             this.clientEmailTextBox.Name = "clientEmailTextBox";
-            this.clientEmailTextBox.Size = new System.Drawing.Size(168, 26);
+            this.clientEmailTextBox.Size = new System.Drawing.Size(171, 30);
             this.clientEmailTextBox.TabIndex = 1;
             this.clientEmailTextBox.Text = "Почта";
             // 
@@ -562,7 +553,7 @@ namespace ProjectOffice.forms
             this.clientBank.BackColor = System.Drawing.Color.WhiteSmoke;
             this.clientBank.Location = new System.Drawing.Point(42, 274);
             this.clientBank.Name = "clientBank";
-            this.clientBank.Size = new System.Drawing.Size(168, 26);
+            this.clientBank.Size = new System.Drawing.Size(171, 30);
             this.clientBank.TabIndex = 1;
             this.clientBank.Text = "Банк";
             // 
@@ -573,18 +564,27 @@ namespace ProjectOffice.forms
             this.saveClientBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
             this.saveClientBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.saveClientBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.saveClientBtn.Location = new System.Drawing.Point(76, 513);
+            this.saveClientBtn.Location = new System.Drawing.Point(79, 513);
             this.saveClientBtn.Name = "saveClientBtn";
             this.saveClientBtn.Size = new System.Drawing.Size(128, 40);
             this.saveClientBtn.TabIndex = 0;
             this.saveClientBtn.Text = "Сохранить";
             this.saveClientBtn.UseVisualStyleBackColor = false;
             // 
-            // clientId
+            // clientIdCol
             // 
-            this.clientId.HeaderText = "id";
-            this.clientId.Name = "clientId";
-            this.clientId.Visible = false;
+            this.clientIdCol.HeaderText = "id";
+            this.clientIdCol.MinimumWidth = 6;
+            this.clientIdCol.Name = "clientIdCol";
+            this.clientIdCol.Visible = false;
+            // 
+            // clientImgCol
+            // 
+            this.clientImgCol.FillWeight = 3F;
+            this.clientImgCol.HeaderText = "";
+            this.clientImgCol.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Stretch;
+            this.clientImgCol.MinimumWidth = 6;
+            this.clientImgCol.Name = "clientImgCol";
             // 
             // clientName
             // 
@@ -607,16 +607,9 @@ namespace ProjectOffice.forms
             this.clientEmail.MinimumWidth = 6;
             this.clientEmail.Name = "clientEmail";
             // 
-            // dop
-            // 
-            this.dop.HeaderText = "Дополнительно";
-            this.dop.MinimumWidth = 6;
-            this.dop.Name = "dop";
-            this.dop.Visible = false;
-            // 
             // ClientsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(812, 569);
@@ -684,13 +677,12 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.TextBox clientEmailTextBox;
         private System.Windows.Forms.TextBox clientBank;
         private System.Windows.Forms.Button saveClientBtn;
-        private System.Windows.Forms.ToolStripComboBox toolsDisplayMode;
         private System.Windows.Forms.ToolStripButton fizSwitchBtn;
         private System.Windows.Forms.ToolStripButton urSwitchBtn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn clientId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clientIdCol;
+        private System.Windows.Forms.DataGridViewImageColumn clientImgCol;
         private System.Windows.Forms.DataGridViewTextBoxColumn clientName;
         private System.Windows.Forms.DataGridViewTextBoxColumn clientPhone;
         private System.Windows.Forms.DataGridViewTextBoxColumn clientEmail;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dop;
     }
 }

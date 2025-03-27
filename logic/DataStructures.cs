@@ -8,7 +8,8 @@ namespace ProjectOffice.logic
     {
         public static string ru_alp { get { return "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"; } }
         public static string en_alp { get { return "abcdefghijklmnopqrstuvwxyz"; } }
-        public static string spec { get { return "!_+=~$#%^:&?*(){}[]-<>"; } }
+        public static string spec { get { return "!_.+=~$#%^:&?*(){}[]-<>"; } }
+        public static string emailPattern { get { return @"(?:(?:[._-]+)*(?:\w+)*(?:\d+)*)+\@(?:\w+)*(?:\d+)*.\w+";  } }
     }
 
     public enum ChooseMode

@@ -23,40 +23,57 @@ namespace ProjectOffice.forms
 
         public List<string[]> SelectedIndexes { get; private set; } = new List<string[]>();
 
+        private void ResolveColumnSettings(ref DataGridViewColumn col, ref string columnTitle)
+        {
+            if (columnTitle.Trim().Length > 0)
+            {
+                if (columnTitle.Contains("V"))
+                {
+                    col = new DataGridViewCheckBoxColumn();
+                    col.CellTemplate = new DataGridViewCheckBoxCell();
+                    columnTitle = columnTitle.Replace("V", "");
+                    col.FillWeight = 2;
+                }
+                else
+                {
+                    col = new DataGridViewColumn();
+                    col.CellTemplate = new DataGridViewTextBoxCell();
+                    col.FillWeight = 3;
+                }
+            }
+            else
+            {
+                col = new DataGridViewImageColumn();
+                col.CellTemplate = new DataGridViewImageCell();
+                col.FillWeight = 1;
+            }
+        }
+
         private void ResolveChooseMode()
         {
             switch (_mode)
             {
                 case ChooseMode.Client:
                     {
-                        string[] titles = { "id", "Имя", "Телефон", "Адрес" };
+                        string[] titles = { "id", "Имя", "Телефон", "Адрес", "" };
                         for (int i = 0; i < titles.Length; i++)
                         {
-                            DataGridViewColumn temp = new DataGridViewColumn();
+                            DataGridViewColumn temp = null;
+                            ResolveColumnSettings(ref temp, ref titles[i]);
                             temp.Name = $"Column{i}";
                             temp.HeaderText = titles[i];
                             temp.Visible = i > 0;
-                            temp.CellTemplate = new DataGridViewTextBoxCell();
                             chooseObjectsTable.Columns.Add(temp);
                         }
                         break;
                     }
                 case ChooseMode.Employee:
                     {
-                        string[] titles = { "id", "ФИО", "Специальность", "Участие", "Ответственный" };
+                        string[] titles = { "id", "ФИО", "Специальность", "УчастиеV", "ОтветственныйV" };
                         for (int i = 0; i < titles.Length; i++)
                         {
                             DataGridViewColumn temp = null;
-                            if (i < 3)
-                            {
-                                temp = new DataGridViewColumn();
-                                temp.CellTemplate = new DataGridViewTextBoxCell();
-                            }
-                            else
-                            {
-                                temp = new DataGridViewCheckBoxColumn();
-                                temp.CellTemplate = new DataGridViewCheckBoxCell();
-                            }
+                            ResolveColumnSettings(ref temp, ref titles[i]);
                             temp.Name = $"Column{i}";
                             temp.HeaderText = titles[i];
                             temp.Visible = i > 0;
@@ -66,20 +83,11 @@ namespace ProjectOffice.forms
                     }
                 case ChooseMode.Stages:
                     {
-                        string[] titles = { "id", "Стадия", "Включить" };
+                        string[] titles = { "id", "Стадия", "ВключитьV" };
                         for (int i = 0; i < titles.Length; i++)
                         {
                             DataGridViewColumn temp = null;
-                            if (i < 2)
-                            {
-                                temp = new DataGridViewColumn();
-                                temp.CellTemplate = new DataGridViewTextBoxCell();
-                            }
-                            else
-                            {
-                                temp = new DataGridViewCheckBoxColumn();
-                                temp.CellTemplate = new DataGridViewCheckBoxCell();
-                            }
+                            ResolveColumnSettings(ref temp, ref titles[i]);
                             temp.Name = $"Column{i}";
                             temp.HeaderText = titles[i];
                             temp.Visible = i > 0;
@@ -110,7 +118,7 @@ namespace ProjectOffice.forms
         private async Task<DataTable> GetClients()
         {
             string query = $@"select  
-ClientID, case when ClientOrgTypeID is null then ClientName else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientAddress 
+ClientID, case when ClientOrgTypeID is null then ClientName else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientAddress, ClientPhoto 
 from {Db.Name}.client where ClientID > 1;";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
@@ -185,7 +193,14 @@ order by UserSurname ASC;";
                                 else if (c == 3)
                                 {
                                     string[] addrParts = dt.Rows[r][c].ToString().Split(',');
-                                    chooseObjectsTable.Rows[indx].Cells[c].Value = $"{addrParts[0]},{addrParts[1]}";
+                                    chooseObjectsTable.Rows[indx].Cells[c].Value = (addrParts.Length > 1) ? $"{addrParts[0]},{addrParts[1]}" : $"{addrParts[0]}";
+                                }
+                                else if (c == 4)
+                                {
+                                    Bitmap curBmp = (dt.Rows[r][c] != null && dt.Rows[r][c] != DBNull.Value) ? logic.Сompressor.DecomoressBytesToBitmap((byte[])dt.Rows[r][c]) : Resources.PLUG_PICTURE;
+                                    curBmp = logic.Сompressor.ResizeImage(curBmp, 20, 40);
+                                    ((DataGridViewImageCell)chooseObjectsTable.Rows[indx].Cells[c]).ImageLayout = DataGridViewImageCellLayout.Stretch;
+                                    ((DataGridViewImageCell)chooseObjectsTable.Rows[indx].Cells[c]).Value = curBmp;
                                 }
                                 else
                                 {

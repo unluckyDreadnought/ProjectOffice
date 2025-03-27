@@ -458,25 +458,6 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             await CheckFieldsFilling();
         }
 
-        // Обработчик нажатия на кнопку выхода из редактора ("К списку")
-        private async void backToProjectListBtn_Click(object sender, EventArgs e)
-        {
-            if (changes)
-            {
-                DialogResult msgResult = MessageBox.Show("Вы уверены, что хотите перейти к списку проектов и отменить изменения в новом проекте?", "Новый проект", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (msgResult == DialogResult.Yes)
-                {
-                    if (!editMode)
-                    {
-                        int n = await proj.Delete();
-                        if (n == -1) MessageBox.Show("Не удалось провести удаление проекта.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    this.Close();
-                }
-            }
-            else this.Close();
-        }
-
         private async void saveProjectBtn_Click(object sender, EventArgs e)
         {
             (logic.Stage[] toDelete, int n) = await proj.Save(existInDb: editMode);
@@ -500,6 +481,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                         (toDelete, n) = await proj.Save(existInDb: editMode, force: true);
                         int linkedN = toDelete.Where(delStg => delStg.subtasks.Count > 0).ToArray().Length;
                         MessageBox.Show($"Проект успешно изменён. Удалено {linkedN} стадий с зависимостями.", "Изменение проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        changes = false;
                         this.Close();
                         return;
                     }
@@ -514,15 +496,43 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 string[][] titles = new string[][] { new string[] { "добавлен", "Создание проекта" }, new string[] { "изменён", "Изменение" } };
                 string[] curTitle = editMode ? titles[1] : titles[0];
                 MessageBox.Show($"Проект успешно {curTitle[0]}", $"{curTitle[1]} проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                changes = false;
                 this.Close();
             }
         }
 
-        #endregion
 
-        private void tableLayoutPanel3_Paint(object sender, PaintEventArgs e)
+        // Обработчик нажатия на кнопку выхода из редактора ("К списку")
+        private async void backToProjectListBtn_Click(object sender, EventArgs e)
         {
-
+            if (changes)
+            {
+                DialogResult msgResult = MessageBox.Show("Вы уверены, что хотите перейти к списку проектов и отменить изменения в новом проекте?", "Новый проект", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (msgResult == DialogResult.Yes)
+                {
+                    if (!editMode)
+                    {
+                        int n = await proj.Delete();
+                        if (n == -1) MessageBox.Show("Не удалось провести удаление проекта.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    this.Close();
+                }
+            }
+            else this.Close();
         }
+
+        private async void ProjectEditorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (changes)
+            {
+                if (!editMode)
+                {
+                    int n = await proj.Delete();
+                    if (n == -1) MessageBox.Show("Не удалось провести удаление проекта.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        #endregion
     }
 }

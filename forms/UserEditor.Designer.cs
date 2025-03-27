@@ -36,7 +36,7 @@ namespace ProjectOffice.forms
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.specLbl = new System.Windows.Forms.Label();
             this.patronymicTextBox = new System.Windows.Forms.TextBox();
             this.nameTextBox = new System.Windows.Forms.TextBox();
             this.surnameTextBox = new System.Windows.Forms.TextBox();
@@ -93,7 +93,7 @@ namespace ProjectOffice.forms
             this.panel4.Controls.Add(this.label5);
             this.panel4.Controls.Add(this.label4);
             this.panel4.Controls.Add(this.label3);
-            this.panel4.Controls.Add(this.label2);
+            this.panel4.Controls.Add(this.specLbl);
             this.panel4.Controls.Add(this.patronymicTextBox);
             this.panel4.Controls.Add(this.nameTextBox);
             this.panel4.Controls.Add(this.surnameTextBox);
@@ -155,17 +155,17 @@ namespace ProjectOffice.forms
             this.label3.TabIndex = 2;
             this.label3.Text = "Отчество";
             // 
-            // label2
+            // specLbl
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.specLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(75, 186);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(156, 25);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Специальность";
+            this.specLbl.AutoSize = true;
+            this.specLbl.Location = new System.Drawing.Point(75, 186);
+            this.specLbl.Name = "specLbl";
+            this.specLbl.Size = new System.Drawing.Size(156, 25);
+            this.specLbl.TabIndex = 2;
+            this.specLbl.Text = "Специальность";
             // 
             // patronymicTextBox
             // 
@@ -448,7 +448,7 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label specLbl;
         private System.Windows.Forms.ComboBox roleCombo;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label1;

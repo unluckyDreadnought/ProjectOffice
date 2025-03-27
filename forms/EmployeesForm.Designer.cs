@@ -29,27 +29,31 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.userSnpLbl = new System.Windows.Forms.Label();
-            this.userModeLbl = new System.Windows.Forms.Label();
+            this.userPhotoPic = new System.Windows.Forms.PictureBox();
+            this.usrSnpLbl = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.actionsPanel = new System.Windows.Forms.ToolStrip();
             this.specFilterCombo = new System.Windows.Forms.ToolStripComboBox();
+            this.addEmployeeBtn = new System.Windows.Forms.ToolStripButton();
             this.editEmployeeBtn = new System.Windows.Forms.ToolStripButton();
             this.deleteEmployeeBtn = new System.Windows.Forms.ToolStripButton();
             this.toolsDisplayModeCombo = new System.Windows.Forms.ToolStripComboBox();
             this.employeeTable = new System.Windows.Forms.DataGridView();
+            this.idCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.fio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.spec = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.haveAccountCol = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.backToMenu = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.userPhotoPic)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
+            this.actionsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.employeeTable)).BeginInit();
             this.SuspendLayout();
             // 
@@ -77,8 +81,8 @@ namespace ProjectOffice.forms
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.tableLayoutPanel1.SetColumnSpan(this.panel1, 2);
-            this.panel1.Controls.Add(this.userSnpLbl);
-            this.panel1.Controls.Add(this.userModeLbl);
+            this.panel1.Controls.Add(this.userPhotoPic);
+            this.panel1.Controls.Add(this.usrSnpLbl);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel1.Location = new System.Drawing.Point(3, 3);
@@ -86,25 +90,28 @@ namespace ProjectOffice.forms
             this.panel1.Size = new System.Drawing.Size(779, 36);
             this.panel1.TabIndex = 0;
             // 
-            // userSnpLbl
+            // userPhotoPic
             // 
-            this.userSnpLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.userSnpLbl.AutoSize = true;
-            this.userSnpLbl.Location = new System.Drawing.Point(456, 6);
-            this.userSnpLbl.Name = "userSnpLbl";
-            this.userSnpLbl.Size = new System.Drawing.Size(79, 29);
-            this.userSnpLbl.TabIndex = 0;
-            this.userSnpLbl.Text = "label1";
+            this.userPhotoPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.userPhotoPic.Image = global::ProjectOffice.Properties.Resources.USR_PLUG_PICTURE;
+            this.userPhotoPic.Location = new System.Drawing.Point(737, 0);
+            this.userPhotoPic.Name = "userPhotoPic";
+            this.userPhotoPic.Size = new System.Drawing.Size(39, 36);
+            this.userPhotoPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.userPhotoPic.TabIndex = 6;
+            this.userPhotoPic.TabStop = false;
             // 
-            // userModeLbl
+            // usrSnpLbl
             // 
-            this.userModeLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.userModeLbl.AutoSize = true;
-            this.userModeLbl.Location = new System.Drawing.Point(624, 6);
-            this.userModeLbl.Name = "userModeLbl";
-            this.userModeLbl.Size = new System.Drawing.Size(79, 29);
-            this.userModeLbl.TabIndex = 0;
-            this.userModeLbl.Text = "label1";
+            this.usrSnpLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.usrSnpLbl.Location = new System.Drawing.Point(393, 4);
+            this.usrSnpLbl.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.usrSnpLbl.Name = "usrSnpLbl";
+            this.usrSnpLbl.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.usrSnpLbl.Size = new System.Drawing.Size(336, 30);
+            this.usrSnpLbl.TabIndex = 5;
+            this.usrSnpLbl.Text = "Фамилия И.О.";
             // 
             // panel2
             // 
@@ -120,33 +127,34 @@ namespace ProjectOffice.forms
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.toolStrip1);
+            this.panel3.Controls.Add(this.actionsPanel);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel3.Location = new System.Drawing.Point(0, 316);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(779, 44);
             this.panel3.TabIndex = 2;
             // 
-            // toolStrip1
+            // actionsPanel
             // 
-            this.toolStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.actionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.actionsPanel.Dock = System.Windows.Forms.DockStyle.None;
+            this.actionsPanel.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.actionsPanel.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.actionsPanel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.specFilterCombo,
+            this.addEmployeeBtn,
             this.editEmployeeBtn,
             this.deleteEmployeeBtn,
             this.toolsDisplayModeCombo});
-            this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.toolStrip1.Location = new System.Drawing.Point(223, 8);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.Size = new System.Drawing.Size(307, 31);
-            this.toolStrip1.Stretch = true;
-            this.toolStrip1.TabIndex = 1;
-            this.toolStrip1.Text = "toolStrip1";
+            this.actionsPanel.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            this.actionsPanel.Location = new System.Drawing.Point(223, 8);
+            this.actionsPanel.Name = "actionsPanel";
+            this.actionsPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.actionsPanel.Size = new System.Drawing.Size(297, 27);
+            this.actionsPanel.Stretch = true;
+            this.actionsPanel.TabIndex = 1;
+            this.actionsPanel.Text = "toolStrip1";
             // 
             // specFilterCombo
             // 
@@ -159,8 +167,19 @@ namespace ProjectOffice.forms
             "Аднистратор баз данных"});
             this.specFilterCombo.Name = "specFilterCombo";
             this.specFilterCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.specFilterCombo.Size = new System.Drawing.Size(121, 28);
+            this.specFilterCombo.Size = new System.Drawing.Size(121, 27);
             this.specFilterCombo.ToolTipText = "Фильтр по должности";
+            // 
+            // addEmployeeBtn
+            // 
+            this.addEmployeeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.addEmployeeBtn.Image = global::ProjectOffice.Properties.Resources.ADD_BTN_PICTURE;
+            this.addEmployeeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.addEmployeeBtn.Name = "addEmployeeBtn";
+            this.addEmployeeBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.addEmployeeBtn.Size = new System.Drawing.Size(24, 24);
+            this.addEmployeeBtn.Text = "Добавить сотрудника";
+            this.addEmployeeBtn.Click += new System.EventHandler(this.addEmployeeBtn_Click);
             // 
             // editEmployeeBtn
             // 
@@ -169,7 +188,7 @@ namespace ProjectOffice.forms
             this.editEmployeeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editEmployeeBtn.Name = "editEmployeeBtn";
             this.editEmployeeBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.editEmployeeBtn.Size = new System.Drawing.Size(29, 25);
+            this.editEmployeeBtn.Size = new System.Drawing.Size(24, 24);
             this.editEmployeeBtn.Text = "Редактировать";
             this.editEmployeeBtn.Click += new System.EventHandler(this.editEmployeeBtn_Click);
             // 
@@ -180,8 +199,9 @@ namespace ProjectOffice.forms
             this.deleteEmployeeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteEmployeeBtn.Name = "deleteEmployeeBtn";
             this.deleteEmployeeBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.deleteEmployeeBtn.Size = new System.Drawing.Size(29, 25);
+            this.deleteEmployeeBtn.Size = new System.Drawing.Size(24, 24);
             this.deleteEmployeeBtn.Text = "Удалить";
+            this.deleteEmployeeBtn.Click += new System.EventHandler(this.deleteEmployeeBtn_Click);
             // 
             // toolsDisplayModeCombo
             // 
@@ -191,26 +211,30 @@ namespace ProjectOffice.forms
             "Совместный"});
             this.toolsDisplayModeCombo.Name = "toolsDisplayModeCombo";
             this.toolsDisplayModeCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolsDisplayModeCombo.Size = new System.Drawing.Size(121, 28);
+            this.toolsDisplayModeCombo.Size = new System.Drawing.Size(121, 27);
             this.toolsDisplayModeCombo.ToolTipText = "Режим отображения";
             // 
             // employeeTable
             // 
+            this.employeeTable.AllowUserToAddRows = false;
+            this.employeeTable.AllowUserToDeleteRows = false;
             this.employeeTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.employeeTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.employeeTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.employeeTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.employeeTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.employeeTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.employeeTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.idCol,
             this.fio,
-            this.spec});
+            this.spec,
+            this.haveAccountCol});
             this.employeeTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.employeeTable.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.employeeTable.EnableHeadersVisualStyles = false;
@@ -222,18 +246,36 @@ namespace ProjectOffice.forms
             this.employeeTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.employeeTable.Size = new System.Drawing.Size(779, 360);
             this.employeeTable.TabIndex = 0;
+            this.employeeTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.employeeTable_CellClick);
+            // 
+            // idCol
+            // 
+            this.idCol.HeaderText = "Column1";
+            this.idCol.Name = "idCol";
+            this.idCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.idCol.Visible = false;
             // 
             // fio
             // 
+            this.fio.FillWeight = 4F;
             this.fio.HeaderText = "ФИО";
             this.fio.MinimumWidth = 6;
             this.fio.Name = "fio";
+            this.fio.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // spec
             // 
+            this.spec.FillWeight = 5F;
             this.spec.HeaderText = "Должность";
             this.spec.MinimumWidth = 6;
             this.spec.Name = "spec";
+            this.spec.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // haveAccountCol
+            // 
+            this.haveAccountCol.FillWeight = 2F;
+            this.haveAccountCol.HeaderText = "Аккаунт";
+            this.haveAccountCol.Name = "haveAccountCol";
             // 
             // backToMenu
             // 
@@ -248,7 +290,7 @@ namespace ProjectOffice.forms
             // 
             // EmployeesForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(785, 452);
@@ -261,12 +303,12 @@ namespace ProjectOffice.forms
             this.Load += new System.EventHandler(this.EmployeesForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.userPhotoPic)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.actionsPanel.ResumeLayout(false);
+            this.actionsPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.employeeTable)).EndInit();
             this.ResumeLayout(false);
 
@@ -276,18 +318,21 @@ namespace ProjectOffice.forms
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label userSnpLbl;
-        private System.Windows.Forms.Label userModeLbl;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStrip actionsPanel;
         private System.Windows.Forms.ToolStripButton editEmployeeBtn;
         private System.Windows.Forms.ToolStripButton deleteEmployeeBtn;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView employeeTable;
-        private System.Windows.Forms.DataGridViewTextBoxColumn fio;
-        private System.Windows.Forms.DataGridViewTextBoxColumn spec;
         private System.Windows.Forms.Button backToMenu;
         private System.Windows.Forms.ToolStripComboBox specFilterCombo;
         private System.Windows.Forms.ToolStripComboBox toolsDisplayModeCombo;
+        private System.Windows.Forms.ToolStripButton addEmployeeBtn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn idCol;
+        private System.Windows.Forms.DataGridViewTextBoxColumn fio;
+        private System.Windows.Forms.DataGridViewTextBoxColumn spec;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn haveAccountCol;
+        private System.Windows.Forms.PictureBox userPhotoPic;
+        private System.Windows.Forms.Label usrSnpLbl;
     }
 }

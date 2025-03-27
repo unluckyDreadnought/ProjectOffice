@@ -17,6 +17,7 @@ namespace ProjectOffice.forms
     {
         OrganizationClientEditorForm orgEdit;
         Db _db = null;
+        string clientId = "";
 
         public ClientsForm()
         {
@@ -27,7 +28,7 @@ namespace ProjectOffice.forms
         private async Task<DataTable> GetClients()
         {
             string query = @"select  
-ClientID, case when ClientOrgTypeID is null then concat(ClientName) else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientEmail 
+ClientID, case when ClientOrgTypeID is null then concat(ClientName) else concat(ClientOrgTypeID, ' \'', ClientName, '\'') end as `ClientName`, ClientPhone, ClientEmail, ClientPhoto 
 from client where ClientID > 1; ";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
@@ -59,17 +60,24 @@ from client where ClientID > 1; ";
 
         private async void UpdateClientsTable()
         {
+            Common.SetSizeForImageRow(ref clientsTable, "clientImgCol", 40, 60);
+            clientsTable.Rows.Clear();
             DataTable src = await GetClients();
             int i = 0;
             while (i < src.Rows.Count)
             {
+                Bitmap curBmp = null;
                 DataRow srcRow = src.Rows[i];
                 int indx = clientsTable.Rows.Add();
                 DataGridViewCellCollection rowCells = clientsTable.Rows[indx].Cells;
-                rowCells["clientId"].Value = srcRow[0].ToString();
+                clientsTable.Rows[indx].Height = 40;
+                rowCells["clientIdCol"].Value = srcRow[0].ToString();
                 rowCells["clientName"].Value = srcRow[1].ToString();
                 rowCells["clientPhone"].Value = $"+{srcRow[2]}";
                 rowCells["clientEmail"].Value = srcRow[3].ToString();
+                curBmp = (srcRow[4] != null && srcRow[4] != DBNull.Value) ? logic.Сompressor.DecomoressBytesToBitmap((byte[])srcRow[4]) : Resources.PLUG_PICTURE;
+                curBmp = Сompressor.ResizeImage(curBmp, 40, 80);
+                ((DataGridViewImageCell)rowCells["clientImgCol"]).Value = curBmp;
                 i++;
             }
         }
@@ -84,7 +92,7 @@ from client where ClientID > 1; ";
             UpdateClientsTable();
         }
 
-        private void OpenEditor(string id = "")
+        private async Task OpenEditor(string id = "")
         {
             if (fizSwitchBtn.Checked)
             {
@@ -93,9 +101,10 @@ from client where ClientID > 1; ";
             else
             {
                 fizClientEditorPanel.Hide();
-                orgEdit = new OrganizationClientEditorForm(id);
+                orgEdit = await OrganizationClientEditorForm.OpenOrganizationEditor(id);
                 orgEdit.ShowDialog();
             }
+            UpdateClientsTable();
         }
 
         private void fizSwitchBtn_Click(object sender, EventArgs e)
@@ -124,19 +133,18 @@ from client where ClientID > 1; ";
             }
         }
 
-        private void addClientBtn_Click(object sender, EventArgs e)
+        private async void addClientBtn_Click(object sender, EventArgs e)
         {
-            OpenEditor();
+            await OpenEditor();
         }
 
-        private void editClientBtn_Click(object sender, EventArgs e)
+        private async void editClientBtn_Click(object sender, EventArgs e)
         {
-            if (clientsTable.SelectedRows.Count == 0) {
-                MessageBox.Show("Сначала выберите запись для редактирования", "Редактирование записи", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (clientId == "") {
+                MessageBox.Show("Сначала выберите запись для редактирования", "Редактирование клиента", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return; 
-            }
-            string id = clientsTable.SelectedRows[0].Cells["clientId"].Value.ToString();
-            OpenEditor(id);
+            };
+            await OpenEditor(clientId);
         }
 
         private void hideEditorPanelBtn_Click(object sender, EventArgs e)
@@ -150,5 +158,60 @@ from client where ClientID > 1; ";
         {
             this.Close();
         }
+
+        private void clientsTable_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1)
+            {
+                clientId = "";
+                return;
+            }
+            clientId = clientsTable.Rows[e.RowIndex].Cells[0].Value.ToString();
+        }
+
+        private async void deleteClientBtn_Click(object sender, EventArgs e)
+        {
+            if (clientId == "") 
+            {
+                MessageBox.Show("Сначала выберите запись для удаления", "Удаление клиента", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (MessageBox.Show("Вы действительно хотите удалить выбранного клиента?", "Удаление клиента", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                int n = 0;
+                bool force = false;
+                while (n > 0)
+                {
+                    (int res, bool haveRefs) = await Common.DeleteClient(clientId, force);
+                    if (res == -1)
+                    {
+                        if (haveRefs)
+                        {
+                            DialogResult dialogRes = MessageBox.Show("Выбранный клиент задействован в других записях.\n" +
+                                "Для удаления клиента потребуется удалить связанные записи.\nВы действительно хотите удалить клиента?", "Удаление клиента", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (dialogRes == DialogResult.Yes)
+                            {
+                                force = true;
+                                n++;
+                                continue;
+                            }
+                            else n = -1; continue;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Удаление клиента заверширось неудачей", "Удаление клиента", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            n = -1; continue;
+                        }
+                    }
+                    else if (res > 0)
+                    {
+                        MessageBox.Show($"Клиент удалён. Удаление клиента вызвало удаление {res} записей.", "Удаление клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        n = -1; continue;
+                    }
+                }
+            }
+            UpdateClientsTable();
+        }
     }
 }
+ 

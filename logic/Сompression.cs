@@ -167,6 +167,16 @@ namespace ProjectOffice.logic
             imageMemoryStream.Close();
             return bytes;
         }
-        
+
+        public static Bitmap DecomoressBytesToBitmap(byte[] input)
+        {
+            byte[] bytes = DecompressBytes(input);
+            Bitmap bmp = null;
+            using (var ms = new MemoryStream(bytes))
+            {
+                bmp = new Bitmap(ms);
+            }
+            return bmp;
+        }
     }
 }

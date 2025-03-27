@@ -60,7 +60,7 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(793, 505);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(793, 468);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // userDataPanel
@@ -105,16 +105,19 @@ namespace ProjectOffice.forms
             this.picturePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.picturePanel.Location = new System.Drawing.Point(399, 109);
             this.picturePanel.Name = "picturePanel";
-            this.picturePanel.Size = new System.Drawing.Size(391, 393);
+            this.picturePanel.Size = new System.Drawing.Size(391, 356);
             this.picturePanel.TabIndex = 0;
             // 
             // splashPicture
             // 
+            this.splashPicture.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.splashPicture.Image = global::ProjectOffice.Properties.Resources.PLUG_PICTURE;
             this.splashPicture.InitialImage = ((System.Drawing.Image)(resources.GetObject("splashPicture.InitialImage")));
-            this.splashPicture.Location = new System.Drawing.Point(-3, 21);
+            this.splashPicture.Location = new System.Drawing.Point(17, 22);
             this.splashPicture.Name = "splashPicture";
-            this.splashPicture.Size = new System.Drawing.Size(396, 351);
+            this.splashPicture.Size = new System.Drawing.Size(356, 306);
             this.splashPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.splashPicture.TabIndex = 4;
             this.splashPicture.TabStop = false;
@@ -126,7 +129,7 @@ namespace ProjectOffice.forms
             this.buttonsPanel.Location = new System.Drawing.Point(3, 3);
             this.buttonsPanel.Name = "buttonsPanel";
             this.tableLayoutPanel1.SetRowSpan(this.buttonsPanel, 2);
-            this.buttonsPanel.Size = new System.Drawing.Size(390, 499);
+            this.buttonsPanel.Size = new System.Drawing.Size(390, 462);
             this.buttonsPanel.TabIndex = 0;
             // 
             // MenuForm
@@ -134,11 +137,12 @@ namespace ProjectOffice.forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(793, 505);
+            this.ClientSize = new System.Drawing.Size(793, 468);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "MenuForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "MenuForm";
             this.Load += new System.EventHandler(this.MenuForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
