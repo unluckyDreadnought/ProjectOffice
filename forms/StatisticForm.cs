@@ -109,8 +109,11 @@ order by StatusTitle;";
         private async Task FillProjectCombo()
         {
             projectStatsCombo.Items.Clear();
-            string[] projectMainInfo = await GetActiveProjects();
-            
+            string[] projectTitles = await GetActiveProjects();
+            if (projectTitles.Length > 0)
+            {
+                projectStatsCombo.Items.AddRange(projectTitles);
+            }       
         }
 
         private async void statsTabControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -145,6 +148,19 @@ order by StatusTitle;";
             {
 
             }
+        }
+
+        private async void projectStatsCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string query = $"select ProjectID from {Db.Name}.project where ProjectTitle = '{projectStatsCombo.SelectedItem.ToString()}'";
+            string[] id = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+            if (id.Length == 0)
+            {
+                MessageBox.Show("Проект не найден", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Project proj = await Project.InitilazeAsync(id[0]);
+            await Common.LoadProjectTree(statsProjectTree, proj);
         }
     }
 }

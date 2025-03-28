@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Linq;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -285,6 +287,111 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
             {
                 table.Rows[row].MinimumHeight = 20;
                 table.Rows[row].Height = rowHeight;
+            }
+        }
+
+        public static async Task LoadProjectTree(TreeView tree, Project proj)
+        {
+            tree.Nodes.Clear();
+            proj.Stages = await Stage.GetStages(proj.Id);
+            int stgIndx = 0; ;
+            while (stgIndx < proj.Stages.Count)
+            {
+                TreeNode stageNode = new TreeNode();
+                stageNode.Text = proj.Stages[stgIndx].Title;
+                stageNode.ToolTipText = proj.Stages[stgIndx].Title;
+                stageNode.Name = $"stg_{proj.Stages[stgIndx].Id}";
+                stageNode.Checked = false;
+
+                int subtaskIndx = 0;
+                while (subtaskIndx < proj.Stages[stgIndx].subtasks.Count)
+                {
+                    TreeNode subtaskNode = new TreeNode();
+                    subtaskNode.Text = proj.Stages[stgIndx].subtasks[subtaskIndx].Title;
+                    string sbtskDesc = proj.Stages[stgIndx].subtasks[subtaskIndx].Description;
+                    if (sbtskDesc != "" && sbtskDesc != null)
+                    {
+                        subtaskNode.ToolTipText = sbtskDesc;
+                    }
+                    else subtaskNode.ToolTipText = proj.Stages[stgIndx].subtasks[subtaskIndx].Title;
+                    subtaskNode.Name = $"sbtsk_{proj.Stages[stgIndx].subtasks[subtaskIndx].Id}";
+                    subtaskNode.Checked = false;
+                    stageNode.Nodes.Add(subtaskNode);
+
+                    int cpIndx = 0;
+                    while (cpIndx < proj.Stages[stgIndx].subtasks[subtaskIndx].points.Count)
+                    {
+                        TreeNode cpNode = new TreeNode();
+                        string author = await Common.GetEmployee(proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].AuthorId);
+                        cpNode.Text = $"{proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].Title} ({author})";
+                        cpNode.ToolTipText = proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].Title;
+                        cpNode.Name = $"cp_{proj.Stages[stgIndx].subtasks[subtaskIndx].points[cpIndx].Id}";
+                        subtaskNode.Nodes.Add(cpNode);
+                        cpIndx++;
+                    }
+
+                    subtaskIndx++;
+                }
+                stgIndx++;
+                tree.Nodes.Add(stageNode);
+            }
+            ColorNodes(tree, proj);
+        }
+
+        private static void ColorNodes(TreeView tree, Project projData)
+        {
+            List<Stage> stages = projData.Stages;
+            List<Stage> started = stages.Where(
+                stg => stg.subtasks.Count > 0 && stg.subtasks.Where(sbtsk => sbtsk.points.Count > 0).ToArray().Length > 0
+            ).ToList();
+            if (started.Count == 0) return;
+            List<List<Subtask>> subtasks = started.Select(stg => stg.subtasks).ToList();
+            int stgIndx = 0;
+            while (stgIndx < subtasks.Count)
+            {
+                subtasks[stgIndx] = subtasks[stgIndx].Where(stsk => stsk.points.Where(p => p.StatusId == ((int)Status.Finish).ToString()).ToArray().Length > 0).ToList();
+                stgIndx++;
+            }
+
+            int level0 = 0;
+            while (level0 < tree.Nodes.Count)
+            {
+                if (tree.Nodes[level0].Nodes.Count == 0)
+                {
+                    level0++;
+                    continue;
+                }
+                int level1 = 0;
+                int completedSbtsk = 0;
+                while (level1 < tree.Nodes[level0].Nodes.Count)
+                {
+                    var subtaskTitles = subtasks[level0].Select(s => s.Title).ToArray();
+                    if (subtaskTitles.Length == 0)
+                    {
+                        level1++;
+                    }
+                    if (subtaskTitles.Contains(tree.Nodes[level0].Nodes[level1].Text))
+                    {
+                        tree.Nodes[level0].Nodes[level1].ForeColor = Color.Gray;
+                        int cpCount = 0;
+                        while (cpCount < tree.Nodes[level0].Nodes[level1].Nodes.Count)
+                        {
+                            tree.Nodes[level0].Nodes[level1].Nodes[cpCount].ForeColor = Color.Gray;
+                            if (cpCount == tree.Nodes[level0].Nodes[level1].Nodes.Count - 1)
+                            {
+                                tree.Nodes[level0].Nodes[level1].Nodes[cpCount].BackColor = Color.LightGray;
+                            }
+                            cpCount++;
+                        }
+                        completedSbtsk++;
+                    }
+                    level1++;
+                }
+                if (completedSbtsk == tree.Nodes[level0].Nodes.Count)
+                {
+                    tree.Nodes[level0].ForeColor = Color.Gray;
+                }
+                level0++;
             }
         }
     }

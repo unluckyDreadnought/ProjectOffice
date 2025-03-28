@@ -29,9 +29,9 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.statsTabControl = new System.Windows.Forms.TabControl();
             this.commonStatsTab = new System.Windows.Forms.TabPage();
             this.outOfDateProjectsCount = new System.Windows.Forms.Label();
@@ -143,18 +143,18 @@ namespace ProjectOffice.forms
             // 
             // allProjectStatsChart
             // 
-            chartArea5.Name = "ChartArea1";
-            this.allProjectStatsChart.ChartAreas.Add(chartArea5);
-            legend5.Name = "Legend1";
-            this.allProjectStatsChart.Legends.Add(legend5);
+            chartArea1.Name = "ChartArea1";
+            this.allProjectStatsChart.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.allProjectStatsChart.Legends.Add(legend1);
             this.allProjectStatsChart.Location = new System.Drawing.Point(349, 19);
             this.allProjectStatsChart.Name = "allProjectStatsChart";
             this.allProjectStatsChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Pastel;
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series5.Legend = "Legend1";
-            series5.Name = "Series1";
-            this.allProjectStatsChart.Series.Add(series5);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.allProjectStatsChart.Series.Add(series1);
             this.allProjectStatsChart.Size = new System.Drawing.Size(300, 300);
             this.allProjectStatsChart.TabIndex = 6;
             this.allProjectStatsChart.Text = "chart1";
@@ -279,6 +279,7 @@ namespace ProjectOffice.forms
             this.projectStatsCombo.Name = "projectStatsCombo";
             this.projectStatsCombo.Size = new System.Drawing.Size(265, 30);
             this.projectStatsCombo.TabIndex = 1;
+            this.projectStatsCombo.SelectedIndexChanged += new System.EventHandler(this.projectStatsCombo_SelectedIndexChanged);
             // 
             // projectLbl
             // 
