@@ -1243,14 +1243,15 @@ ProjectFactEndDate from {Db.Name}.project where ProjectID = {id}; ";
         /// <returns>Возвращает асинхронную операцию, результатом которой является количество удалённых записей в случае успеха, иначе -1</returns>
         public async Task<int> Delete()
         {
-            await this.RemoveAllEmployees();
-            await this.RemoveAllStages();
+            int total = 0;
+            total += await this.RemoveAllEmployees();
+            total += await this.RemoveAllStages();
             string query = $"delete from {Db.Name}.{Db.GetTableName(Db.Tables.Project)} where {GetColumnName(ProjectField.Id)} = {Id};";
             var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (object result, _) = await Common.GetNoScalarResult(task);
-            int res = Convert.ToInt32(result);
+            total += Convert.ToInt32(result);
             this.Dispose();
-            return res;
+            return total;
         }
 
         /// <summary>

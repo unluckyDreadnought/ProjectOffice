@@ -86,8 +86,9 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
         private void UsersForm_Load(object sender, EventArgs e)
         {
             this.Text = $"{Resources.APP_NAME}: Пользователи системы";
-            userSnp.Text = AppUser.Snp;
-            userModeTip.SetToolTip(userSnp, AppUser.GetUserMode());
+            usrSnpLbl.Text = AppUser.Snp;
+            userPhotoPic.Image = AppUser.Photo;
+            userModeTip.SetToolTip(usrSnpLbl, AppUser.GetUserMode());
 
             UpdateUserList();
         }
@@ -129,22 +130,53 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
             string userSnp = selectedRow.Cells["fio"].Value.ToString();
             string userLogin = selectedRow.Cells["login"].Value.ToString();
             if (MessageBox.Show($"Вы действительно хотите удалить этого пользователя ({userSnp} [{userLogin}])?", 
-                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                string query = $"delete from {Db.Name}.user where UserID = {userId};";
-                (int rows, Exception ex) = await _db.ExecuteNoDataResultAsync(query);
-                if (ex != null)
+                bool deleting = true;
+                bool force = false;
+                while (deleting)
                 {
-                    MessageBox.Show(ex.Message, "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                if (rows > 0)
-                {
-                    MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) успешно удалён", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Что-то пошло не так. Пользователь не был удалён.", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    int linkedProjCount = 0;
+                    (int n, bool haveRefs) = await Common.DeleteUser(userId, force: force);
+                    if (n < 0)
+                    {
+                        if (haveRefs && !force)
+                        {
+                            linkedProjCount += -1 * n;
+                            if (MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) включён в список исполнителей в {linkedProjCount} проектах.\n" +
+                        $"Для удаления пользователя требуется удалить все записи о нём из других таблиц.\nВы действительно хотите это сделать?",
+                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            {
+                                force = true;
+                                continue;
+                            }
+                            else
+                            {
+                                MessageBox.Show("Операция удаления отменена. Дальнейшее удаление невозможно без предыдущего шага.", "Редактор пользователей",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                deleting = false;
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Ошибка удаления пользователя", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            deleting = false;
+                            continue;
+                        }
+                    }
+                    else if (n == 0)
+                    {
+                        MessageBox.Show("Что-то пошло не так. Пользователь не был удалён.", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        deleting = false;
+                        continue;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) успешно удалён", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        deleting = false;
+                        continue;
+                    }
                 }
                 UpdateUserList();
             }

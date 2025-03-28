@@ -83,27 +83,67 @@ order by Snp asc;";
 
         private async void deleteEmployeeBtn_Click(object sender, EventArgs e)
         {
-            if (uId == "" || uId == null || uId == "-1")
+            DataGridViewRow selectedRow = usersTable.Rows.Cast<DataGridViewRow>().Where(
+                row => row.Cells["id"].Value.ToString() == userId).First();
+            string userSnp = selectedRow.Cells["fio"].Value.ToString();
+            string userLogin = selectedRow.Cells["login"].Value.ToString();
+
+            if (MessageBox.Show($"Вы действительно хотите удалить этого пользователя ({userSnp} [{userLogin}])?",
+                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                MessageBox.Show("Выберите сотрудника для удаления", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
+                bool deleting = true;
+                bool force = false;
+                while (deleting)
+                {
+                    int linkedProjCount = 0;
+                    (int n, bool haveRefs) = await Common.DeleteUser(userId, force: force);
+                    if (n < 0)
+                    {
+                        if (haveRefs && !force)
+                        {
+                            linkedProjCount += -1 * n;
+                            if (MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) включён в список исполнителей в {linkedProjCount} проектах.\n" +
+                        $"Для удаления пользователя требуется удалить все записи о нём из других таблиц.\nВы действительно хотите это сделать?",
+                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            {
+                                force = true;
+                                continue;
+                            }
+                            else
+                            {
+                                MessageBox.Show("Операция удаления отменена. Дальнейшее удаление невозможно без предыдущего шага.", "Редактор пользователей",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                deleting = false;
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Ошибка удаления пользователя", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            deleting = false;
+                            continue;
+                        }
+                    }
+                    else if (n == 0)
+                    {
+                        MessageBox.Show("Что-то пошло не так. Пользователь не был удалён.", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        deleting = false;
+                        continue;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) успешно удалён", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        deleting = false;
+                        continue;
+                    }
+                }
+                await UpdateEmployeesTable();
             }
             else
             {
-                string msg = "Вы уверены, что хотите удалить выбранного сотрудника?\n";
-                string query = $"select ProjectID from {Db.Name}.userproject where UserID = {uId};";
-                string[] projIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
-                if (projIds.Length > 0)
-                {
-                    msg += "Выбранный сотрудник, включён в исполнителей некоторых проектов.\nСотрудник будет удалён из всех записей безвозвратно.";
-                }
-                if (MessageBox.Show(msg, "Удаление сотрудника", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    query = $"delete from userproject where UserID in ({string.Join(",",projIds)});";
-                }
+                MessageBox.Show($"Операция удаления пользователя ({userSnp} [{userLogin}]) прервана", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            
-
         }
 
         private void backToMenu_Click(object sender, EventArgs e)

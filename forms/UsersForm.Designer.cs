@@ -34,7 +34,6 @@ namespace ProjectOffice.forms
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.userSnp = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableActionBtnPanel = new System.Windows.Forms.Panel();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
@@ -43,19 +42,22 @@ namespace ProjectOffice.forms
             this.deleteUserBtn = new System.Windows.Forms.ToolStripButton();
             this.toolsDisplayModeCombo = new System.Windows.Forms.ToolStripComboBox();
             this.usersTable = new System.Windows.Forms.DataGridView();
-            this.backToMenuBtn = new System.Windows.Forms.Button();
-            this.userModeTip = new System.Windows.Forms.ToolTip(this.components);
             this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.userAvatar = new System.Windows.Forms.DataGridViewImageColumn();
             this.fio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.login = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.role = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.backToMenuBtn = new System.Windows.Forms.Button();
+            this.userModeTip = new System.Windows.Forms.ToolTip(this.components);
+            this.userPhotoPic = new System.Windows.Forms.PictureBox();
+            this.usrSnpLbl = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tableActionBtnPanel.SuspendLayout();
             this.toolStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.usersTable)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.userPhotoPic)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -83,7 +85,8 @@ namespace ProjectOffice.forms
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.tableLayoutPanel1.SetColumnSpan(this.panel1, 2);
-            this.panel1.Controls.Add(this.userSnp);
+            this.panel1.Controls.Add(this.userPhotoPic);
+            this.panel1.Controls.Add(this.usrSnpLbl);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel1.Location = new System.Drawing.Point(3, 2);
@@ -91,16 +94,6 @@ namespace ProjectOffice.forms
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(829, 38);
             this.panel1.TabIndex = 0;
-            // 
-            // userSnp
-            // 
-            this.userSnp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.userSnp.AutoSize = true;
-            this.userSnp.Location = new System.Drawing.Point(596, 7);
-            this.userSnp.Name = "userSnp";
-            this.userSnp.Size = new System.Drawing.Size(79, 29);
-            this.userSnp.TabIndex = 0;
-            this.userSnp.Text = "label1";
             // 
             // panel2
             // 
@@ -239,18 +232,6 @@ namespace ProjectOffice.forms
             this.usersTable.TabIndex = 0;
             this.usersTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.usersTable_CellClick);
             // 
-            // backToMenuBtn
-            // 
-            this.backToMenuBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.backToMenuBtn.Location = new System.Drawing.Point(3, 408);
-            this.backToMenuBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.backToMenuBtn.Name = "backToMenuBtn";
-            this.backToMenuBtn.Size = new System.Drawing.Size(149, 38);
-            this.backToMenuBtn.TabIndex = 2;
-            this.backToMenuBtn.Text = "Меню";
-            this.backToMenuBtn.UseVisualStyleBackColor = true;
-            this.backToMenuBtn.Click += new System.EventHandler(this.backToMenuBtn_Click);
-            // 
             // id
             // 
             this.id.HeaderText = "Column1";
@@ -288,6 +269,40 @@ namespace ProjectOffice.forms
             this.role.MinimumWidth = 6;
             this.role.Name = "role";
             // 
+            // backToMenuBtn
+            // 
+            this.backToMenuBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.backToMenuBtn.Location = new System.Drawing.Point(3, 408);
+            this.backToMenuBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.backToMenuBtn.Name = "backToMenuBtn";
+            this.backToMenuBtn.Size = new System.Drawing.Size(149, 38);
+            this.backToMenuBtn.TabIndex = 2;
+            this.backToMenuBtn.Text = "Меню";
+            this.backToMenuBtn.UseVisualStyleBackColor = true;
+            this.backToMenuBtn.Click += new System.EventHandler(this.backToMenuBtn_Click);
+            // 
+            // userPhotoPic
+            // 
+            this.userPhotoPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.userPhotoPic.Image = global::ProjectOffice.Properties.Resources.USR_PLUG_PICTURE;
+            this.userPhotoPic.Location = new System.Drawing.Point(789, 1);
+            this.userPhotoPic.Name = "userPhotoPic";
+            this.userPhotoPic.Size = new System.Drawing.Size(39, 36);
+            this.userPhotoPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.userPhotoPic.TabIndex = 8;
+            this.userPhotoPic.TabStop = false;
+            // 
+            // usrSnpLbl
+            // 
+            this.usrSnpLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.usrSnpLbl.Location = new System.Drawing.Point(445, 5);
+            this.usrSnpLbl.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.usrSnpLbl.Name = "usrSnpLbl";
+            this.usrSnpLbl.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.usrSnpLbl.Size = new System.Drawing.Size(336, 30);
+            this.usrSnpLbl.TabIndex = 7;
+            this.usrSnpLbl.Text = "Фамилия И.О.";
+            // 
             // UsersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -302,13 +317,13 @@ namespace ProjectOffice.forms
             this.Load += new System.EventHandler(this.UsersForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.tableActionBtnPanel.ResumeLayout(false);
             this.tableActionBtnPanel.PerformLayout();
             this.toolStrip2.ResumeLayout(false);
             this.toolStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.usersTable)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.userPhotoPic)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -317,7 +332,6 @@ namespace ProjectOffice.forms
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label userSnp;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel tableActionBtnPanel;
         private System.Windows.Forms.DataGridView usersTable;
@@ -333,5 +347,7 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.DataGridViewTextBoxColumn fio;
         private System.Windows.Forms.DataGridViewTextBoxColumn login;
         private System.Windows.Forms.DataGridViewTextBoxColumn role;
+        private System.Windows.Forms.PictureBox userPhotoPic;
+        private System.Windows.Forms.Label usrSnpLbl;
     }
 }

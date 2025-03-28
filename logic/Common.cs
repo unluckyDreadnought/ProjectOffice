@@ -203,6 +203,43 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
             return (total, false);
         }
 
+        /// <summary>
+        /// Удаляет запись о пользователе (сотруднике) из БД
+        /// </summary>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <param name="force">Флаг подтверждения удаления</param>
+        /// <returns>(количество удалённых записей; флаг возврата из-за обнаруженных связей)</returns>
+        public static async Task<(int, bool)> DeleteUser(string userId, bool force = false)
+        {
+            string query = $"select ProjectID from {Db.Name}.userproject where UserID = {userId};";
+            string[] projIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+
+            if (!force && projIds.Length > 0)
+            {
+                return (-1*(projIds.Length), true);
+            }
+
+            object n = null;
+            int total = 0;
+
+            query = $"delete from {Db.Name}.userproject where UserID = {userId};";
+            (n, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
+            if (Convert.ToInt32(n) == -1)
+            {
+                return (-1, false);
+            }
+            else total += Convert.ToInt32(n);
+
+            query = $"delete from {Db.Name}.`user` where UserID = {userId};";
+            (n, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
+            if (Convert.ToInt32(n) == -1)
+            {
+                return (-1, false);
+            }
+            else total += Convert.ToInt32(n);
+            return (total, false);
+        }
+
         public static void SetSizeForImageRow(ref DataGridView table, string imgColName, int imgColWidth = 80, int rowHeight = 100)
         {
             table.Columns[imgColName].Width = imgColWidth;
