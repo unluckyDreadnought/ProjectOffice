@@ -28,7 +28,8 @@ namespace ProjectOffice.forms
         {
             string query = $@"select 
 UserID, SpecializationTitle, 
-concat(UserSurname, ' ', substring(UserName, 1,1), '.', substring(UserPatronymic, 1,1)) as 'Snp',
+concat(UserSurname, ' ', substring(UserName, 1,1), '.', 
+case when UserPatronymic is not null then substring(UserPatronymic, 1,1) else '' end) as 'Snp',
 case when UserLogin is not null then true else false end as 'HaveAccount'
 from project_office.user
 inner join specialization on specialization.SpecializationID = `user`.UserSpecializationID
@@ -47,8 +48,8 @@ order by Snp asc;";
             {
                 employeeTable.Rows.Add();
                 employeeTable.Rows[row].Cells["idCol"].Value = employeesInfo[row][0];
-                employeeTable.Rows[row].Cells["fio"].Value = employeesInfo[row][1];
-                employeeTable.Rows[row].Cells["spec"].Value = employeesInfo[row][2];
+                employeeTable.Rows[row].Cells["fio"].Value = employeesInfo[row][2];
+                employeeTable.Rows[row].Cells["spec"].Value = employeesInfo[row][1];
                 employeeTable.Rows[row].Cells["haveAccountCol"].Value = Convert.ToInt32(employeesInfo[row][3]) > 0;
                 row++;
             }
@@ -64,7 +65,7 @@ order by Snp asc;";
             userPhotoPic.Image = AppUser.Photo;
         }
 
-        private void editEmployeeBtn_Click(object sender, EventArgs e)
+        private async void editEmployeeBtn_Click(object sender, EventArgs e)
         {
             if (uId == "" || uId == null || uId == "-1")
             {
@@ -73,22 +74,23 @@ order by Snp asc;";
             }
             UserEditor uEdit = new UserEditor(edit: true, userId: uId);
             uEdit.ShowDialog();
+            await UpdateEmployeesTable();
         }
 
-        private void addEmployeeBtn_Click(object sender, EventArgs e)
+        private async void addEmployeeBtn_Click(object sender, EventArgs e)
         {
             UserEditor uEdit = new UserEditor(edit: false);
             uEdit.ShowDialog();
+            await UpdateEmployeesTable();
         }
 
         private async void deleteEmployeeBtn_Click(object sender, EventArgs e)
         {
-            DataGridViewRow selectedRow = usersTable.Rows.Cast<DataGridViewRow>().Where(
-                row => row.Cells["id"].Value.ToString() == userId).First();
+            DataGridViewRow selectedRow = employeeTable.Rows.Cast<DataGridViewRow>().Where(
+                row => row.Cells[0].Value.ToString() == uId).First();
             string userSnp = selectedRow.Cells["fio"].Value.ToString();
-            string userLogin = selectedRow.Cells["login"].Value.ToString();
 
-            if (MessageBox.Show($"Вы действительно хотите удалить этого пользователя ({userSnp} [{userLogin}])?",
+            if (MessageBox.Show($"Вы действительно хотите удалить этого пользователя ({userSnp})?",
                 "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 bool deleting = true;
@@ -96,22 +98,22 @@ order by Snp asc;";
                 while (deleting)
                 {
                     int linkedProjCount = 0;
-                    (int n, bool haveRefs) = await Common.DeleteUser(userId, force: force);
+                    (int n, bool haveRefs) = await Common.DeleteUser(uId, force: force);
                     if (n < 0)
                     {
                         if (haveRefs && !force)
                         {
                             linkedProjCount += -1 * n;
-                            if (MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) включён в список исполнителей в {linkedProjCount} проектах.\n" +
-                        $"Для удаления пользователя требуется удалить все записи о нём из других таблиц.\nВы действительно хотите это сделать?",
-                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            if (MessageBox.Show($"Сотрудниик ({userSnp}) включён в список исполнителей в {linkedProjCount} проектах.\n" +
+                        $"Для удаления сотрудника требуется удалить все записи о нём из других таблиц.\nВы действительно хотите это сделать?",
+                "Редактор сотрудников", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             {
                                 force = true;
                                 continue;
                             }
                             else
                             {
-                                MessageBox.Show("Операция удаления отменена. Дальнейшее удаление невозможно без предыдущего шага.", "Редактор пользователей",
+                                MessageBox.Show("Операция удаления отменена. Дальнейшее удаление невозможно без предыдущего шага.", "Редактор сотрудников",
                                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 deleting = false;
                                 continue;
@@ -119,20 +121,20 @@ order by Snp asc;";
                         }
                         else
                         {
-                            MessageBox.Show("Ошибка удаления пользователя", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Ошибка удаления сотрудника", "Редактор сотрудников", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             deleting = false;
                             continue;
                         }
                     }
                     else if (n == 0)
                     {
-                        MessageBox.Show("Что-то пошло не так. Пользователь не был удалён.", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Что-то пошло не так. Сотрудник не был удалён.", "Редактор сотрудников", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         deleting = false;
                         continue;
                     }
                     else
                     {
-                        MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) успешно удалён", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"Сотрудник ({userSnp}) успешно удалён", "Редактор сотрудников", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         deleting = false;
                         continue;
                     }
@@ -141,7 +143,7 @@ order by Snp asc;";
             }
             else
             {
-                MessageBox.Show($"Операция удаления пользователя ({userSnp} [{userLogin}]) прервана", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Операция удаления сотрудника ({userSnp}) прервана", "Редактор сотрудников", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
         }

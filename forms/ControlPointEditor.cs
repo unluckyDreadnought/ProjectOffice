@@ -178,6 +178,33 @@ namespace ProjectOffice.forms
             else
             {
                 MessageBox.Show($"{titles[0]} контрольной точки прошло успешно.");
+                if (proj.Status == ((int)Status.New).ToString())
+                {
+                    await proj.Update(new ProjectField[] { ProjectField.Status }, new string[] { ((int)Status.Work).ToString() });
+                }
+                if (s == Status.Finish)
+                {
+                    bool projectFinish = true;
+                    var stgs = proj.Stages;
+                    int stIndx = 0;
+                    while (projectFinish && stIndx < stgs.Count)
+                    {
+                        var sbtsks = stgs[stIndx].subtasks;
+                        int sbIndx = 0;
+                        while (projectFinish && sbIndx < sbtsks.Count)
+                        {
+                            var points = sbtsks[sbIndx].points.Where(point => point.StatusId == ((int)Status.Finish).ToString()).ToArray();
+                            projectFinish = projectFinish && points.Length > 0;
+                            sbIndx++;
+                        }
+                        stIndx++;
+                    }
+                    if (projectFinish)
+                    {
+                        await proj.Update(new ProjectField[] { ProjectField.Status }, new string[] { ((int)Status.PreparingToEnd).ToString() });
+                    }
+                    
+                }
                 this.Close();
             }
         }

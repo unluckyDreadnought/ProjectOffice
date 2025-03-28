@@ -44,6 +44,7 @@ namespace ProjectOffice.forms
             this.descLbl = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.rejectProject = new System.Windows.Forms.Button();
             this.employeePanel.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -130,7 +131,7 @@ namespace ProjectOffice.forms
             this.addBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addBtn.Name = "addBtn";
             this.addBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.addBtn.Size = new System.Drawing.Size(29, 37);
+            this.addBtn.Size = new System.Drawing.Size(24, 37);
             this.addBtn.Text = "Добавить объект";
             this.addBtn.Click += new System.EventHandler(this.addBtn_Click);
             // 
@@ -141,7 +142,7 @@ namespace ProjectOffice.forms
             this.editBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editBtn.Name = "editBtn";
             this.editBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.editBtn.Size = new System.Drawing.Size(29, 37);
+            this.editBtn.Size = new System.Drawing.Size(24, 37);
             this.editBtn.Text = "Изменить объект";
             this.editBtn.Click += new System.EventHandler(this.editBtn_Click);
             // 
@@ -152,7 +153,7 @@ namespace ProjectOffice.forms
             this.deleteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteBtn.Name = "deleteBtn";
             this.deleteBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.deleteBtn.Size = new System.Drawing.Size(29, 37);
+            this.deleteBtn.Size = new System.Drawing.Size(24, 37);
             this.deleteBtn.Text = "Удалить объект";
             this.deleteBtn.Click += new System.EventHandler(this.deleteBtn_Click);
             // 
@@ -232,12 +233,24 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1.Size = new System.Drawing.Size(748, 330);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
+            // rejectProject
+            // 
+            this.rejectProject.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.rejectProject.Location = new System.Drawing.Point(608, 349);
+            this.rejectProject.Name = "rejectProject";
+            this.rejectProject.Size = new System.Drawing.Size(134, 35);
+            this.rejectProject.TabIndex = 6;
+            this.rejectProject.Text = "Отклонить";
+            this.rejectProject.UseVisualStyleBackColor = true;
+            this.rejectProject.Click += new System.EventHandler(this.rejectProject_Click);
+            // 
             // SubtaskList
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.ClientSize = new System.Drawing.Size(754, 396);
+            this.Controls.Add(this.rejectProject);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.backBtn);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -273,5 +286,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label descLbl;
+        private System.Windows.Forms.Button rejectProject;
     }
 }

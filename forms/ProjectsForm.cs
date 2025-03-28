@@ -535,6 +535,7 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
                 Project proj = await Project.InitilazeAsync(employeeProjectTable.Rows[e.RowIndex].Cells[0].Value.ToString());
                 SubtaskList tasksList = new SubtaskList(ref proj);
                 tasksList.ShowDialog();
+                await UpdateTable();
             }
         }
     }

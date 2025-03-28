@@ -142,20 +142,40 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
                     {
                         if (haveRefs && !force)
                         {
-                            linkedProjCount += -1 * n;
-                            if (MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) включён в список исполнителей в {linkedProjCount} проектах.\n" +
-                        $"Для удаления пользователя требуется удалить все записи о нём из других таблиц.\nВы действительно хотите это сделать?",
-                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            if (n == int.MinValue)
                             {
-                                force = true;
-                                continue;
+                                if (MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) является менеджером создавшим несколько проектов.\n" +
+                            $"Для удаления пользователя требуется удалить все проекты с его участием.\nВы действительно хотите это сделать?",
+                    "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                                {
+                                    force = true;
+                                    continue;
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Операция удаления отменена. Дальнейшее удаление невозможно без предыдущего шага.", "Редактор пользователей",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    deleting = false;
+                                    continue;
+                                }
                             }
                             else
                             {
-                                MessageBox.Show("Операция удаления отменена. Дальнейшее удаление невозможно без предыдущего шага.", "Редактор пользователей",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                deleting = false;
-                                continue;
+                                linkedProjCount += -1 * n;
+                                if (MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) включён в список исполнителей в {linkedProjCount} проектах.\n" +
+                            $"Для удаления пользователя требуется удалить все записи о нём из других таблиц.\nВы действительно хотите это сделать?",
+                    "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                                {
+                                    force = true;
+                                    continue;
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Операция удаления отменена. Дальнейшее удаление невозможно без предыдущего шага.", "Редактор пользователей",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    deleting = false;
+                                    continue;
+                                }
                             }
                         }
                         else

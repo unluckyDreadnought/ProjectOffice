@@ -7,9 +7,6 @@ using System.Windows.Forms;
 using ProjectOffice.logic;
 using ProjectOffice.logic.app;
 using ProjectOffice.Properties;
-using Excel = Microsoft.Office.Interop.Excel;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 namespace ProjectOffice.forms
 {
@@ -22,42 +19,7 @@ namespace ProjectOffice.forms
         private int rejected = 0;
         private int outOfDate = 0;
 
-        Excel.Application app = null;
-        Excel.Workbooks wbs = null;
-        Excel.Workbook wb = null;
-        Excel.Worksheet ws = null;
-
         string baseSavePath = "";
-
-        private void FullCloseExcel()
-        {
-            if (wb != null)
-            {
-                wb.Close();
-            }
-            if (wbs != null)
-            {
-                wbs.Close();
-            }
-            if (app != null)
-            {
-                app.Application.Quit();
-                app.Quit();
-            }
-            ReleaseExcel();
-        }
-
-        private void ReleaseExcel()
-        {
-            ReleaseObject(ws);
-            ReleaseObject(wb);
-            ReleaseObject(wbs);
-            ReleaseObject(app);
-            wbs = null;
-            ws = null;
-            wb = null;
-            app = null;
-        }
 
         private void DrawChartOnData(int rejected, int active, int outOfDate, int completed)
         {
@@ -71,79 +33,6 @@ namespace ProjectOffice.forms
             allProjectStatsChart.Series["DataSeries"].Points.DataBindXY(titles, data);
             allProjectStatsChart.Series["DataSeries"].Label = "#PERCENT{P}";
             allProjectStatsChart.Series["DataSeries"].LegendText = "#VALX";
-        }
-
-        private void SaveReport(int rejected, int active, int outOfDate, int completed)
-        {
-            string[] arr = new string[] { "Активные проекты", "Отменённые проекты", "Просроченные активные проекты", "Завершённые проекты", "", "Всего" };
-            int[] counts = new int[] { active, rejected, outOfDate, completed, -1, active + rejected + completed };
-
-            string template = $@"{Directory.GetParent(Directory.GetParent(Application.StartupPath).FullName).FullName}\templates\stats.xlsx";
-
-            baseSavePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\myfile.xlsx";
-
-            try
-            {
-                app = new Excel.Application();
-
-                if (app == null)
-                {
-                    MessageBox.Show("Не удалось создать отчёт", "Отчёт Excel", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                app.Visible = true;
-                app.Visible = false;
-
-                wbs = app.Workbooks;
-                wb = wbs.Open(template);
-                ws = wb.Worksheets[1];
-
-                ws.Range["A3"].Value = DateTime.Now.ToString("g");
-                ws.Range["D3"].Value = AppUser.Snp;
-
-                int indx = 0;
-                int row = 6;
-
-                // заполнение таблицы количества групп проектов
-                while (indx < counts.Length)
-                {
-                    ws.Range[$"A{row + indx}"].Value = arr[indx];
-                    if (counts[indx] >= 0) ws.Range[$"B{row + indx}"].Value = counts[indx];
-                    indx++;
-                }
-
-                SaveFileDialog fileDialog = new SaveFileDialog();
-                fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                fileDialog.Filter = "Электронная таблица Excel (*.xlsx)|*.xlsx";
-                fileDialog.DefaultExt = "xlsx";
-                if (fileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    if (fileDialog.FileName != "") baseSavePath = fileDialog.FileName;
-                }
-
-                MessageBox.Show($"Файл будет сохранён по пути '{baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                ws.Columns.AutoFit();
-
-                app.Visible = true;
-
-                wb.SaveAs(baseSavePath);
-                FullCloseExcel();
-
-                if (app == null) app = new Excel.Application();
-                wbs = app.Workbooks;
-                wb = wbs.Open(baseSavePath);
-                ws = wb.Worksheets[1];
-
-                app.Visible = true;
-
-                ReleaseExcel();
-            }
-            catch (Exception e)
-            {
-                ;
-                FullCloseExcel();
-            }
         }
 
         private async Task<DataTable> GetCommonStats()
@@ -211,37 +100,50 @@ order by StatusTitle;";
             FillCommonStats();
         }
 
-        private void statsTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private async Task<string[]> GetActiveProjects()
+        {
+            string query = "select ProjectTitle from project where ProjectStatusID not in (5,6);";
+            return Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+        }
+
+        private async Task FillProjectCombo()
+        {
+            projectStatsCombo.Items.Clear();
+            string[] projectMainInfo = await GetActiveProjects();
+            
+        }
+
+        private async void statsTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (statsTabControl.SelectedIndex == 0)
             {
                 FillCommonStats();
             }
-            else {; }
+            else {
+                await FillProjectCombo();
+            }
         }
 
         private void statsReportBtn_Click(object sender, EventArgs e)
         {
-            SaveReport(rejected, active, outOfDate, completed);
-        }
-
-
-        private void ReleaseObject(object obj)
-        {
-            try
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            fileDialog.Filter = "Электронная таблица Excel (*.xlsx)|*.xlsx";
+            fileDialog.DefaultExt = "xlsx";
+            if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                Marshal.FinalReleaseComObject(obj);
-                Marshal.ReleaseComObject(obj);
-                obj = null;
+                if (fileDialog.FileName != "") baseSavePath = fileDialog.FileName;
             }
-            catch (Exception e)
+
+            if (statsTabControl.SelectedIndex == 0)
             {
-                obj = null;
+                Reports.SetBasePath(baseSavePath);
+                MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Reports.SaveCommonStatsReport(rejected, active, outOfDate, completed, Reports.baseSavePath);
             }
-            finally
+            else
             {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+
             }
         }
     }

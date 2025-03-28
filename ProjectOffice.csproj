@@ -207,6 +207,7 @@
     <Compile Include="logic\DataStructures.cs" />
     <Compile Include="logic\Db.cs" />
     <Compile Include="logic\Project.cs" />
+    <Compile Include="logic\Reports.cs" />
     <Compile Include="logic\Security.cs" />
     <Compile Include="logic\Сompression.cs" />
     <Compile Include="Program.cs" />
@@ -355,6 +356,15 @@
       <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>6</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Word">
+      <Guid>{00020905-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>4</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>

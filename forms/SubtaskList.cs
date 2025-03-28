@@ -194,7 +194,12 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                 int completedSbtsk = 0;
                 while (level1 < projectTree.Nodes[level0].Nodes.Count)
                 {
-                    if (subtasks[level0].Select(s => s.Title).ToArray().Contains(projectTree.Nodes[level0].Nodes[level1].Text))
+                    var subtaskTitles = subtasks[level0].Select(s => s.Title).ToArray();
+                    if (subtaskTitles.Length == 0)
+                    {
+                        level1++;
+                    }
+                    if (subtaskTitles.Contains(projectTree.Nodes[level0].Nodes[level1].Text))
                     {
                         projectTree.Nodes[level0].Nodes[level1].ForeColor = Color.Gray;
                         int cpCount = 0;
@@ -230,6 +235,7 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
             await LoadProjectTree();
             ChangeBtnsClickability();
             await CheckUserResponsibility();
+            rejectProject.Enabled = rejectProject.Visible = proj.Status == ((int)Status.New).ToString();
         }
 
         private void SetDescriptionVisibility(bool visible = false)
@@ -391,6 +397,16 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                 default: break;
             }
             await LoadProjectTree();
+        }
+
+        private async void rejectProject_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Вы точно хотите отказаться от проекта? Проект бесповоротно будет закрыт.", "Отклонение проекта", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                await proj.Update(new ProjectField[] { ProjectField.Status }, new string[] { ((int)Status.Rejected).ToString() });
+                MessageBox.Show("Проект закрыт по причине отказа.", "Отклонение проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Close();
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)

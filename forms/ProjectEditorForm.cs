@@ -335,6 +335,16 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 projectIdLbl.Text = $"Проект #{projId}";
             }
             await CheckFieldsFilling();
+            subtaskBtn.Enabled = subtaskBtn.Visible = proj.Status == ((int)Status.Finish).ToString();
+            if (proj.Status == ((int)Status.PreparingToEnd).ToString()) 
+            {
+                endProject.Text = "Завершить";
+            }
+            else if (proj.Status == ((int)Status.Rejected).ToString())
+            {
+                endProject.Text = "Договор";
+            }
+            endProject.Enabled = endProject.Visible = proj.Status == ((int)Status.PreparingToEnd).ToString() || proj.Status == ((int)Status.Rejected).ToString();
         }
 
         // Обработчик нажатия на кнопку выбора клиента-заказчика проекта
@@ -534,5 +544,22 @@ from {Db.Name}.client where ClientID = {clientID}; ";
         }
 
         #endregion
+
+        private void endProject_Click(object sender, EventArgs e)
+        {
+            switch (endProject.Text)
+            {
+                case "Договор":
+                    {
+
+                        break;
+                    }
+                case "Завершить":
+                    {
+
+                        break;
+                    }
+            }
+        }
     }
 }

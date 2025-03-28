@@ -211,7 +211,18 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
         /// <returns>(количество удалённых записей; флаг возврата из-за обнаруженных связей)</returns>
         public static async Task<(int, bool)> DeleteUser(string userId, bool force = false)
         {
-            string query = $"select ProjectID from {Db.Name}.userproject where UserID = {userId};";
+            string query = $"select ProjectID from project where ProjectCreatorID  = {userId};";
+
+            string[] manInProjIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+            if (manInProjIds.Length > 0)
+            {
+                if (!force)
+                {
+                    return (int.MinValue, true);
+                }
+            }
+
+            query = $"select ProjectID from {Db.Name}.userproject where UserID = {userId};";
             string[] projIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
 
             if (!force && projIds.Length > 0)
@@ -222,13 +233,26 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
             object n = null;
             int total = 0;
 
-            query = $"delete from {Db.Name}.userproject where UserID = {userId};";
-            (n, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
-            if (Convert.ToInt32(n) == -1)
+            if (manInProjIds.Length > 0)
             {
-                return (-1, false);
+                int indx = 0;
+                while (indx < manInProjIds.Length)
+                {
+                    Project temp = await Project.InitilazeAsync(manInProjIds[indx]);
+                    total += await temp.Delete();
+                    indx++;
+                }
             }
-            else total += Convert.ToInt32(n);
+            else
+            {
+                query = $"delete from {Db.Name}.userproject where UserID = {userId};";
+                (n, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
+                if (Convert.ToInt32(n) == -1)
+                {
+                    return (-1, false);
+                }
+                else total += Convert.ToInt32(n);
+            }
 
             query = $"delete from {Db.Name}.`user` where UserID = {userId};";
             (n, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
@@ -237,6 +261,7 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
                 return (-1, false);
             }
             else total += Convert.ToInt32(n);
+
             return (total, false);
         }
 

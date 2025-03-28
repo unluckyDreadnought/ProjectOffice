@@ -22,7 +22,7 @@ namespace ProjectOffice.forms
         string userAc = "";
         bool[] fieldsFilled = null;
         byte[] neccessaryFields = new byte[] { 1, 2, 5, 6, 7 };
-        Regex secRegex = new Regex("(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}");
+        Regex secRegex = new Regex("[a-zA-Z0-9]{8,}");
 
 
         // UserID, UserModeID, UserSpecializationID, UserSurname, UserName, UserPatronymic, UserLogin, UserPassword, UserPhoto
