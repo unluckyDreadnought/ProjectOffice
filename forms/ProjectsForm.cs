@@ -430,6 +430,31 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
         private async void addProjectBtn_Click(object sender, EventArgs e)
         {
+            object[] compInfo = await Common.GetOrgClientInfo("0");
+            if (compInfo.Length == 0)
+            {
+                DialogResult dialogRes = MessageBox.Show("При создании проекта автоматически формируется договор.\n" +
+                    "Для автоматического заполнения договора требуется информация о Вашей организации, которая не была обнаружена в данный момент.\n" +
+                    "Иначе потребуется заполнение вручную после формирования договора.\n\n" +
+                    "Открыть форму \"Настройки организации\"?", "Создание проекта", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                switch (dialogRes)
+                {
+                    case DialogResult.Yes:
+                        {
+                            ClientEditorForm orgSettingsForm = await ClientEditorForm.OpenOrganizationEditor("0");
+                            orgSettingsForm.ShowDialog();
+                            break;
+                        }
+                    case DialogResult.No:
+                        {
+                            break;
+                        }
+                    case DialogResult.Cancel:
+                        {
+                            return;
+                        }
+                }
+            }
             ProjectEditorForm projEditor = new ProjectEditorForm();
             projEditor.ShowDialog();
             await UpdateTable();

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProjectOffice.Properties;
 using ProjectOffice.logic;
+using ProjectOffice.logic.app;
 
 namespace ProjectOffice.forms
 {
@@ -27,12 +28,12 @@ namespace ProjectOffice.forms
         {
             InitializeComponent();
             editId = id;
+            organization = org;
             if (editId != "")
             {
                 storedOrgInfo = clientInfo;
                 PasteClientInformation();
             }
-            organization = org;
             SelectTab(organization);
         }
 
@@ -75,6 +76,7 @@ namespace ProjectOffice.forms
                     filled = filled || orgKpp.Text != storedOrgInfo[8].ToString();
                     filled = filled || orgOgrn.Text != storedOrgInfo[9].ToString();
                     filled = filled || orgBik.Text != storedOrgInfo[10].ToString();
+                    if (editId == "0") filled = filled || director.Text.Trim().Length > 0;
                     if (imgStream != null && storedOrgInfo[11] == DBNull.Value)
                     {
                         filled = true;
@@ -148,10 +150,12 @@ namespace ProjectOffice.forms
                 orgKpp.Text = storedOrgInfo[8].ToString();
                 orgOgrn.Text = storedOrgInfo[9].ToString();
                 orgBik.Text = storedOrgInfo[10].ToString();
+                if (editId == "0") director.Text = AppSettings.director;
                 if (storedOrgInfo[11] != DBNull.Value)
                 {
-                    using (var ms = new MemoryStream(logic.Сompressor.DecompressBytes((byte[])storedOrgInfo[12])))
+                    using (var ms = new MemoryStream(logic.Сompressor.DecompressBytes((byte[])storedOrgInfo[11])))
                     {
+                        if (imgStream == null) imgStream = new MemoryStream();
                         ms.CopyTo(imgStream);
                     }
                 }
@@ -228,6 +232,9 @@ insert into client value (0, 2, 'ООО', '', '', '', '', null, null, null, null
             obj = organization ? "организации" : "физического лица";
             if (editId != "")
             {
+                directorLbl.Visible = editId == "0";
+                director.Visible = director.Enabled = directorLbl.Visible;
+
                 this.Text = $"{Resources.APP_NAME}: Редактирование {obj}";
                 HideNotEditTab(organization);
             }
@@ -355,6 +362,11 @@ insert into {Db.Name}.client value
         private async Task<object> UpdateOrganization(string phn)
         {
             object n = null;
+            if (editId == "0")
+            {
+                AppSettings.director = director.Text.Trim();
+                AppSettings.SaveModified();
+            }
             string query = $@"update {Db.Name}.`client` set
 ClientOrgTypeId = '{orgType.SelectedItem.ToString()}', ClientName = '{orgName.Text.Trim()}', ClientAddress = '{orgAddr.Text.Trim()}', ClientBankAccount = '{orgBankAcc.Text.Trim()}',
 ClientBank = '{orgBank.Text.Trim()}', ClientPhone = '{phn}', ClientEmail = @mail, ClientOrgINN = '{orgInn.Text.Trim()}',
@@ -463,6 +475,16 @@ ClientBank = '{fizClientBank.Text.Trim()}', ClientPhone = '{phn}', ClientEmail =
             if ("- ".Concat(Symbols.ru_alp).Contains(Char.ToLower(e.KeyChar)) || e.KeyChar == (int)Keys.Delete || e.KeyChar == (int)Keys.Back)
             {
                 if (((TextBox)sender).Text.Trim().Length == 0) e.KeyChar = Char.ToUpper(e.KeyChar);
+                return;
+            }
+            else e.Handled = true;
+        }
+
+        private void director_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ("- ".Concat(Symbols.ru_alp).Contains(Char.ToLower(e.KeyChar)) || e.KeyChar == (int)Keys.Delete || e.KeyChar == (int)Keys.Back)
+            {
+                if (((TextBox)sender).Text.Trim().Length == 0 || ((TextBox)sender).Text.Last() == ' ') e.KeyChar = Char.ToUpper(e.KeyChar);
                 return;
             }
             else e.Handled = true;

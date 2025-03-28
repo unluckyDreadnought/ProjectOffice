@@ -282,6 +282,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="doc\development_deal.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="doc\stats.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

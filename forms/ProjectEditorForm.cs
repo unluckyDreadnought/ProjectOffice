@@ -507,6 +507,24 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 string[] curTitle = editMode ? titles[1] : titles[0];
                 MessageBox.Show($"Проект успешно {curTitle[0]}", $"{curTitle[1]} проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 changes = false;
+
+                string baseSavePath = "";
+                SaveFileDialog fileDialog = new SaveFileDialog();
+                fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                fileDialog.Filter = "Документ Word (*.docx)|*.docx";
+                fileDialog.DefaultExt = "docx";
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    if (fileDialog.FileName != "") baseSavePath = fileDialog.FileName;
+                }
+                Reports.SetBasePath(baseSavePath);
+                MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                (string text, bool isError) = await Reports.MakeDevelopmentDealDocument(proj, Reports.baseSavePath);
+                if (text != null && isError)
+                {
+                    MessageBox.Show(text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
                 this.Close();
             }
         }

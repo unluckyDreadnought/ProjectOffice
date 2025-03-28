@@ -398,5 +398,24 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
                 level0++;
             }
         }
+
+        public static string GetShortSnp(string fullSnp)
+        {
+            string result = "";
+            string[] snpParts = fullSnp.Split(' ');
+            int part = 0;
+            while (part < snpParts.Length)
+            {
+                string separator = " ";
+                if (part != 0)
+                {
+                    snpParts[part] = snpParts[part][0].ToString();
+                    separator = ".";
+                }
+                result += snpParts[part] + separator;
+                part++;
+            }
+            return result;
+        }
     }
 }

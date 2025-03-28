@@ -75,6 +75,8 @@ namespace ProjectOffice.forms
             this.emailTxt = new System.Windows.Forms.TextBox();
             this.orgBank = new System.Windows.Forms.TextBox();
             this.orgName = new System.Windows.Forms.TextBox();
+            this.director = new System.Windows.Forms.TextBox();
+            this.directorLbl = new System.Windows.Forms.Label();
             this.clientTabs.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fizPhoto)).BeginInit();
@@ -85,7 +87,7 @@ namespace ProjectOffice.forms
             // closeOrgEditorBtn
             // 
             this.closeOrgEditorBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.closeOrgEditorBtn.Location = new System.Drawing.Point(12, 515);
+            this.closeOrgEditorBtn.Location = new System.Drawing.Point(12, 567);
             this.closeOrgEditorBtn.Name = "closeOrgEditorBtn";
             this.closeOrgEditorBtn.Size = new System.Drawing.Size(150, 40);
             this.closeOrgEditorBtn.TabIndex = 13;
@@ -100,7 +102,7 @@ namespace ProjectOffice.forms
             this.saveOrganizationBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
             this.saveOrganizationBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.saveOrganizationBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.saveOrganizationBtn.Location = new System.Drawing.Point(486, 513);
+            this.saveOrganizationBtn.Location = new System.Drawing.Point(490, 565);
             this.saveOrganizationBtn.Name = "saveOrganizationBtn";
             this.saveOrganizationBtn.Size = new System.Drawing.Size(175, 45);
             this.saveOrganizationBtn.TabIndex = 12;
@@ -118,7 +120,7 @@ namespace ProjectOffice.forms
             this.clientTabs.Location = new System.Drawing.Point(1, 9);
             this.clientTabs.Name = "clientTabs";
             this.clientTabs.SelectedIndex = 0;
-            this.clientTabs.Size = new System.Drawing.Size(674, 498);
+            this.clientTabs.Size = new System.Drawing.Size(678, 550);
             this.clientTabs.TabIndex = 33;
             this.clientTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.clientTabs_Selecting);
             // 
@@ -360,17 +362,19 @@ namespace ProjectOffice.forms
             this.tabPage2.Controls.Add(this.label4);
             this.tabPage2.Controls.Add(this.label3);
             this.tabPage2.Controls.Add(this.label10);
+            this.tabPage2.Controls.Add(this.directorLbl);
             this.tabPage2.Controls.Add(this.label2);
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.orgType);
             this.tabPage2.Controls.Add(this.orgAddr);
             this.tabPage2.Controls.Add(this.emailTxt);
             this.tabPage2.Controls.Add(this.orgBank);
+            this.tabPage2.Controls.Add(this.director);
             this.tabPage2.Controls.Add(this.orgName);
             this.tabPage2.Location = new System.Drawing.Point(4, 38);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(666, 456);
+            this.tabPage2.Size = new System.Drawing.Size(670, 508);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Юридическое лицо";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -388,7 +392,7 @@ namespace ProjectOffice.forms
             // 
             // orgInn
             // 
-            this.orgInn.Location = new System.Drawing.Point(26, 207);
+            this.orgInn.Location = new System.Drawing.Point(26, 264);
             this.orgInn.Mask = "9999999999";
             this.orgInn.Name = "orgInn";
             this.orgInn.Size = new System.Drawing.Size(145, 34);
@@ -397,7 +401,7 @@ namespace ProjectOffice.forms
             // 
             // orgBik
             // 
-            this.orgBik.Location = new System.Drawing.Point(345, 207);
+            this.orgBik.Location = new System.Drawing.Point(345, 264);
             this.orgBik.Mask = "999999999";
             this.orgBik.Name = "orgBik";
             this.orgBik.Size = new System.Drawing.Size(129, 34);
@@ -406,7 +410,7 @@ namespace ProjectOffice.forms
             // 
             // orgOgrn
             // 
-            this.orgOgrn.Location = new System.Drawing.Point(26, 278);
+            this.orgOgrn.Location = new System.Drawing.Point(26, 331);
             this.orgOgrn.Mask = "9999999999999";
             this.orgOgrn.Name = "orgOgrn";
             this.orgOgrn.Size = new System.Drawing.Size(178, 34);
@@ -415,7 +419,7 @@ namespace ProjectOffice.forms
             // 
             // phoneTxt
             // 
-            this.phoneTxt.Location = new System.Drawing.Point(426, 412);
+            this.phoneTxt.Location = new System.Drawing.Point(426, 465);
             this.phoneTxt.Mask = "+9 (999) 000 00 00";
             this.phoneTxt.Name = "phoneTxt";
             this.phoneTxt.Size = new System.Drawing.Size(215, 34);
@@ -424,7 +428,7 @@ namespace ProjectOffice.forms
             // 
             // orgBankAcc
             // 
-            this.orgBankAcc.Location = new System.Drawing.Point(368, 278);
+            this.orgBankAcc.Location = new System.Drawing.Point(368, 331);
             this.orgBankAcc.Mask = "99999999999999999999";
             this.orgBankAcc.Name = "orgBankAcc";
             this.orgBankAcc.Size = new System.Drawing.Size(274, 34);
@@ -433,7 +437,7 @@ namespace ProjectOffice.forms
             // 
             // orgKpp
             // 
-            this.orgKpp.Location = new System.Drawing.Point(186, 207);
+            this.orgKpp.Location = new System.Drawing.Point(186, 264);
             this.orgKpp.Mask = "999999999";
             this.orgKpp.Name = "orgKpp";
             this.orgKpp.Size = new System.Drawing.Size(129, 34);
@@ -444,7 +448,7 @@ namespace ProjectOffice.forms
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label13.Location = new System.Drawing.Point(21, 384);
+            this.label13.Location = new System.Drawing.Point(21, 437);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(78, 25);
             this.label13.TabIndex = 77;
@@ -454,7 +458,7 @@ namespace ProjectOffice.forms
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label12.Location = new System.Drawing.Point(421, 384);
+            this.label12.Location = new System.Drawing.Point(421, 437);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(107, 25);
             this.label12.TabIndex = 76;
@@ -464,7 +468,7 @@ namespace ProjectOffice.forms
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label9.Location = new System.Drawing.Point(338, 179);
+            this.label9.Location = new System.Drawing.Point(338, 236);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(58, 25);
             this.label9.TabIndex = 75;
@@ -474,7 +478,7 @@ namespace ProjectOffice.forms
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label8.Location = new System.Drawing.Point(21, 316);
+            this.label8.Location = new System.Drawing.Point(21, 369);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(63, 25);
             this.label8.TabIndex = 74;
@@ -484,7 +488,7 @@ namespace ProjectOffice.forms
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(363, 250);
+            this.label6.Location = new System.Drawing.Point(363, 303);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(171, 25);
             this.label6.TabIndex = 73;
@@ -494,7 +498,7 @@ namespace ProjectOffice.forms
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label5.Location = new System.Drawing.Point(21, 250);
+            this.label5.Location = new System.Drawing.Point(21, 303);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(72, 25);
             this.label5.TabIndex = 72;
@@ -504,7 +508,7 @@ namespace ProjectOffice.forms
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label7.Location = new System.Drawing.Point(181, 179);
+            this.label7.Location = new System.Drawing.Point(181, 236);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(60, 25);
             this.label7.TabIndex = 70;
@@ -514,7 +518,7 @@ namespace ProjectOffice.forms
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(21, 179);
+            this.label4.Location = new System.Drawing.Point(21, 236);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(60, 25);
             this.label4.TabIndex = 71;
@@ -554,7 +558,7 @@ namespace ProjectOffice.forms
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(495, 179);
+            this.label1.Location = new System.Drawing.Point(495, 236);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(88, 25);
             this.label1.TabIndex = 68;
@@ -571,7 +575,7 @@ namespace ProjectOffice.forms
             "ПАО",
             "ЗАО",
             "АО"});
-            this.orgType.Location = new System.Drawing.Point(500, 207);
+            this.orgType.Location = new System.Drawing.Point(500, 264);
             this.orgType.Name = "orgType";
             this.orgType.Size = new System.Drawing.Size(142, 37);
             this.orgType.TabIndex = 62;
@@ -591,7 +595,7 @@ namespace ProjectOffice.forms
             // emailTxt
             // 
             this.emailTxt.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.emailTxt.Location = new System.Drawing.Point(26, 412);
+            this.emailTxt.Location = new System.Drawing.Point(26, 465);
             this.emailTxt.MaxLength = 256;
             this.emailTxt.Name = "emailTxt";
             this.emailTxt.Size = new System.Drawing.Size(377, 34);
@@ -603,7 +607,7 @@ namespace ProjectOffice.forms
             this.orgBank.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.orgBank.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.orgBank.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.orgBank.Location = new System.Drawing.Point(26, 344);
+            this.orgBank.Location = new System.Drawing.Point(26, 397);
             this.orgBank.MaxLength = 256;
             this.orgBank.Name = "orgBank";
             this.orgBank.Size = new System.Drawing.Size(619, 34);
@@ -620,13 +624,34 @@ namespace ProjectOffice.forms
             this.orgName.TabIndex = 57;
             this.orgName.TextChanged += new System.EventHandler(this.control_Changed);
             // 
+            // director
+            // 
+            this.director.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.director.Location = new System.Drawing.Point(26, 195);
+            this.director.MaxLength = 256;
+            this.director.Name = "director";
+            this.director.Size = new System.Drawing.Size(615, 34);
+            this.director.TabIndex = 57;
+            this.director.TextChanged += new System.EventHandler(this.control_Changed);
+            this.director.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.director_KeyPress);
+            // 
+            // directorLbl
+            // 
+            this.directorLbl.AutoSize = true;
+            this.directorLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.directorLbl.Location = new System.Drawing.Point(21, 167);
+            this.directorLbl.Name = "directorLbl";
+            this.directorLbl.Size = new System.Drawing.Size(114, 25);
+            this.directorLbl.TabIndex = 78;
+            this.directorLbl.Text = "*Директор";
+            // 
             // ClientEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.ClientSize = new System.Drawing.Size(673, 562);
+            this.ClientSize = new System.Drawing.Size(677, 614);
             this.Controls.Add(this.clientTabs);
             this.Controls.Add(this.closeOrgEditorBtn);
             this.Controls.Add(this.saveOrganizationBtn);
@@ -694,5 +719,7 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.TextBox clientSurname;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.TextBox fizClientAddr;
+        private System.Windows.Forms.Label directorLbl;
+        private System.Windows.Forms.TextBox director;
     }
 }

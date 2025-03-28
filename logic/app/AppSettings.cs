@@ -57,6 +57,12 @@ namespace ProjectOffice.logic.app
             get { return "project_office"; }
         }
 
+        public static string director
+        {
+            get { return GetSetting("director"); }
+            set { SetSetting("director", value); }
+        }
+
         // Функция для записи изменений настроек в файл
         public static void SaveModified()
         {
