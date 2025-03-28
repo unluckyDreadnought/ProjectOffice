@@ -349,8 +349,17 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
             int stgIndx = 0;
             while (stgIndx < subtasks.Count)
             {
+                // выбираем все подзадачи, в которых точка имеет статус "Завершено"
                 subtasks[stgIndx] = subtasks[stgIndx].Where(stsk => stsk.points.Where(p => p.StatusId == ((int)Status.Finish).ToString()).ToArray().Length > 0).ToList();
                 stgIndx++;
+            }
+
+            List<string> subtaskTitles = new List<string>();
+            int indx = 0;
+            while (indx < subtasks.Count)
+            {
+                subtaskTitles.AddRange(subtasks[indx].Select(s => s.Title).ToArray());
+                indx++;
             }
 
             int level0 = 0;
@@ -365,11 +374,6 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
                 int completedSbtsk = 0;
                 while (level1 < tree.Nodes[level0].Nodes.Count)
                 {
-                    var subtaskTitles = subtasks[level0].Select(s => s.Title).ToArray();
-                    if (subtaskTitles.Length == 0)
-                    {
-                        level1++;
-                    }
                     if (subtaskTitles.Contains(tree.Nodes[level0].Nodes[level1].Text))
                     {
                         tree.Nodes[level0].Nodes[level1].ForeColor = Color.Gray;

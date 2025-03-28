@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,6 +21,8 @@ namespace ProjectOffice.forms
         private int outOfDate = 0;
 
         string baseSavePath = "";
+
+        Project proj = null;
 
         private void DrawChartOnData(int rejected, int active, int outOfDate, int completed)
         {
@@ -90,6 +93,7 @@ order by StatusTitle;";
 
         private void backToMenu_Click(object sender, EventArgs e)
         {
+            GC.Collect();
             this.Close();
         }
 
@@ -127,8 +131,17 @@ order by StatusTitle;";
             }
         }
 
-        private void statsReportBtn_Click(object sender, EventArgs e)
+        private async void statsReportBtn_Click(object sender, EventArgs e)
         {
+            if (statsTabControl.SelectedIndex == 1)
+            {
+                if (projectStatsCombo.SelectedItem == null)
+                {
+                    MessageBox.Show("Сначала выберите проект", "Создание отчёта", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             SaveFileDialog fileDialog = new SaveFileDialog();
             fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             fileDialog.Filter = "Электронная таблица Excel (*.xlsx)|*.xlsx";
@@ -137,17 +150,51 @@ order by StatusTitle;";
             {
                 if (fileDialog.FileName != "") baseSavePath = fileDialog.FileName;
             }
+            Reports.SetBasePath(baseSavePath);
+            MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            if (statsTabControl.SelectedIndex == 0)
+            string text = "";
+            bool isError = false;
+            if (statsTabControl.SelectedIndex == 0) (text, isError) = Reports.SaveCommonStatsReport(rejected, active, outOfDate, completed, Reports.baseSavePath);
+            else (text, isError) = await Reports.SaveStatsOnProject(proj, Reports.baseSavePath);
+            if (text != null && isError)
             {
-                Reports.SetBasePath(baseSavePath);
-                MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Reports.SaveCommonStatsReport(rejected, active, outOfDate, completed, Reports.baseSavePath);
+                MessageBox.Show(text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            else
-            {
+        }
 
+        private async Task FillProjectProgress(Project proj)
+        {
+            proj.Stages = await Stage.GetStages(proj.Id);
+            int allSbtskCount = 0;
+            int completedSbtsks = 0;
+            int stgIndx = 0;
+            while (stgIndx < proj.Stages.Count)
+            {
+                allSbtskCount += proj.Stages[stgIndx].subtasks.Count;
+                int sbtskIndx = 0;
+                while (sbtskIndx < proj.Stages[stgIndx].subtasks.Count)
+                {
+                    ControlPoint[] finished = proj.Stages[stgIndx].subtasks[sbtskIndx].points.Where(pnt => pnt.StatusId == ((int)Status.Finish).ToString()).ToArray();
+                    if (finished.Length > 0) completedSbtsks++;
+                    sbtskIndx++;
+                }
+                stgIndx++;
             }
+
+            float completePercents = 0;
+            try
+            {
+                completePercents = ((float)completedSbtsks / allSbtskCount)*100;
+            }
+            catch (DivideByZeroException)
+            {
+                completePercents = 0;
+            }
+            completePercents = (completePercents is float.NaN) ? 0 : completePercents;
+            projectCompleteStatusBar.Value = Convert.ToInt32(Math.Ceiling(completePercents));
+            statusLbl.Text = $"{completedSbtsks}/{allSbtskCount} ({Math.Round(completePercents, 2)}%)";
         }
 
         private async void projectStatsCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -159,8 +206,14 @@ order by StatusTitle;";
                 MessageBox.Show("Проект не найден", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            Project proj = await Project.InitilazeAsync(id[0]);
+            proj = await Project.InitilazeAsync(id[0]);
             await Common.LoadProjectTree(statsProjectTree, proj);
+            await FillProjectProgress(proj);
+        }
+
+        private void StatisticForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            GC.Collect();
         }
     }
 }

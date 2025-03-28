@@ -129,7 +129,7 @@ and ProjectTitle like '%{searchPattern}%' ";
         private async void UpdateEmployeeProjectTable(string searchPattern = "")
         {
             object res = await _db.GetAsyncReaderResult(GetEmployeeProjectsData(searchPattern));
-            employeeProjectTable.Rows.Clear();
+            employeeProjectTable.DataSource = new DataTable();
             if (res is DataTable == false)
             {
                 if (res != null) MessageBox.Show((string)res, "Обновление данных о проектах", MessageBoxButtons.OK, MessageBoxIcon.Error);
