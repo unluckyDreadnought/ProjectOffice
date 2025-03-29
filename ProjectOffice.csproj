@@ -285,6 +285,12 @@
     <None Include="doc\development_deal.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="doc\end_act_fail.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="doc\end_act_success.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="doc\stats.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -594,7 +594,6 @@ from {Db.Name}.client where ClientID = {clientID}; ";
         #endregion
 
 
-
         private async void createDocBtn_Click(object sender, EventArgs e)
         {
             if (docTypeCombo.SelectedItem == null)
@@ -617,7 +616,11 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                     }
                 case "Акт завершения":
                     {
-                        // Reports.EndActDoc
+                        string baseSavePath = "";
+                        baseSavePath = Common.GetSaveFilePath("docx", "Документ Word (*.docx)|*.docx");
+                        Reports.SetBasePath(baseSavePath);
+                        MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        (text, isError) = await Reports.MakeEndWorkAct(proj, baseSavePath);
                         break;
                     }
             }

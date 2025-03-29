@@ -542,5 +542,184 @@ where ClientID = 0; ";
             }
             return (null, false);
         }
+
+        public async static Task<(string, bool)> MakeEndWorkAct(Project project, string notBasePath = null)
+        {
+            string path = baseSavePath;
+            string template = "";
+            bool success = (project.Status == ((int)Status.Finish).ToString()) ? true : false;
+
+            if (success) template = $@"{(Application.StartupPath)}\doc\end_act_success.docx";
+            else template = $@"{(Application.StartupPath)}\doc\end_act_fail.docx";
+
+            if (notBasePath == null)
+            {
+                path += $"Акт_о_завершении_работ_{project.Id}_{DateTime.Now.ToString("d_T")}.docx";
+            }
+            else
+            {
+                path = notBasePath;
+            }
+
+            try
+            {
+                wordApp = new Word.Application();
+                if (wordApp == null)
+                {
+                    return ("Не удалось создать отчёт", true);
+                }
+                wordApp.Visible = true;
+                //wordApp.Visible = false;
+
+                wrdDcs = wordApp.Documents;
+                wrdDc = wrdDcs.Add(template);
+                wrdDc.Activate();
+
+                string query = $@"select ClientTypeID from {Db.Name}.client where ClientID = {project.CustomerId};";
+
+                string clientName = "";
+                (object n, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query)));
+                if (Convert.ToInt32(n) == 2)
+                {
+                    query = $@"select OrganitationTypeDescription, ClientName from {Db.Name}.client 
+inner join organitationtype on organitationtype.OrganitationTypeName = client.ClientOrgTypeID
+where ClientID = {project.CustomerId};";
+                    string[] clientInfo = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+                    if (clientInfo.Length != 0) clientName = $"{clientInfo[0]} \"{clientInfo[1]}\"";
+                    else clientName = "[заказчик]";
+                }
+                else
+                {
+                    query = $"select ClientName from {Db.Name}.client where ClientID = {project.CustomerId};";
+                    (object name, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query)));
+                    clientName = name.ToString();
+                }
+
+                query = $@"select OrganitationTypeName, OrganitationTypeDescription, ClientName, ClientAddress from {Db.Name}.client 
+inner join organitationtype on organitationtype.OrganitationTypeName = client.ClientOrgTypeID
+where ClientID = 0;";
+                string companyFullName = "";
+                string companyAddress = "";
+                string director = "";
+
+                string[] companyInfo = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+                if (companyInfo.Length != 0)
+                {
+                    companyFullName = $"{companyInfo[1]} \"{companyInfo[2]}\"";
+                    companyAddress = companyInfo[3];
+                    director = AppSettings.director;
+                }
+                else
+                {
+                    companyFullName = "[Полное имя Разработчика]";
+                    companyAddress = "[Юр. Адрес Разработчика]";
+                    director = "[ФИО директора Разработчика]";
+                }
+
+                int coeff = Convert.ToInt32(project.Coefficient);
+                double costWithCoeff = Convert.ToDouble(project.Cost) * (1 + (coeff / 100));
+                double returnMoney = Convert.ToDouble(project.Cost) - costWithCoeff;
+
+                string[] initialCost = Math.Round(Convert.ToDouble(project.Cost), 2).ToString().Split('.');
+                string[] withCoeff = Math.Round(costWithCoeff, 2).ToString().Split('.');
+                string[] toReturn = Math.Round(returnMoney, 2).ToString().Split('.');
+
+                PlaceValueToBookmarkRange("companyAddress", companyAddress);
+                PlaceValueToBookmarkRange("companyFullName", companyFullName);
+                PlaceValueToBookmarkRange("companyFullName2", companyFullName);
+                PlaceValueToBookmarkRange("directorFullName", director);
+                PlaceValueToBookmarkRange("clIentName", clientName);
+                PlaceValueToBookmarkRange("clIentName2", clientName);
+                PlaceValueToBookmarkRange("projectID", project.Id);
+                PlaceValueToBookmarkRange("projectStartDate", DateTime.Parse(project.StartDate).ToString("dd.MM.yyyy"));
+                PlaceValueToBookmarkRange("projectTitle", project.Title);
+                if (toReturn.Length == 2)
+                {
+                    PlaceValueToBookmarkRange("intReturn", toReturn[0]);
+                    PlaceValueToBookmarkRange("floatReturn", toReturn[1]);
+                }
+                else
+                {
+                    PlaceValueToBookmarkRange("intReturn", toReturn[0]);
+                    PlaceValueToBookmarkRange("floatReturn", "00");
+                }
+
+                if (success)
+                {
+                    if (initialCost.Length == 2)
+                    {
+                        PlaceValueToBookmarkRange("intMoneyPart", toReturn[0]);
+                        PlaceValueToBookmarkRange("floatMoneyPart", toReturn[1]);
+                    }
+                    else
+                    {
+                        PlaceValueToBookmarkRange("intMoneyPart", toReturn[0]);
+                        PlaceValueToBookmarkRange("floatMoneyPart", "00");
+                    }
+                    if (withCoeff.Length == 2)
+                    {
+                        PlaceValueToBookmarkRange("intWithCoeff", withCoeff[0]);
+                        PlaceValueToBookmarkRange("floatWithCoeff", withCoeff[1]);
+                    }
+                    else
+                    {
+                        PlaceValueToBookmarkRange("intWithCoeff", withCoeff[0]);
+                        PlaceValueToBookmarkRange("floatWithCoeff", "00");
+                    }
+                    wrdTbl = wrdDc.Tables[2];
+
+                    int stgIndx = 0;
+                    List<string> subtaskTitles = new List<string>();
+                    while (stgIndx < project.Stages.Count)
+                    {
+                        int sbtskIndx = 0;
+                        while (sbtskIndx < project.Stages[stgIndx].subtasks.Count)
+                        {
+                            ControlPoint[] finishedPnt = project.Stages[stgIndx].subtasks[sbtskIndx].points.Where(pnt => pnt.StatusId == ((int)Status.Finish).ToString()).ToArray();
+                            if (finishedPnt.Length > 0)
+                            {
+                                subtaskTitles.Add(project.Stages[stgIndx].subtasks[sbtskIndx].Title);
+                            }
+                            sbtskIndx++;
+                        }
+                        stgIndx++;
+                    }
+
+                    int row = 0;
+                    while (row < subtaskTitles.Count)
+                    {
+                        wrdTbl.Rows.Add(wrdTbl.Rows[wrdTbl.Rows.Count]);
+                        Word.Cell cell = wrdTbl.Cell(row + 1, 1);
+                        wrdRng = cell.Range;
+                        wrdRng.Text = $"{row + 1}";
+                        cell.Borders.OutsideColor = Word.WdColor.wdColorBlack;
+                        cell = wrdTbl.Cell(row + 1, 2);
+                        wrdRng = cell.Range;
+                        wrdRng.Text = subtaskTitles[row];
+                        cell.Borders.OutsideLineStyle = Word.WdLineStyle.wdLineStyleThickThinSmallGap;
+                        cell.Borders.OutsideColor = Word.WdColor.wdColorBlack;
+                        ReleaseObject(cell);
+                        row++;
+                    }
+                }
+
+                wordApp.ActiveDocument.SaveAs2(path);
+                FullCloseWord();
+
+                if (wordApp == null) wordApp = new Word.Application();
+                wordApp.Visible = true;
+                wrdDcs = wordApp.Documents;
+                wrdDc = wrdDcs.Open(path);
+                wrdDc.Activate();
+                ReleaseWord();
+                GC.Collect();
+            }
+            catch (Exception e)
+            {
+                FullCloseWord();
+                return (e.Message, true);
+            }
+            return (null, false);
+        }
     }
 }
