@@ -400,7 +400,8 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
             string idPlaceholder = lastCpId != -1 ? $"{lastCpId + 1}" : "null";
             string desc = description != null ? $"'{description}'" : "null";
             string t = title.Length == 0 ? "null" : $"'{title}'";
-            string query = $@"insert into {Db.Name}.{Db.GetTableName(Db.Tables.ControlPoint)} value ({idPlaceholder}, {AppUser.Id}, {((int)status)}, {t}, {desc}, '{DateTime.Now.ToString("yyyy.MM.dd HH:mm")}');";
+            string createDate = DateTime.Now.ToString("yyyy.MM.dd HH:mm");
+            string query = $@"insert into {Db.Name}.{Db.GetTableName(Db.Tables.ControlPoint)} value ({idPlaceholder}, {AppUser.Id}, {((int)status)}, {t}, {desc}, '{createDate}');";
             var task =  _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (object result, _) = await Common.GetNoScalarResult(task);
             if (Convert.ToInt32(result) == -1) return -1;
@@ -416,6 +417,30 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
             query = $"insert into {Db.Name}.{Db.GetTableName(Db.Tables.CtrlPntToSubtask)} value ({idPlaceholder}, {await Subtask.GetSubtaskLinkID(projectId, this.StageId, this.Id)}, {lastCpId});";
             task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (result, _) = await Common.GetNoScalarResult(task);
+            if (Convert.ToInt32(result) > 0)
+            {
+                string cpId = "";
+                if (lastCpId != -1) cpId = $"{lastCpId+1}";
+                else
+                {
+                    query = $@"select ControlPointID from {Db.Name}.controlpoint
+where ControlPointDateTime = '{createDate}' and ControlPointTitle = {t};";
+                    (object pntId, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query)));
+                    if (Convert.ToInt32(pntId) > 0) cpId = $"{Convert.ToInt32(pntId)}";
+                }
+
+                if (cpId != "")
+                {
+                    ControlPoint cp = new ControlPoint();
+                    cp.Id = cpId;
+                    cp.CreatedTime = createDate;
+                    cp.AuthorId = AppUser.Id;
+                    if (title.Length != 0) cp.Title = title;
+                    if (description != null) cp.Description =  description;
+                    cp.StatusId = ((int)status).ToString();
+                    this.points.Add(cp);
+                }
+            }
             return Convert.ToInt32(result);
         }
 
@@ -429,17 +454,26 @@ where SbtskLinkID in ({string.Join(",", sbtskLinkIds)});";
         /// <returns>Возвращает асинхронную операцию, результатом которой является число добавленных записей в связующую контрольные точки и подзадачи таблицу при успехе, иначе -1</returns>
         public async Task<int> UpdateControlPoint(string cntrPointId, string title = null, Status status = Status.NotSetted, string description = null)
         {
-            int lastCpId = -1;
-            int.TryParse(await ProjectLinked.GetLastId(_db, ProjectLinked.LinkedTables.ControlPoint), out lastCpId);
-            if (lastCpId == -1) return -1;
+            string updatedDate = DateTime.Now.ToString("yyyy.MM.dd HH:mm");
             string query = $@"update {Db.Name}.{Db.GetTableName(Db.Tables.ControlPoint)} set";
             if (title != null) query += $" ControlPointTitle = '{title}',";
             if (status != Status.NotSetted) query += $" StatusID = {((int)status).ToString()},";
             if (description != null) query += $" ControlPointDescription = '{description}',";
-            if (description != null) query += $" ControlPointDateTime = '{DateTime.Now.ToString("yyyy.MM.dd HH:mm")}'";
+            query += $" ControlPointDateTime = '{updatedDate}'";
             query += $"where ControlPointID = {cntrPointId};";
             var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
             (object result, _) = await Common.GetNoScalarResult(task);
+            if (Convert.ToInt32(result) > 0)
+            {
+                int pointListIndx = this.points.IndexOf(this.points.Where(pnt => pnt.Id == cntrPointId).ToArray()[0]);
+                if (pointListIndx != -1)
+                {
+                    this.points[pointListIndx].CreatedTime = updatedDate;
+                    if (status != Status.NotSetted) this.points[pointListIndx].StatusId = ((int)status).ToString();
+                    if (title != null) this.points[pointListIndx].Title = title;
+                    if (description != null) this.points[pointListIndx].Description = description;
+                }
+            }
             return Convert.ToInt32(result);
         }
 
@@ -885,9 +919,7 @@ select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
             CreatorId = creator;
             Coefficient = coff;
             Status = status;
-            int iCost = Convert.ToInt32(cost);
-            int iCoef = Convert.ToInt32(coff);
-            Cost = $"{Math.Round((float)iCost * (1 + (iCoef / 100)), 2)}";
+            Cost = cost;
             Stages = stages;
             EmployeesId = employees;
         }
@@ -942,6 +974,8 @@ select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
             }
             else
             {
+                info[5] = ((DateTime.Now.Subtract(DateTime.Parse(info[2])).Days / 14) * -5).ToString();
+                await Project.Update(id, new ProjectField[] { ProjectField.Coefficient }, new string[] { info[5] });
                 return new Project(id, title: info[0], start: info[1], endPlan: info[2], customer: info[3], creator: info[4], coff: info[5], cost: info[6], status: info[7], stgs, empl);
             }
         }
@@ -1039,6 +1073,32 @@ ProjectFactEndDate from {Db.Name}.project where ProjectID = {id}; ";
                 case ProjectField.Title: columnName = "ProjectTitle"; break;
             }
             return columnName;
+        }
+
+        /// <summary>
+        /// Обновленение указанных полей проекта с указанным идентификатором
+        /// </summary>
+        /// <param name="projectId">Идентификатор обновляемого проекта</param>
+        /// <param name="fields">Массив обновляемых полей</param>
+        /// <param name="args">Массив значений обновляемых полей</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является целое число - количество обновлённых записей в случае успеха, иначе -1</returns>
+        public static async Task<int> Update(string projectId, ProjectField[] fields, string[] args)
+        {
+            string query = $@"update {Db.Name}.project set";
+            int i = 0;
+            while (i < fields.Length && i < args.Length)
+            {
+                query += $" {GetColumnName(fields[i])} = ";
+                bool text = (new ProjectField[] { ProjectField.Coefficient, ProjectField.FactEnd, ProjectField.PlanEnd, ProjectField.StartDate, ProjectField.Title }).Contains(fields[i]);
+                query += (text) ? $"'{args[i]}'" : $"{args[i]}";
+                if (i != fields.Length - 1) query += ",";
+                i++;
+            }
+            query += $" where {GetColumnName(ProjectField.Id)} = {projectId};";
+            var task = _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+            (object result, _) = await Common.GetNoScalarResult(task);
+            int res = Convert.ToInt32(result);
+            return res;
         }
 
         /// <summary>

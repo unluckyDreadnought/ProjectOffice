@@ -46,10 +46,8 @@ namespace ProjectOffice.logic
         private static Word.Application wordApp = null;
         private static Word.Documents wrdDcs = null;
         private static Word.Document wrdDc = null;
-        private static Word.Paragraph wrdPrgh = null;
         private static Word.Range wrdRng = null;
         private static Word.Bookmark bkmk = null;
-        private static Word.Tables wrdTbls = null;
         private static Word.Table wrdTbl = null;
 
         private static void PlaceValueToBookmarkRange(string name, string value)
@@ -111,11 +109,10 @@ namespace ProjectOffice.logic
 
         private static void ReleaseWord()
         {
-            ReleaseObject(wrdPrgh);
             ReleaseObject(wrdDc);
-            ReleaseObject(wrdDcs);
             ReleaseObject(wordApp);
-            wrdPrgh = null;
+            wrdRng = null;
+            wrdTbl = null;
             wrdDc = null;
             wrdDcs = null;
             wordApp = null;
@@ -130,12 +127,12 @@ namespace ProjectOffice.logic
             }
             if (wrdDcs != null)
             {
-                wrdDcs.Close();
+                wrdDcs = null;
+                GC.Collect();
             }
             if (wordApp != null)
             {
                 wordApp.Application.Quit();
-                wordApp.Quit();
             }
             ReleaseWord();
         }
@@ -361,11 +358,12 @@ group by controlpoint.ControlPointAuthorID";
                 {
                     return ("Не удалось создать отчёт", true);
                 }
-                wordApp.Visible = true;
+                //wordApp.Visible = true;
                 wordApp.Visible = false;
 
                 wrdDcs = wordApp.Documents;
-                wrdDc = wrdDcs.Open(template);
+                wrdDc = wrdDcs.Add(template);
+                wrdDc.Activate();
 
                 string query = $@"select ClientTypeID from {Db.Name}.client where ClientID = {project.CustomerId};";
                 (object objRes, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteScalarAsync(query)));
@@ -401,103 +399,141 @@ from project_office.client
 inner join organitationtype on organitationtype.OrganitationTypeName = ClientOrgTypeID
 where ClientID = 0; ";
                 companyInfo = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
-
-                string companyFullName = $"{companyInfo[0]} {companyInfo[2]}";
-                string companyName = $"{companyInfo[0]} {companyInfo[2]}";
-                string directorShort = Common.GetShortSnp(AppSettings.director);
-                string clientName = (clientInfo.Length > 6) ? $"{clientInfo[0]} {clientInfo[2]}" : clientInfo[0];
+                string clientName = (clientInfo.Length > 6) ? $"{clientInfo[0]} \"{clientInfo[2]}\"" : clientInfo[0];
 
                 PlaceValueToBookmarkRange("projectID", project.Id);
-                PlaceValueToBookmarkRange("companyAddress", companyInfo[3]);
-                PlaceValueToBookmarkRange("companyName", companyName);
-                PlaceValueToBookmarkRange("companyFullName", companyFullName);
-                PlaceValueToBookmarkRange("directorFullName", AppSettings.director);
                 PlaceValueToBookmarkRange("clientName", clientName);
-                PlaceValueToBookmarkRange("directorShortName", directorShort);
-                PlaceValueToBookmarkRange("companyInn", companyInfo[8]);
-                PlaceValueToBookmarkRange("companyKpp", companyInfo[9]);
-                PlaceValueToBookmarkRange("companyOgrn", companyInfo[10]);
-                PlaceValueToBookmarkRange("companyBankAccount", companyInfo[4]);
-                PlaceValueToBookmarkRange("companyBank", companyInfo[5]);
-                PlaceValueToBookmarkRange("companyBik", companyInfo[11]);
-                PlaceValueToBookmarkRange("companyPhone", companyInfo[6]);
-                PlaceValueToBookmarkRange("companyEmail", companyInfo[7]);
+
+                if (companyInfo.Length > 0)
+                {
+                    string companyFullName = $"{companyInfo[0]} \"{companyInfo[2]}\"";
+                    string companyName = $"{companyInfo[1]} \"{companyInfo[2]}\"";
+                    string directorShort = Common.GetShortSnp(AppSettings.director);
+
+                    PlaceValueToBookmarkRange("companyAddress", companyInfo[3]);
+                    PlaceValueToBookmarkRange("companyName", companyName);
+                    PlaceValueToBookmarkRange("companyFullName", companyFullName);
+                    PlaceValueToBookmarkRange("directorFullName", AppSettings.director);
+                    PlaceValueToBookmarkRange("directorShortName", directorShort);
+                    PlaceValueToBookmarkRange("companyInn", companyInfo[8]);
+                    PlaceValueToBookmarkRange("companyKpp", companyInfo[9]);
+                    PlaceValueToBookmarkRange("companyOgrn", companyInfo[10]);
+                    PlaceValueToBookmarkRange("companyBankAccount", companyInfo[4]);
+                    PlaceValueToBookmarkRange("companyBank", companyInfo[5]);
+                    PlaceValueToBookmarkRange("companyBik", companyInfo[11]);
+                    PlaceValueToBookmarkRange("companyPhone", companyInfo[6]);
+                    PlaceValueToBookmarkRange("companyEmail", companyInfo[7]);
+                    PlaceValueToBookmarkRange("companyAddress2", companyInfo[3]);
+                    PlaceValueToBookmarkRange("companyName2", companyName);
+                    PlaceValueToBookmarkRange("companyFullName2", companyFullName);
+                    PlaceValueToBookmarkRange("directorShortName2", Common.GetShortSnp(AppSettings.director));
+                }
+                else
+                {
+                    PlaceValueToBookmarkRange("companyAddress", "[Юридический адрес Разработчика]");
+                    PlaceValueToBookmarkRange("companyName", "[Краткое название Разработчика]");
+                    PlaceValueToBookmarkRange("companyFullName", "[Полное название Разработчика]"); 
+                    PlaceValueToBookmarkRange("directorFullName", "[ФИО директора Разработчика]");
+                    PlaceValueToBookmarkRange("directorShortName", "[Фамилия Инициалы директора Разработчика]");
+                    PlaceValueToBookmarkRange("companyInn", "[ИНН Разработчика]");
+                    PlaceValueToBookmarkRange("companyKpp", "[КПП Разработчика]");
+                    PlaceValueToBookmarkRange("companyOgrn", "[ОГРН Разработчика]");
+                    PlaceValueToBookmarkRange("companyBankAccount", "[Р/с Разработчика]");
+                    PlaceValueToBookmarkRange("companyBank", "[Банк Разработчика]");
+                    PlaceValueToBookmarkRange("companyBik", "[БИК Разработчика]");
+                    PlaceValueToBookmarkRange("companyPhone", "[Телефон Разработчика]");
+                    PlaceValueToBookmarkRange("companyEmail", "[Почта Разработчика]");
+                    PlaceValueToBookmarkRange("companyAddress2", "[Юридический адрес Разработчика]");
+                    PlaceValueToBookmarkRange("companyName2", "[Краткое название Разработчика]");
+                    PlaceValueToBookmarkRange("companyFullName2", "[Полное название Разработчика]");
+                    PlaceValueToBookmarkRange("directorShortName2", "[Фамилия Инициалы директора Разработчика]");
+                }
 
                 string[] data = new string[] { };
                 string[] titles = new string[] { };
                 if (clientInfo.Length > 6)
                 {
                     data = new string[] {
-                        $"{clientInfo[0]} {clientInfo[2]}", clientInfo[3], clientInfo[8], clientInfo[9],
-                        clientInfo[10], clientInfo[4], clientInfo[5], clientInfo[11], clientInfo[6], clientInfo[7]
+                        $"{clientInfo[0]} \"{clientInfo[2]}\"", clientInfo[3], $"{clientInfo[8]}/{clientInfo[9]}",
+                        clientInfo[10], clientInfo[4], clientInfo[5], clientInfo[11], clientInfo[6], clientInfo[7], "", 
+                        $"{clientInfo[0]} \"{clientInfo[2]}\""
                     };
                     titles = new string[] {
                         "Заказчик:", "Юр. Адрес:", "ИНН/КПП:", "ОГРН:", "Р/с:", "Наименование банка:", "БИК:", "Телефон:",
-                        "Электронная почта:", "Заказчик", "____________/_______________/", "", "", 
+                        "Электронная почта:", "Заказчик", "", "____________/_______________/", "", 
                         "«     »  ____________ ____ г."
                     };
                 }
                 else
                 {
                     data = new string[] {
-                        $"{clientInfo[0]} {clientInfo[1]}", clientInfo[2], clientInfo[3], clientInfo[4],
-                        clientInfo[5]
+                        clientInfo[0], clientInfo[1], clientInfo[2], clientInfo[3], clientInfo[4],
+                        clientInfo[5], "", "", "", "", clientInfo[0]
                     };
                     titles = new string[] {
                         "Заказчик:", "Адрес:", "Р/с:", "Наименование банка:", "Телефон:", "Электронная почта:", 
-                        "", "", "", "Заказчик", "____________/_______________/", "", "",
+                        "", "", "", "Заказчик", "", "____________/_______________/", "",
                         "«     »  ____________ ____ г."
                     };
                 }
 
                 
-                wrdTbl = wrdDc.Tables[2];
+                wrdTbl = wrdDc.Tables[3];
 
                 int row = 0;
                 while (row < wrdTbl.Rows.Count)
                 {
-                    Word.Cell cell = wrdTbl.Cell(row, 0);
+                    Word.Cell cell = wrdTbl.Cell(row+1, 2);
                     wrdRng = cell.Range;
                     wrdRng.Font.Bold = 0;
-                    wrdRng.Text = titles[row];
+                    var cells = wrdRng.Cells[1];
+                    cells.Range.Text = titles[row];
+                    cells = null;
+                    GC.Collect();
                     if (row < data.Length)
                     {
-                        wrdRng.Text += $" {data[row]}";
+                        string paste = $"{titles[row]} {data[row]}";
+                        wrdRng.Text = paste.Trim();
                     }
-
-                    object objStart = wrdRng.Start;
-                    object objEnd = wrdRng.Start + titles[row].IndexOf(":");
-                    Word.Range rngBold = wrdDc.Range(ref objStart, ref objEnd);
-                    rngBold.Font.Bold = 1;
+                    else
+                    {
+                        wrdRng.Text = titles[row].Trim();
+                    }
+                    
+                    if (titles[row] != null && titles[row] != "")
+                    {
+                        object objStart = wrdRng.Start;
+                        object objEnd = wrdRng.Start + titles[row].IndexOf(":");
+                        Word.Range rngBold = wrdDc.Range(ref objStart, ref objEnd);
+                        rngBold.Font.Bold = 1;
+                    }
                     row++;
                 }
 
-                wrdTbl = wrdDc.Tables[3];
+                wrdTbl = wrdDc.Tables[4];
 
-                int indx = row - 1;
+                int indx = row;
                 row = 0;
                 while (row < wrdTbl.Rows.Count)
                 {
-                    Word.Cell cell = wrdTbl.Cell(row, 0);
+                    Word.Cell cell = wrdTbl.Cell(row+1, 2);
                     wrdRng = cell.Range;
-                    wrdRng.Font.Bold = 1;
-                    wrdRng.Text = titles[indx + row];
+                    wrdRng.Font.Bold = (row == 0) ? 1 : 0;
+                    wrdRng.Text = (row + indx < data.Length) ? $"{titles[row + indx]}{data[row + indx]}" : titles[row + indx];
                     ReleaseObject(cell);
                     row++;
                 }
 
-                if (wrdTbl != null) ReleaseObject(wrdTbl);
-                if (wrdPrgh != null) ReleaseObject(wrdPrgh);
-                if (wrdTbls != null) ReleaseObject(wrdTbls);
-                GC.Collect();
-
-                wrdDc.SaveAs(path);
+                wordApp.ActiveDocument.SaveAs2(path);
                 FullCloseWord();
 
                 if (wordApp == null) wordApp = new Word.Application();
-                
                 wordApp.Visible = true;
+                wrdDcs = wordApp.Documents;
+                wrdDc = wrdDcs.Open(path);
+                wrdDc.Activate();
                 ReleaseWord();
+                GC.Collect();
             }
             catch (Exception e)
             {

@@ -399,6 +399,20 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
             }
         }
 
+        public static string GetSaveFilePath(string extension, string filter)
+        {
+            string savePath = "";
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            fileDialog.Filter = filter;
+            fileDialog.DefaultExt = extension;
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                if (fileDialog.FileName != "") savePath = fileDialog.FileName;
+            }
+            return savePath;
+        }
+
         public static string GetShortSnp(string fullSnp)
         {
             string result = "";
@@ -416,6 +430,19 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
                 part++;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Считает конечную стоимость проекта с применением коэффициента и сумму к возврату
+        /// </summary>
+        /// <param name="project">Экземпляр проекта</param>
+        /// <returns>Возвращает числа с плавающей запятой в виде набора (конечная стоимость; сумма возврата)</returns>
+        public static (double, double) GetProjectCost(Project project)
+        {
+            double documentedCost = Convert.ToDouble(project.Cost);
+            double finalCost = 0, coeff = Convert.ToDouble(project.Coefficient);
+            finalCost = documentedCost * (1 + (coeff / 100));
+            return (Math.Round(finalCost, 2), Math.Round(documentedCost - finalCost, 2));
         }
     }
 }

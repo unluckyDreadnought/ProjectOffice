@@ -29,8 +29,8 @@ namespace ProjectOffice.forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.stagesTable = new System.Windows.Forms.DataGridView();
             this.Stage = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.employeesTable = new System.Windows.Forms.DataGridView();
@@ -58,6 +58,7 @@ namespace ProjectOffice.forms
             this.panel3 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel13 = new System.Windows.Forms.Panel();
+            this.endProject = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -78,7 +79,8 @@ namespace ProjectOffice.forms
             this.panel10 = new System.Windows.Forms.Panel();
             this.panel11 = new System.Windows.Forms.Panel();
             this.panel14 = new System.Windows.Forms.Panel();
-            this.endProject = new System.Windows.Forms.Button();
+            this.createDocBtn = new System.Windows.Forms.Button();
+            this.docTypeCombo = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.stagesTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.employeesTable)).BeginInit();
             this.panel1.SuspendLayout();
@@ -110,14 +112,14 @@ namespace ProjectOffice.forms
             this.stagesTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.stagesTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.stagesTable.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.stagesTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.stagesTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.stagesTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.stagesTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Stage});
@@ -148,14 +150,14 @@ namespace ProjectOffice.forms
             this.employeesTable.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.employeesTable.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.employeesTable.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.employeesTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(217)))), ((int)(((byte)(246)))));
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.employeesTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
             this.employeesTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.employeesTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.fio,
@@ -196,7 +198,7 @@ namespace ProjectOffice.forms
             this.endPlanDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.endPlanDate.Location = new System.Drawing.Point(0, 0);
             this.endPlanDate.Name = "endPlanDate";
-            this.endPlanDate.Size = new System.Drawing.Size(235, 26);
+            this.endPlanDate.Size = new System.Drawing.Size(235, 30);
             this.endPlanDate.TabIndex = 26;
             this.endPlanDate.ValueChanged += new System.EventHandler(this.endPlanDate_ValueChanged);
             // 
@@ -222,7 +224,7 @@ namespace ProjectOffice.forms
             this.projectCostTextBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.projectCostTextBox.Location = new System.Drawing.Point(0, 0);
             this.projectCostTextBox.Name = "projectCostTextBox";
-            this.projectCostTextBox.Size = new System.Drawing.Size(364, 28);
+            this.projectCostTextBox.Size = new System.Drawing.Size(364, 34);
             this.projectCostTextBox.TabIndex = 23;
             this.projectCostTextBox.TextChanged += new System.EventHandler(this.projectCostTextBox_TextChanged);
             this.projectCostTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.projectCostTextBox_KeyPress);
@@ -281,7 +283,7 @@ namespace ProjectOffice.forms
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(220, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(110, 24);
+            this.label8.Size = new System.Drawing.Size(140, 29);
             this.label8.TabIndex = 16;
             this.label8.Text = "Стоимость";
             // 
@@ -310,7 +312,7 @@ namespace ProjectOffice.forms
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(3, 6);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(108, 24);
+            this.label2.Size = new System.Drawing.Size(136, 29);
             this.label2.TabIndex = 11;
             this.label2.Text = "№ проекта";
             // 
@@ -329,7 +331,7 @@ namespace ProjectOffice.forms
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(22, 6);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(74, 24);
+            this.label6.Size = new System.Drawing.Size(99, 29);
             this.label6.TabIndex = 8;
             this.label6.Text = "Начало";
             // 
@@ -340,7 +342,7 @@ namespace ProjectOffice.forms
             this.projectIdLbl.AutoSize = true;
             this.projectIdLbl.Location = new System.Drawing.Point(146, 6);
             this.projectIdLbl.Name = "projectIdLbl";
-            this.projectIdLbl.Size = new System.Drawing.Size(90, 24);
+            this.projectIdLbl.Size = new System.Drawing.Size(115, 29);
             this.projectIdLbl.TabIndex = 17;
             this.projectIdLbl.Text = "Проект #";
             // 
@@ -351,7 +353,7 @@ namespace ProjectOffice.forms
             this.startDateLbl.AutoSize = true;
             this.startDateLbl.Location = new System.Drawing.Point(127, 6);
             this.startDateLbl.Name = "startDateLbl";
-            this.startDateLbl.Size = new System.Drawing.Size(60, 24);
+            this.startDateLbl.Size = new System.Drawing.Size(79, 29);
             this.startDateLbl.TabIndex = 7;
             this.startDateLbl.Text = "label1";
             // 
@@ -457,6 +459,21 @@ namespace ProjectOffice.forms
             this.panel13.Size = new System.Drawing.Size(364, 49);
             this.panel13.TabIndex = 34;
             // 
+            // endProject
+            // 
+            this.endProject.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.endProject.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(143)))), ((int)(((byte)(252)))));
+            this.endProject.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.endProject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.endProject.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
+            this.endProject.Location = new System.Drawing.Point(49, 5);
+            this.endProject.Name = "endProject";
+            this.endProject.Size = new System.Drawing.Size(153, 38);
+            this.endProject.TabIndex = 18;
+            this.endProject.Text = "Завершить";
+            this.endProject.UseVisualStyleBackColor = false;
+            this.endProject.Click += new System.EventHandler(this.endProject_Click);
+            // 
             // panel4
             // 
             this.panel4.AutoSize = true;
@@ -551,6 +568,8 @@ namespace ProjectOffice.forms
             // subtaskPanel
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.subtaskPanel, 2);
+            this.subtaskPanel.Controls.Add(this.docTypeCombo);
+            this.subtaskPanel.Controls.Add(this.createDocBtn);
             this.subtaskPanel.Controls.Add(this.subtaskBtn);
             this.subtaskPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.subtaskPanel.Location = new System.Drawing.Point(3, 615);
@@ -680,24 +699,34 @@ namespace ProjectOffice.forms
             this.panel14.Size = new System.Drawing.Size(363, 49);
             this.panel14.TabIndex = 34;
             // 
-            // endProject
+            // createDocBtn
             // 
-            this.endProject.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.endProject.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(143)))), ((int)(((byte)(252)))));
-            this.endProject.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.endProject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.endProject.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.endProject.Location = new System.Drawing.Point(49, 5);
-            this.endProject.Name = "endProject";
-            this.endProject.Size = new System.Drawing.Size(153, 38);
-            this.endProject.TabIndex = 18;
-            this.endProject.Text = "Завершить";
-            this.endProject.UseVisualStyleBackColor = false;
-            this.endProject.Click += new System.EventHandler(this.endProject_Click);
+            this.createDocBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.createDocBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(143)))), ((int)(((byte)(252)))));
+            this.createDocBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.createDocBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.createDocBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
+            this.createDocBtn.Location = new System.Drawing.Point(577, 3);
+            this.createDocBtn.Name = "createDocBtn";
+            this.createDocBtn.Size = new System.Drawing.Size(153, 38);
+            this.createDocBtn.TabIndex = 18;
+            this.createDocBtn.Text = "Договор";
+            this.createDocBtn.UseVisualStyleBackColor = false;
+            this.createDocBtn.Click += new System.EventHandler(this.createDocBtn_Click);
+            // 
+            // docTypeCombo
+            // 
+            this.docTypeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.docTypeCombo.FormattingEnabled = true;
+            this.docTypeCombo.Location = new System.Drawing.Point(358, 4);
+            this.docTypeCombo.Name = "docTypeCombo";
+            this.docTypeCombo.Size = new System.Drawing.Size(213, 37);
+            this.docTypeCombo.TabIndex = 30;
+            this.docTypeCombo.SelectedIndexChanged += new System.EventHandler(this.docTypeCombo_SelectedIndexChanged);
             // 
             // ProjectEditorForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.ClientSize = new System.Drawing.Size(739, 717);
@@ -792,5 +821,7 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button endProject;
+        private System.Windows.Forms.Button createDocBtn;
+        private System.Windows.Forms.ComboBox docTypeCombo;
     }
 }

@@ -274,6 +274,21 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             }
         }
 
+        private void LoadPossibleDocumentTypes()
+        {
+            string[] options = new string[] { "Договор на разработку", "Акт завершения" };
+            docTypeCombo.Items.Clear();
+            if (proj == null) return;
+            if (proj.Status == ((int)Status.Rejected).ToString() || proj.Status == ((int)Status.Finish).ToString())
+            {
+                docTypeCombo.Items.AddRange(options);
+            }
+            else
+            {
+                docTypeCombo.Items.Add(options[0]);
+            }
+        }
+
         #region event_handlers
 
         // Обработчик загрузки формы редактора проекта
@@ -284,8 +299,6 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             {
                 this.Text = $"{Resources.APP_NAME}: Редактирование проекта";
                 chooseClientPanel.Hide();
-                //chooseEmployeePanel.Hide();
-                //chooseStagePanel.Hide();
                 projectCostTextBox.Enabled = projectCostTextBox.Visible = false;
                 endPlanDate.Enabled = endPlanDate.Visible = false;
 
@@ -312,7 +325,12 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 managerLbl.Text = await GetManagerName(proj.CreatorId);
                 await UpdateEmployeeList(proj.EmployeesId);
                 ParseStages(proj.Stages);
-                projCostLbl.Text = proj.Cost;
+                if (proj.Coefficient != "0")
+                {
+                    (double cost, double toReturn) = Common.GetProjectCost(proj);
+                    projCostLbl.Text = $"{cost}  | К возврату: {toReturn}";
+                }
+                else projCostLbl.Text = proj.Cost;
             }
             else
             {
@@ -329,22 +347,18 @@ from {Db.Name}.client where ClientID = {clientID}; ";
 
                 endPlanDate.MinDate = DateTime.Parse(proj.StartDate).AddDays(5);
                 endPlanDate.MaxDate = DateTime.Parse(proj.StartDate).AddMonths(4);
+                label1.Enabled = label1.Visible = false;
+                factEndDateLbl.Enabled = factEndDateLbl.Visible = false;
 
                 projectNameTextBox.Text = proj.Title;
                 managerLbl.Text = await GetManagerName(proj.CreatorId);
                 projectIdLbl.Text = $"Проект #{projId}";
             }
             await CheckFieldsFilling();
+            LoadPossibleDocumentTypes();
+            createDocBtn.Enabled = docTypeCombo.SelectedItem != null;
             subtaskBtn.Enabled = subtaskBtn.Visible = proj.Status == ((int)Status.Finish).ToString();
-            if (proj.Status == ((int)Status.PreparingToEnd).ToString()) 
-            {
-                endProject.Text = "Завершить";
-            }
-            else if (proj.Status == ((int)Status.Rejected).ToString())
-            {
-                endProject.Text = "Договор";
-            }
-            endProject.Enabled = endProject.Visible = proj.Status == ((int)Status.PreparingToEnd).ToString() || proj.Status == ((int)Status.Rejected).ToString();
+            endProject.Enabled = endProject.Visible = proj.Status == ((int)Status.PreparingToEnd).ToString();
         }
 
         // Обработчик нажатия на кнопку выбора клиента-заказчика проекта
@@ -509,14 +523,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                 changes = false;
 
                 string baseSavePath = "";
-                SaveFileDialog fileDialog = new SaveFileDialog();
-                fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                fileDialog.Filter = "Документ Word (*.docx)|*.docx";
-                fileDialog.DefaultExt = "docx";
-                if (fileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    if (fileDialog.FileName != "") baseSavePath = fileDialog.FileName;
-                }
+                baseSavePath = Common.GetSaveFilePath("docx", "Документ Word (*.docx)|*.docx");
                 Reports.SetBasePath(baseSavePath);
                 MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 (string text, bool isError) = await Reports.MakeDevelopmentDealDocument(proj, Reports.baseSavePath);
@@ -561,23 +568,68 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             }
         }
 
+        private async void endProject_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Вы уверены, что хотите завершить проект?", "Завершение проекта", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                ProjectField[] toUpdate = null;
+                string[] updateValues = null;
+                if (DateTime.Now > DateTime.Parse(proj.PlanEndDate))
+                {
+                    toUpdate = new ProjectField[] { ProjectField.Status, ProjectField.FactEnd };
+                    updateValues = new string[] { ((int)Status.Finish).ToString(), DateTime.Now.ToString("yyyy-MM-dd") };
+                }
+                else
+                {
+                    toUpdate = new ProjectField[] { ProjectField.Status };
+                    updateValues = new string[] { ((int)Status.Finish).ToString() };
+                }
+                int res = await proj.Update(toUpdate, updateValues);
+                if (res > 0) MessageBox.Show("Проект успешно завершён", "Завершение проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else if (res == 0) MessageBox.Show("Проект не завершён. Произошла неизвестная ошибка.", "Завершение проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Close();
+            }
+        }
+
         #endregion
 
-        private void endProject_Click(object sender, EventArgs e)
-        {
-            switch (endProject.Text)
-            {
-                case "Договор":
-                    {
 
+
+        private async void createDocBtn_Click(object sender, EventArgs e)
+        {
+            if (docTypeCombo.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите тип желаемого документа", "Формирование документа по проекту", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            string text = null;
+            bool isError = false;
+            switch (docTypeCombo.SelectedItem.ToString())
+            {
+                case "Договор на разработку": 
+                    {
+                        string baseSavePath = "";
+                        baseSavePath = Common.GetSaveFilePath("docx", "Документ Word (*.docx)|*.docx");
+                        Reports.SetBasePath(baseSavePath);
+                        MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        (text, isError) = await Reports.MakeDevelopmentDealDocument(proj, Reports.baseSavePath);
                         break;
                     }
-                case "Завершить":
+                case "Акт завершения":
                     {
-
+                        // Reports.EndActDoc
                         break;
                     }
             }
+            if (text != null && isError)
+            {
+                MessageBox.Show(text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void docTypeCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            createDocBtn.Enabled = docTypeCombo.SelectedItem != null;
         }
     }
 }

@@ -142,14 +142,7 @@ order by StatusTitle;";
                 }
             }
 
-            SaveFileDialog fileDialog = new SaveFileDialog();
-            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            fileDialog.Filter = "Электронная таблица Excel (*.xlsx)|*.xlsx";
-            fileDialog.DefaultExt = "xlsx";
-            if (fileDialog.ShowDialog() == DialogResult.OK)
-            {
-                if (fileDialog.FileName != "") baseSavePath = fileDialog.FileName;
-            }
+            baseSavePath = Common.GetSaveFilePath("xlsx", "Электронная таблица Excel (*.xlsx)|*.xlsx");
             Reports.SetBasePath(baseSavePath);
             MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
