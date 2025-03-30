@@ -141,7 +141,7 @@ from client where ClientID > 1; ";
             }
             if (MessageBox.Show("Вы действительно хотите удалить выбранного клиента?", "Удаление клиента", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                int n = 0;
+                int n = 1;
                 bool force = false;
                 while (n > 0)
                 {

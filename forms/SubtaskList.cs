@@ -131,11 +131,13 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
             if (AppUser.Role != UserRole.Employee)
             {
                 employeePanel.Hide();
+                backBtn.Text = "К проекту";
             }
+            backBtn.Text = "К списку проектов";
             await LoadProjectTree();
             ChangeBtnsClickability();
             await CheckUserResponsibility();
-            rejectProject.Enabled = rejectProject.Visible = proj.Status == ((int)Status.New).ToString();
+            rejectProject.Enabled = rejectProject.Visible = proj.Status == ((int)Status.New).ToString() && DateTime.Now.Subtract(DateTime.Parse(proj.StartDate)).Days < 2;
         }
 
         private void SetDescriptionVisibility(bool visible = false)
@@ -267,6 +269,7 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                             }
                             else if (r > 0)
                             {
+                                await _db.LogToEventJournal(EventJournal.EventType.DeleteObject, this);
                                 MessageBox.Show($"Удаление произведено успешно.\nИз проекта удалено {r} объектов", 
                                     "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
@@ -288,6 +291,7 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
                             }
                             else if (r > 0)
                             {
+                                await _db.LogToEventJournal(EventJournal.EventType.DeleteObject, this);
                                 MessageBox.Show($"Удаление произведено успешно.\nИз проекта удалено {r} объектов",
                                     "Операция удаления", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
@@ -304,6 +308,7 @@ where userproject.ProjectID = {proj.Id} and UserID = {AppUser.Id};";
             if (MessageBox.Show("Вы точно хотите отказаться от проекта? Проект бесповоротно будет закрыт.", "Отклонение проекта", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 await proj.Update(new ProjectField[] { ProjectField.Status }, new string[] { ((int)Status.Rejected).ToString() });
+                await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
                 MessageBox.Show("Проект закрыт по причине отказа.", "Отклонение проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
             }

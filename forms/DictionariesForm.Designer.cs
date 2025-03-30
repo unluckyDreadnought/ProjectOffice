@@ -44,7 +44,6 @@ namespace ProjectOffice.forms
             this.addObject = new System.Windows.Forms.ToolStripButton();
             this.editObject = new System.Windows.Forms.ToolStripButton();
             this.deleteObject = new System.Windows.Forms.ToolStripButton();
-            this.toolsDisplayModeCombo = new System.Windows.Forms.ToolStripComboBox();
             this.typesCheckBtn = new System.Windows.Forms.ToolStripButton();
             this.subtasksCheckBtn = new System.Windows.Forms.ToolStripButton();
             this.objectTable = new System.Windows.Forms.DataGridView();
@@ -95,14 +94,14 @@ namespace ProjectOffice.forms
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(571, 49);
+            this.panel1.Size = new System.Drawing.Size(570, 49);
             this.panel1.TabIndex = 0;
             // 
             // userPhotoPic
             // 
             this.userPhotoPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.userPhotoPic.Image = global::ProjectOffice.Properties.Resources.USR_PLUG_PICTURE;
-            this.userPhotoPic.Location = new System.Drawing.Point(525, 4);
+            this.userPhotoPic.Location = new System.Drawing.Point(524, 4);
             this.userPhotoPic.Name = "userPhotoPic";
             this.userPhotoPic.Size = new System.Drawing.Size(39, 39);
             this.userPhotoPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -112,7 +111,7 @@ namespace ProjectOffice.forms
             // usrSnpLbl
             // 
             this.usrSnpLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.usrSnpLbl.Location = new System.Drawing.Point(181, 7);
+            this.usrSnpLbl.Location = new System.Drawing.Point(180, 7);
             this.usrSnpLbl.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.usrSnpLbl.Name = "usrSnpLbl";
             this.usrSnpLbl.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -129,7 +128,7 @@ namespace ProjectOffice.forms
             this.panel2.Location = new System.Drawing.Point(3, 58);
             this.panel2.Name = "panel2";
             this.tableLayoutPanel1.SetRowSpan(this.panel2, 2);
-            this.panel2.Size = new System.Drawing.Size(571, 470);
+            this.panel2.Size = new System.Drawing.Size(570, 470);
             this.panel2.TabIndex = 1;
             // 
             // panel3
@@ -139,7 +138,7 @@ namespace ProjectOffice.forms
             this.panel3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.panel3.Location = new System.Drawing.Point(0, 437);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(571, 33);
+            this.panel3.Size = new System.Drawing.Size(570, 33);
             this.panel3.TabIndex = 2;
             // 
             // toolStrip1
@@ -153,14 +152,13 @@ namespace ProjectOffice.forms
             this.addObject,
             this.editObject,
             this.deleteObject,
-            this.toolsDisplayModeCombo,
             this.typesCheckBtn,
             this.subtasksCheckBtn});
             this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.Size = new System.Drawing.Size(571, 33);
+            this.toolStrip1.Size = new System.Drawing.Size(570, 33);
             this.toolStrip1.Stretch = true;
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
@@ -235,14 +233,6 @@ namespace ProjectOffice.forms
             this.deleteObject.Text = "Редактировать";
             this.deleteObject.Click += new System.EventHandler(this.deleteObject_Click);
             // 
-            // toolsDisplayModeCombo
-            // 
-            this.toolsDisplayModeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolsDisplayModeCombo.Name = "toolsDisplayModeCombo";
-            this.toolsDisplayModeCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolsDisplayModeCombo.Size = new System.Drawing.Size(121, 33);
-            this.toolsDisplayModeCombo.ToolTipText = "Режим отображения";
-            // 
             // typesCheckBtn
             // 
             this.typesCheckBtn.CheckOnClick = true;
@@ -250,7 +240,7 @@ namespace ProjectOffice.forms
             this.typesCheckBtn.Image = ((System.Drawing.Image)(resources.GetObject("typesCheckBtn.Image")));
             this.typesCheckBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.typesCheckBtn.Name = "typesCheckBtn";
-            this.typesCheckBtn.Size = new System.Drawing.Size(146, 24);
+            this.typesCheckBtn.Size = new System.Drawing.Size(146, 30);
             this.typesCheckBtn.Text = "Типы организаций";
             this.typesCheckBtn.CheckedChanged += new System.EventHandler(this.typesCheckBtn_CheckedChanged);
             this.typesCheckBtn.Click += new System.EventHandler(this.toolStripBtn_Click);
@@ -297,7 +287,7 @@ namespace ProjectOffice.forms
             this.objectTable.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.objectTable.RowTemplate.Height = 24;
             this.objectTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.objectTable.Size = new System.Drawing.Size(571, 470);
+            this.objectTable.Size = new System.Drawing.Size(570, 470);
             this.objectTable.TabIndex = 0;
             // 
             // name
@@ -325,10 +315,10 @@ namespace ProjectOffice.forms
             this.editorPanel.Controls.Add(this.saveObjectBtn);
             this.editorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.editorPanel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.editorPanel.Location = new System.Drawing.Point(580, 3);
+            this.editorPanel.Location = new System.Drawing.Point(579, 3);
             this.editorPanel.Name = "editorPanel";
             this.tableLayoutPanel1.SetRowSpan(this.editorPanel, 4);
-            this.editorPanel.Size = new System.Drawing.Size(213, 582);
+            this.editorPanel.Size = new System.Drawing.Size(214, 582);
             this.editorPanel.TabIndex = 3;
             // 
             // hideEditorPanelBtn
@@ -349,7 +339,7 @@ namespace ProjectOffice.forms
             this.objectTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.objectTextBox.Location = new System.Drawing.Point(27, 304);
             this.objectTextBox.Name = "objectTextBox";
-            this.objectTextBox.Size = new System.Drawing.Size(168, 30);
+            this.objectTextBox.Size = new System.Drawing.Size(169, 30);
             this.objectTextBox.TabIndex = 1;
             this.objectTextBox.Text = "Иванов";
             // 
@@ -360,7 +350,7 @@ namespace ProjectOffice.forms
             this.saveObjectBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
             this.saveObjectBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.saveObjectBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.saveObjectBtn.Location = new System.Drawing.Point(76, 533);
+            this.saveObjectBtn.Location = new System.Drawing.Point(77, 533);
             this.saveObjectBtn.Name = "saveObjectBtn";
             this.saveObjectBtn.Size = new System.Drawing.Size(128, 40);
             this.saveObjectBtn.TabIndex = 0;
@@ -414,7 +404,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.ToolStripButton specCheckBtn;
         private System.Windows.Forms.ToolStripButton statusCheckBtn;
         private System.Windows.Forms.ToolStripButton stagesCheckBtn;
-        private System.Windows.Forms.ToolStripComboBox toolsDisplayModeCombo;
         private System.Windows.Forms.ToolStripButton typesCheckBtn;
         private System.Windows.Forms.ToolStripButton subtasksCheckBtn;
         private System.Windows.Forms.PictureBox userPhotoPic;

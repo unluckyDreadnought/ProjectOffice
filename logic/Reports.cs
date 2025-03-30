@@ -141,7 +141,7 @@ namespace ProjectOffice.logic
         {
             string path = baseSavePath;
             string template = $@"{(Application.StartupPath)}\doc\stats_on_project.xlsx";
-            if (notBasePath == null)
+            if (notBasePath == null || notBasePath == "")
             {
                 path += $"Отчёт_{project.Title}_{DateTime.Now.ToString("d_T")}.xlsx";
             }
@@ -271,7 +271,7 @@ group by controlpoint.ControlPointAuthorID";
 
             string template = $@"{(Application.StartupPath)}\doc\stats.xlsx";
 
-            if (notBasePath == null)
+            if (notBasePath == null || notBasePath == "")
             {
                 path += $"Общий_отчёт_по_проектам_{DateTime.Now.ToString("d_T")}.xlsx";
             }
@@ -342,7 +342,7 @@ group by controlpoint.ControlPointAuthorID";
             string path = baseSavePath;
             string template = $@"{(Application.StartupPath)}\doc\development_deal.docx";
 
-            if (notBasePath == null)
+            if (notBasePath == null || notBasePath == "")
             {
                 path += $"Договор_на_разработку_{project.Id}_{DateTime.Now.ToString("d_T")}.docx";
             }
@@ -554,7 +554,7 @@ where ClientID = 0; ";
             if (success) template = $@"{(Application.StartupPath)}\doc\end_act_success.docx";
             else template = $@"{(Application.StartupPath)}\doc\end_act_fail.docx";
 
-            if (notBasePath == null)
+            if (notBasePath == null || notBasePath == "")
             {
                 path += $"Акт_о_завершении_работ_{project.Id}_{DateTime.Now.ToString("d_T")}.docx";
             }

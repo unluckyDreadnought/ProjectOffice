@@ -427,7 +427,7 @@ where SubtaskID = {objId});";
 
         public async Task<(string[], DataTable)> FindUser(string login, string passwd)
         {
-            string query = $@"select concat(UserSurname, ' ', substring(UserName, 1, 1), '.', substring(UserPatronymic, 1, 1)) as snf, UserModeID, UserID, UserPhoto 
+            string query = $@"select concat(UserSurname, ' ', substring(UserName, 1, 1), '.', case when UserPatronymic is not null then substring(UserPatronymic, 1, 1) else '' end) as snf, UserModeID, UserID, UserPhoto 
 from `{AppSettings.dbName}`.`user` where UserLogin = @login and UserPassword = @pswd;";
 
             var task = ExecuteReaderAsync(query, login, passwd);

@@ -66,7 +66,7 @@ concat(date_format(ProjectStartDate, '%d.%m.%Y'), ' - ',  date_format(ProjectPla
 StatusTitle as 'Статус'
 from project_office.project
 inner join project_office.`status` on `status`.StatusID = project.ProjectStatusID
-where project.ProjectStatusID not in (5,6) and ({AppUser.Id}) in (select UserID from project_office.userproject)
+where project.ProjectStatusID not in (5,6) and ProjectID in (select ProjectID from project_office.userproject where UserID in ({AppUser.Id}))
 and ProjectTitle like '%{searchPattern}%' ";
             query += $"order by ProjectPlanEndDate asc;";
             var task = _db.ExecuteReaderAsync(query);
@@ -374,7 +374,6 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             if (AppUser.Role == UserRole.Employee) 
             {
                 toolStrip1.Hide();
-                projectReportBtn.Hide();
                 projectsTable.Hide();
                 employeeProjectTable.Show();
                 HideTable(projMngr: true, projEmpl: false);
@@ -388,7 +387,6 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             else if (AppUser.Role == UserRole.Manager)
             {
                 toolStrip1.Show();
-                projectReportBtn.Show();
                 projectsTable.Show();
                 employeeProjectTable.Hide();
                 HideTable(projMngr: false, projEmpl: true);
@@ -532,7 +530,11 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             {
                 Project temp = await Project.InitilazeAsync(selectedId);
                 int n = await temp.Delete();
-                if (n != -1) MessageBox.Show($"Проект (#{selectedId}) был удалён", "Удаление проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (n != -1)
+                {
+                    await _db.LogToEventJournal(EventJournal.EventType.DeleteObject, this);
+                    MessageBox.Show($"Проект (#{selectedId}) был удалён", "Удаление проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             else MessageBox.Show($"Удаление проекта (#{selectedId}) было прервано", "Удаление проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
             await UpdateTable();

@@ -194,6 +194,7 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
                     }
                     else
                     {
+                        await _db.LogToEventJournal(EventJournal.EventType.DeleteObject, this);
                         MessageBox.Show($"Пользователь ({userSnp} [{userLogin}]) успешно удалён", "Редактор пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         deleting = false;
                         continue;

@@ -134,6 +134,7 @@ order by Snp asc;";
                     }
                     else
                     {
+                        await _db.LogToEventJournal(EventJournal.EventType.DeleteObject, this);
                         MessageBox.Show($"Сотрудник ({userSnp}) успешно удалён", "Редактор сотрудников", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         deleting = false;
                         continue;

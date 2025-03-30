@@ -335,6 +335,7 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             else
             {
                 this.Text = $"{Resources.APP_NAME}: Создание проекта";
+                this.Icon = Resources.PROJECT_OFFICE_ICON;
                 planDateEditLbl.Enabled = planDateEditLbl.Visible = false;
                 projCostLbl.Enabled = projCostLbl.Visible = false;
                 subtaskPanel.Hide();
@@ -516,6 +517,8 @@ from {Db.Name}.client where ClientID = {clientID}; ";
             }
             if (n >= 0)
             {
+                if (editMode) await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
+                else await _db.LogToEventJournal(EventJournal.EventType.CreateObject, this);
                 string[][] titles = new string[][] { new string[] { "добавлен", "Создание проекта" }, new string[] { "изменён", "Изменение" } };
                 string[] curTitle = editMode ? titles[1] : titles[0];
                 MessageBox.Show($"Проект успешно {curTitle[0]}", $"{curTitle[1]} проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -45,8 +45,8 @@ namespace ProjectOffice.forms
             this.userAccountEditPnl = new System.Windows.Forms.Panel();
             this.roleCombo = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label = new System.Windows.Forms.Label();
+            this.logLbl = new System.Windows.Forms.Label();
+            this.passLbl = new System.Windows.Forms.Label();
             this.generatePswdBtn = new System.Windows.Forms.Button();
             this.generateLoginBtn = new System.Windows.Forms.Button();
             this.passTextBox = new System.Windows.Forms.TextBox();
@@ -244,8 +244,8 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1.SetColumnSpan(this.userAccountEditPnl, 2);
             this.userAccountEditPnl.Controls.Add(this.roleCombo);
             this.userAccountEditPnl.Controls.Add(this.label6);
-            this.userAccountEditPnl.Controls.Add(this.label1);
-            this.userAccountEditPnl.Controls.Add(this.label);
+            this.userAccountEditPnl.Controls.Add(this.logLbl);
+            this.userAccountEditPnl.Controls.Add(this.passLbl);
             this.userAccountEditPnl.Controls.Add(this.generatePswdBtn);
             this.userAccountEditPnl.Controls.Add(this.generateLoginBtn);
             this.userAccountEditPnl.Controls.Add(this.passTextBox);
@@ -279,25 +279,25 @@ namespace ProjectOffice.forms
             this.label6.TabIndex = 2;
             this.label6.Text = "*Роль";
             // 
-            // label1
+            // logLbl
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(243, 2);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(76, 25);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "*Логин";
+            this.logLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.logLbl.AutoSize = true;
+            this.logLbl.Location = new System.Drawing.Point(234, 2);
+            this.logLbl.Name = "logLbl";
+            this.logLbl.Size = new System.Drawing.Size(76, 25);
+            this.logLbl.TabIndex = 2;
+            this.logLbl.Text = "*Логин";
             // 
-            // label
+            // passLbl
             // 
-            this.label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label.AutoSize = true;
-            this.label.Location = new System.Drawing.Point(499, 2);
-            this.label.Name = "label";
-            this.label.Size = new System.Drawing.Size(88, 25);
-            this.label.TabIndex = 2;
-            this.label.Text = "*Пароль";
+            this.passLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.passLbl.AutoSize = true;
+            this.passLbl.Location = new System.Drawing.Point(489, 2);
+            this.passLbl.Name = "passLbl";
+            this.passLbl.Size = new System.Drawing.Size(88, 25);
+            this.passLbl.TabIndex = 2;
+            this.passLbl.Text = "*Пароль";
             // 
             // generatePswdBtn
             // 
@@ -451,8 +451,8 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Label specLbl;
         private System.Windows.Forms.ComboBox roleCombo;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label;
+        private System.Windows.Forms.Label logLbl;
+        private System.Windows.Forms.Label passLbl;
         private System.Windows.Forms.ToolTip tipImageBox;
     }
 }

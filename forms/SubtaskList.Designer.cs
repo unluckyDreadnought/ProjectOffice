@@ -131,7 +131,7 @@ namespace ProjectOffice.forms
             this.addBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addBtn.Name = "addBtn";
             this.addBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.addBtn.Size = new System.Drawing.Size(24, 37);
+            this.addBtn.Size = new System.Drawing.Size(29, 37);
             this.addBtn.Text = "Добавить объект";
             this.addBtn.Click += new System.EventHandler(this.addBtn_Click);
             // 
@@ -142,7 +142,7 @@ namespace ProjectOffice.forms
             this.editBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editBtn.Name = "editBtn";
             this.editBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.editBtn.Size = new System.Drawing.Size(24, 37);
+            this.editBtn.Size = new System.Drawing.Size(29, 37);
             this.editBtn.Text = "Изменить объект";
             this.editBtn.Click += new System.EventHandler(this.editBtn_Click);
             // 
@@ -153,7 +153,7 @@ namespace ProjectOffice.forms
             this.deleteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteBtn.Name = "deleteBtn";
             this.deleteBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.deleteBtn.Size = new System.Drawing.Size(24, 37);
+            this.deleteBtn.Size = new System.Drawing.Size(29, 37);
             this.deleteBtn.Text = "Удалить объект";
             this.deleteBtn.Click += new System.EventHandler(this.deleteBtn_Click);
             // 
@@ -236,9 +236,9 @@ namespace ProjectOffice.forms
             // rejectProject
             // 
             this.rejectProject.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.rejectProject.Location = new System.Drawing.Point(608, 349);
+            this.rejectProject.Location = new System.Drawing.Point(546, 349);
             this.rejectProject.Name = "rejectProject";
-            this.rejectProject.Size = new System.Drawing.Size(134, 35);
+            this.rejectProject.Size = new System.Drawing.Size(196, 35);
             this.rejectProject.TabIndex = 6;
             this.rejectProject.Text = "Отклонить";
             this.rejectProject.UseVisualStyleBackColor = true;
@@ -246,7 +246,7 @@ namespace ProjectOffice.forms
             // 
             // SubtaskList
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.ClientSize = new System.Drawing.Size(754, 396);

@@ -37,11 +37,9 @@ namespace ProjectOffice.forms
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.actionsPanel = new System.Windows.Forms.ToolStrip();
-            this.specFilterCombo = new System.Windows.Forms.ToolStripComboBox();
             this.addEmployeeBtn = new System.Windows.Forms.ToolStripButton();
             this.editEmployeeBtn = new System.Windows.Forms.ToolStripButton();
             this.deleteEmployeeBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolsDisplayModeCombo = new System.Windows.Forms.ToolStripComboBox();
             this.employeeTable = new System.Windows.Forms.DataGridView();
             this.idCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.fio = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -138,37 +136,22 @@ namespace ProjectOffice.forms
             // 
             this.actionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.actionsPanel.AutoSize = false;
             this.actionsPanel.Dock = System.Windows.Forms.DockStyle.None;
             this.actionsPanel.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.actionsPanel.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.actionsPanel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.specFilterCombo,
             this.addEmployeeBtn,
             this.editEmployeeBtn,
-            this.deleteEmployeeBtn,
-            this.toolsDisplayModeCombo});
+            this.deleteEmployeeBtn});
             this.actionsPanel.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionsPanel.Location = new System.Drawing.Point(223, 8);
+            this.actionsPanel.Location = new System.Drawing.Point(333, 8);
             this.actionsPanel.Name = "actionsPanel";
             this.actionsPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.actionsPanel.Size = new System.Drawing.Size(297, 27);
+            this.actionsPanel.Size = new System.Drawing.Size(110, 27);
             this.actionsPanel.Stretch = true;
             this.actionsPanel.TabIndex = 1;
             this.actionsPanel.Text = "toolStrip1";
-            // 
-            // specFilterCombo
-            // 
-            this.specFilterCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.specFilterCombo.Items.AddRange(new object[] {
-            "Должность",
-            "Неопределена",
-            "Программист",
-            "Аналитик",
-            "Аднистратор баз данных"});
-            this.specFilterCombo.Name = "specFilterCombo";
-            this.specFilterCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.specFilterCombo.Size = new System.Drawing.Size(121, 27);
-            this.specFilterCombo.ToolTipText = "Фильтр по должности";
             // 
             // addEmployeeBtn
             // 
@@ -177,7 +160,7 @@ namespace ProjectOffice.forms
             this.addEmployeeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addEmployeeBtn.Name = "addEmployeeBtn";
             this.addEmployeeBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.addEmployeeBtn.Size = new System.Drawing.Size(24, 24);
+            this.addEmployeeBtn.Size = new System.Drawing.Size(29, 24);
             this.addEmployeeBtn.Text = "Добавить сотрудника";
             this.addEmployeeBtn.Click += new System.EventHandler(this.addEmployeeBtn_Click);
             // 
@@ -188,7 +171,7 @@ namespace ProjectOffice.forms
             this.editEmployeeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editEmployeeBtn.Name = "editEmployeeBtn";
             this.editEmployeeBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.editEmployeeBtn.Size = new System.Drawing.Size(24, 24);
+            this.editEmployeeBtn.Size = new System.Drawing.Size(29, 24);
             this.editEmployeeBtn.Text = "Редактировать";
             this.editEmployeeBtn.Click += new System.EventHandler(this.editEmployeeBtn_Click);
             // 
@@ -199,20 +182,9 @@ namespace ProjectOffice.forms
             this.deleteEmployeeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteEmployeeBtn.Name = "deleteEmployeeBtn";
             this.deleteEmployeeBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.deleteEmployeeBtn.Size = new System.Drawing.Size(24, 24);
+            this.deleteEmployeeBtn.Size = new System.Drawing.Size(29, 24);
             this.deleteEmployeeBtn.Text = "Удалить";
             this.deleteEmployeeBtn.Click += new System.EventHandler(this.deleteEmployeeBtn_Click);
-            // 
-            // toolsDisplayModeCombo
-            // 
-            this.toolsDisplayModeCombo.Items.AddRange(new object[] {
-            "Иконка",
-            "Текст",
-            "Совместный"});
-            this.toolsDisplayModeCombo.Name = "toolsDisplayModeCombo";
-            this.toolsDisplayModeCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolsDisplayModeCombo.Size = new System.Drawing.Size(121, 27);
-            this.toolsDisplayModeCombo.ToolTipText = "Режим отображения";
             // 
             // employeeTable
             // 
@@ -251,6 +223,7 @@ namespace ProjectOffice.forms
             // idCol
             // 
             this.idCol.HeaderText = "Column1";
+            this.idCol.MinimumWidth = 6;
             this.idCol.Name = "idCol";
             this.idCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.idCol.Visible = false;
@@ -275,6 +248,7 @@ namespace ProjectOffice.forms
             // 
             this.haveAccountCol.FillWeight = 2F;
             this.haveAccountCol.HeaderText = "Аккаунт";
+            this.haveAccountCol.MinimumWidth = 6;
             this.haveAccountCol.Name = "haveAccountCol";
             // 
             // backToMenu
@@ -290,7 +264,7 @@ namespace ProjectOffice.forms
             // 
             // EmployeesForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(785, 452);
@@ -306,7 +280,6 @@ namespace ProjectOffice.forms
             ((System.ComponentModel.ISupportInitialize)(this.userPhotoPic)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             this.actionsPanel.ResumeLayout(false);
             this.actionsPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.employeeTable)).EndInit();
@@ -325,8 +298,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView employeeTable;
         private System.Windows.Forms.Button backToMenu;
-        private System.Windows.Forms.ToolStripComboBox specFilterCombo;
-        private System.Windows.Forms.ToolStripComboBox toolsDisplayModeCombo;
         private System.Windows.Forms.ToolStripButton addEmployeeBtn;
         private System.Windows.Forms.DataGridViewTextBoxColumn idCol;
         private System.Windows.Forms.DataGridViewTextBoxColumn fio;

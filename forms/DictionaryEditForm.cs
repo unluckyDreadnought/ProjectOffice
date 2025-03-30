@@ -65,7 +65,11 @@ namespace ProjectOffice.forms
             {
                 MessageBox.Show("При добавлении возникла ошибка", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else if (res is int && (int)res > 0) MessageBox.Show("Запись успешно добавлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else if (res is int && (int)res > 0) 
+            {
+                await _db.LogToEventJournal(EventJournal.EventType.CreateObject, this);
+                MessageBox.Show("Запись успешно добавлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information); 
+            }
         }
 
         private async void UpdateRecord(string[] cols, params string[] val)
@@ -87,7 +91,11 @@ namespace ProjectOffice.forms
             {
                 MessageBox.Show("При изменении возникла ошибка", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Error); ;
             }
-            else if (res is int && (int)res > 0) MessageBox.Show("Запись успешно добавлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else if (res is int && (int)res > 0)
+            {
+                await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
+                MessageBox.Show("Запись успешно добавлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void CreateInputControls(string[] fieldDescriptions)

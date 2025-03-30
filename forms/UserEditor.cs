@@ -22,7 +22,7 @@ namespace ProjectOffice.forms
         string userAc = "";
         bool[] fieldsFilled = null;
         byte[] neccessaryFields = new byte[] { 1, 2, 5, 6, 7 };
-        Regex secRegex = new Regex("[a-zA-Z0-9]{8,}");
+        Regex secRegex = new Regex("((?:[a-zA-Z0-9])|(?:[\\!_\\.\\+=~\\$#%\\^:&?\\*(){}\\[\\]\\-<>])){8,}");
 
 
         // UserID, UserModeID, UserSpecializationID, UserSurname, UserName, UserPatronymic, UserLogin, UserPassword, UserPhoto
@@ -30,8 +30,8 @@ namespace ProjectOffice.forms
         private bool HaveDiffFromDbValue(bool user)
         {
             bool photo = Common.IsImageBytesDifference(imgMem == null ? null : imgMem.ToArray(), storedValues[8] == System.DBNull.Value ? null : Сompressor.DecompressBytes((byte[])storedValues[8]));
-            int specIndx = storedValues[2] != System.DBNull.Value ? Convert.ToInt32(storedValues[2]) : 0;
-            bool spec = specCombo.SelectedIndex != specIndx;
+            string specItem = storedValues[2] != System.DBNull.Value ? storedValues[2].ToString() : null;
+            bool spec = specCombo.SelectedItem.ToString() != specItem;
             bool snp = surnameTextBox.Text != storedValues[3].ToString() || nameTextBox.Text != storedValues[4].ToString() || patronymicTextBox.Text != storedValues[5].ToString();
 
             if (user)
@@ -91,7 +91,9 @@ namespace ProjectOffice.forms
 
         private async Task FillUserInfo(string userId)
         {
-            string query = $"select * from  `{Db.Name}`.`user` where UserID = {userId};";
+            string query = $@"select UserID, UserModeID, specialization.SpecializationTitle, UserSurname, UserName, UserPatronymic, UserLogin, UserPassword, UserPhoto from  `{Db.Name}`.`user`
+inner join specialization on specialization.SpecializationID = user.UserSpecializationID
+where UserID = {userId};";
             var task = _db.ExecuteReaderAsync(query);
             DataTable dt = await Common.GetAsyncResult(task);
             if (dt.Rows.Count == 0)
@@ -120,14 +122,13 @@ namespace ProjectOffice.forms
             if (userMode)
             {
                 roleCombo.SelectedIndex = Convert.ToInt32(dt.Rows[0][1].ToString());
-                loginTextBox.Text = dt.Rows[0][6].ToString();
+                loginTextBox.Text = storedValues[6].ToString();
             }
-
-            nameTextBox.Text = dt.Rows[0][4].ToString();
-            surnameTextBox.Text = dt.Rows[0][3].ToString();
-            int spec = (dt.Rows[0][2] != System.DBNull.Value && dt.Rows[0][2].ToString() != "") ? Convert.ToInt32(dt.Rows[0][2].ToString()) : 0;
-            specCombo.SelectedIndex = spec;
-            patronymicTextBox.Text = dt.Rows[0][5].ToString();
+            nameTextBox.Text = storedValues[4].ToString();
+            surnameTextBox.Text = storedValues[3].ToString();
+            string spec = (dt.Rows[0][2] != System.DBNull.Value && dt.Rows[0][2].ToString() != "") ? storedValues[2].ToString() : null;
+            specCombo.SelectedItem = spec;
+            patronymicTextBox.Text = storedValues[5].ToString();
             addEditBtn.Enabled = HaveDiffFromDbValue(userMode);
         }
 
@@ -154,6 +155,7 @@ namespace ProjectOffice.forms
             FillSpecCombo();
             if (userMode)
             {
+                if (editMode) neccessaryFields = new byte[] { 1, 2, 5, 6 };
                 fieldsFilled = new bool[8];
                 userAccountEditPnl.Show();
                 await FillRolesCombo();
@@ -278,15 +280,26 @@ namespace ProjectOffice.forms
         private void accountFields_TextChanged(object sender, EventArgs e)
         {
             bool res = secRegex.Match(((TextBox)sender).Text.Trim()).Success;
-            if (((TextBox)sender).Name == "loginTextBox") fieldsFilled[6] = res;
-            else fieldsFilled[7] = res;
+            if (((TextBox)sender).Name == "loginTextBox")
+            {
+                fieldsFilled[6] = res;
+                if (res) logLbl.Text = "*Логин";
+                else logLbl.Text = "*Логин (>= 8 символов)";
+            }
+            else
+            {
+                fieldsFilled[7] = res;
+                if (res) passLbl.Text = "*Пароль";
+                else passLbl.Text = "*Пароль  (>= 8 символов)";
+            }
+
             if (storedValues.Length > 0) ChangeEnabledBtn();
             else if (userAc == null || userAc == "") ChangeEnabledBtn();
         }
 
         private string GetSpecialization()
         {
-            return (specCombo.SelectedIndex <= 0) ? "0" : $"{specCombo.SelectedIndex}";
+            return (specCombo.SelectedIndex <= 0) ? "0" : $"(select SpecializationID from specialization where SpecializationTitle = '{specCombo.SelectedItem.ToString()}')";
         }
 
         private string GetPatronymic()
@@ -307,7 +320,7 @@ namespace ProjectOffice.forms
             string query = $"insert into {Db.Name}.user ";
             if (userMode)
             {
-                query += $@"value (null,{roleCombo.SelectedIndex},{GetSpecialization()},'{surnameTextBox.Text.Trim()}','{nameTextBox.Text.Trim()}',{patronymic},'{loginTextBox.Text.Trim()}','{GetPassWord()}',";
+                query += $@"value (null,(select UserModeID from usermode where UserModeTitle = '{roleCombo.SelectedItem.ToString()}'),{GetSpecialization()},'{surnameTextBox.Text.Trim()}','{nameTextBox.Text.Trim()}',{patronymic},'{loginTextBox.Text.Trim()}','{GetPassWord()}',";
             }
             else
             {
@@ -328,7 +341,11 @@ namespace ProjectOffice.forms
             {
                 MessageBox.Show(e.Message, "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            if (rows > 0) MessageBox.Show($"Пользователь создан успешно.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (rows > 0)
+            {
+                await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
+                MessageBox.Show($"Пользователь создан успешно.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private async Task EditUser(string userId)
@@ -339,7 +356,7 @@ namespace ProjectOffice.forms
             {
                 if (Convert.ToInt32(storedValues[1].ToString()) != roleCombo.SelectedIndex)
                 {
-                    string role = roleCombo.SelectedIndex < 0 ? "null" : $"{roleCombo.SelectedIndex}";
+                    string role = roleCombo.SelectedIndex < 0 ? "null" : $"(select UserModeID from usermode where UserModeTitle = '{roleCombo.SelectedItem.ToString()}')";
                     query += $"UserModeID = {role}, ";
                 }
                 if (storedValues[6].ToString() != loginTextBox.Text.Trim())
@@ -351,9 +368,9 @@ namespace ProjectOffice.forms
                     query += $"UserPassword = '{GetPassWord()}', ";
                 }
             }
-            if (Convert.ToInt32(storedValues[2].ToString()) != specCombo.SelectedIndex)
+            if (storedValues[2].ToString() != specCombo.SelectedItem.ToString())
             {
-                query += $"UserSpecialization = {GetSpecialization()}, ";
+                query += $"UserSpecializationID = {GetSpecialization()}, ";
             }
             if (storedValues[3].ToString() != surnameTextBox.Text.Trim())
             {
@@ -372,11 +389,12 @@ namespace ProjectOffice.forms
             {
                 query += "UserPhoto = @image ";
             }
-            else
+            query = query.Trim();
+            if (query.Last() == ',')
             {
-                query += "UserPhoto = null ";
+                query = query.Remove(query.LastIndexOf(','));
             }
-            query += $"where UserID = {userId};";
+            query += $" where UserID = {userId};";
 
             int rows = -1;
             Exception e = null;
@@ -394,7 +412,11 @@ namespace ProjectOffice.forms
             {
                 MessageBox.Show(e.Message, "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            if (rows > 0) MessageBox.Show($"Пользователь успешно отредактирован.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (rows > 0)
+            {
+                await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
+                MessageBox.Show($"Пользователь успешно отредактирован.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void ClearFields()

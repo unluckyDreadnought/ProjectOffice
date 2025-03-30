@@ -177,6 +177,8 @@ namespace ProjectOffice.forms
             }
             else
             {
+                if (proj.Id != null) await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
+                else await _db.LogToEventJournal(EventJournal.EventType.CreateObject, this);
                 MessageBox.Show($"{titles[0]} контрольной точки прошло успешно.");
                 if (proj.Status == ((int)Status.New).ToString())
                 {

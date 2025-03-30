@@ -422,6 +422,7 @@ ClientBank = '{fizClientBank.Text.Trim()}', ClientPhone = '{phn}', ClientEmail =
                     n = await AddOrganization(GetPhoneText(phoneTxt.Text));
                     if (Convert.ToInt32(n) > 0)
                     {
+                        await _db.LogToEventJournal(EventJournal.EventType.CreateObject, this);
                         MessageBox.Show("Организиция успешно добавлена.", "Добавление клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     }
@@ -431,6 +432,7 @@ ClientBank = '{fizClientBank.Text.Trim()}', ClientPhone = '{phn}', ClientEmail =
                     n = await UpdateOrganization(GetPhoneText(phoneTxt.Text));
                     if (Convert.ToInt32(n) > 0)
                     {
+                        await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
                         MessageBox.Show("Организиция успешно изменена.", "Изменение клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     }
@@ -443,6 +445,7 @@ ClientBank = '{fizClientBank.Text.Trim()}', ClientPhone = '{phn}', ClientEmail =
                     n = await AddPerson(GetPhoneText(fizClientPhone.Text));
                     if (Convert.ToInt32(n) > 0)
                     {
+                        await _db.LogToEventJournal(EventJournal.EventType.CreateObject, this);
                         MessageBox.Show("Клиент успешно добавлен.", "Добавление клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     }
@@ -452,6 +455,7 @@ ClientBank = '{fizClientBank.Text.Trim()}', ClientPhone = '{phn}', ClientEmail =
                     n = await UpdatePerson(GetPhoneText(fizClientPhone.Text));
                     if (Convert.ToInt32(n) > 0)
                     {
+                        await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
                         MessageBox.Show("Клиент успешно изменен.", "Изменение клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     }
@@ -488,6 +492,31 @@ ClientBank = '{fizClientBank.Text.Trim()}', ClientPhone = '{phn}', ClientEmail =
                 return;
             }
             else e.Handled = true;
+        }
+
+        private void fizPhoto_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp";
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            fileDialog.CheckFileExists = fileDialog.CheckPathExists = true;
+            fileDialog.Multiselect = false;
+            if (fileDialog.ShowDialog() != DialogResult.OK) return;
+
+            byte[] newImg = Сompressor.CompressImageToBytes(fileDialog.FileName);
+            if (imgStream == null)
+            {
+                imgStream = new MemoryStream(newImg);
+            }
+            else
+            {
+                if (Common.IsImageBytesDifference(newImg, imgStream.ToArray()))
+                {
+                    imgStream = new MemoryStream(newImg);
+                }
+            }
+            fizPhoto.Image = new Bitmap(imgStream);
+            CheckFieldsFilling();
         }
     }
 }

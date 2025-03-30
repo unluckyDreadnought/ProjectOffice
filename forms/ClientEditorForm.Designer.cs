@@ -293,6 +293,7 @@ namespace ProjectOffice.forms
             this.fizPhoto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.fizPhoto.TabIndex = 81;
             this.fizPhoto.TabStop = false;
+            this.fizPhoto.Click += new System.EventHandler(this.fizPhoto_Click);
             // 
             // clientPatro
             // 

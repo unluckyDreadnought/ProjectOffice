@@ -83,15 +83,17 @@ namespace ProjectOffice.forms
         private async void addSubtask_Click(object sender, EventArgs e)
         {
             Stage stgObj = proj.Stages.Where(stg => stg.Id == stgId).ToArray()[0];
+            int n = 0;
             if (subtaskDescTxt.Text == "Опишите подзадачу здесь...")
             {
-                await stgObj.AddSubtask(subtaskCombo.Text.Trim());
+                n = await stgObj.AddSubtask(subtaskCombo.Text.Trim());
             }
             else
             {
-                await stgObj.AddSubtask(subtaskCombo.Text.Trim(), subtaskDescTxt.Text.Trim());
+                n = await stgObj.AddSubtask(subtaskCombo.Text.Trim(), subtaskDescTxt.Text.Trim());
             }
 
+            if (n > 0) await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
             subtaskDescTxt.Text = "";
             subtaskCombo.Text = "Подзадача не выбрана";
             this.Close();

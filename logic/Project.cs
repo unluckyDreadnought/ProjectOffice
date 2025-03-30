@@ -974,7 +974,8 @@ select SubtaskID from {Db.Name}.subtask order by SubtaskID DESC limit 1";
             }
             else
             {
-                info[5] = ((DateTime.Now.Subtract(DateTime.Parse(info[2])).Days / 14) * -5).ToString();
+                int days = DateTime.Now.Subtract(DateTime.Parse(info[2])).Days;
+                info[5] = (days < 0) ? "0" : ((DateTime.Now.Subtract(DateTime.Parse(info[2])).Days / 14) * -5).ToString();
                 await Project.Update(id, new ProjectField[] { ProjectField.Coefficient }, new string[] { info[5] });
                 return new Project(id, title: info[0], start: info[1], endPlan: info[2], customer: info[3], creator: info[4], coff: info[5], cost: info[6], status: info[7], stgs, empl);
             }

@@ -53,9 +53,7 @@ namespace ProjectOffice.forms
             this.addProjectBtn = new System.Windows.Forms.ToolStripButton();
             this.editProjectBtn = new System.Windows.Forms.ToolStripButton();
             this.deleteProjectBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolsDisplayModeCombo = new System.Windows.Forms.ToolStripComboBox();
             this.backToMenu = new System.Windows.Forms.Button();
-            this.projectReportBtn = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.projectTablesLayout = new System.Windows.Forms.TableLayoutPanel();
             this.projectsTable = new System.Windows.Forms.DataGridView();
@@ -310,7 +308,6 @@ namespace ProjectOffice.forms
             this.tableLayoutPanel1.SetColumnSpan(this.panel2, 4);
             this.panel2.Controls.Add(this.toolStrip1);
             this.panel2.Controls.Add(this.backToMenu);
-            this.panel2.Controls.Add(this.projectReportBtn);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(2, 520);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
@@ -328,8 +325,7 @@ namespace ProjectOffice.forms
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addProjectBtn,
             this.editProjectBtn,
-            this.deleteProjectBtn,
-            this.toolsDisplayModeCombo});
+            this.deleteProjectBtn});
             this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStrip1.Location = new System.Drawing.Point(349, 2);
             this.toolStrip1.Name = "toolStrip1";
@@ -372,18 +368,6 @@ namespace ProjectOffice.forms
             this.deleteProjectBtn.Text = "Удалить";
             this.deleteProjectBtn.Click += new System.EventHandler(this.deleteProjectBtn_Click);
             // 
-            // toolsDisplayModeCombo
-            // 
-            this.toolsDisplayModeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolsDisplayModeCombo.Items.AddRange(new object[] {
-            "Иконка",
-            "Текст",
-            "Совместный"});
-            this.toolsDisplayModeCombo.Name = "toolsDisplayModeCombo";
-            this.toolsDisplayModeCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolsDisplayModeCombo.Size = new System.Drawing.Size(122, 31);
-            this.toolsDisplayModeCombo.ToolTipText = "Режим отображения";
-            // 
             // backToMenu
             // 
             this.backToMenu.Location = new System.Drawing.Point(10, 2);
@@ -394,17 +378,6 @@ namespace ProjectOffice.forms
             this.backToMenu.Text = "В меню";
             this.backToMenu.UseVisualStyleBackColor = true;
             this.backToMenu.Click += new System.EventHandler(this.backToMenu_Click);
-            // 
-            // projectReportBtn
-            // 
-            this.projectReportBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.projectReportBtn.Location = new System.Drawing.Point(914, 2);
-            this.projectReportBtn.Margin = new System.Windows.Forms.Padding(2);
-            this.projectReportBtn.Name = "projectReportBtn";
-            this.projectReportBtn.Size = new System.Drawing.Size(91, 38);
-            this.projectReportBtn.TabIndex = 0;
-            this.projectReportBtn.Text = "Отчёт";
-            this.projectReportBtn.UseVisualStyleBackColor = true;
             // 
             // panel3
             // 
@@ -617,8 +590,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.ToolStripButton editProjectBtn;
         private System.Windows.Forms.ToolStripButton deleteProjectBtn;
         private System.Windows.Forms.Button backToMenu;
-        private System.Windows.Forms.Button projectReportBtn;
-        private System.Windows.Forms.ToolStripComboBox toolsDisplayModeCombo;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
