@@ -68,15 +68,15 @@ namespace ProjectOffice.forms
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.directorLbl = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.orgType = new System.Windows.Forms.ComboBox();
             this.orgAddr = new System.Windows.Forms.TextBox();
             this.emailTxt = new System.Windows.Forms.TextBox();
             this.orgBank = new System.Windows.Forms.TextBox();
-            this.orgName = new System.Windows.Forms.TextBox();
             this.director = new System.Windows.Forms.TextBox();
-            this.directorLbl = new System.Windows.Forms.Label();
+            this.orgName = new System.Windows.Forms.TextBox();
             this.clientTabs.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fizPhoto)).BeginInit();
@@ -146,7 +146,7 @@ namespace ProjectOffice.forms
             this.tabPage1.Location = new System.Drawing.Point(4, 38);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(666, 456);
+            this.tabPage1.Size = new System.Drawing.Size(670, 508);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Физическое лицо";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -163,7 +163,7 @@ namespace ProjectOffice.forms
             // 
             // fizClientBankAcc
             // 
-            this.fizClientBankAcc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.fizClientBankAcc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.fizClientBankAcc.Location = new System.Drawing.Point(382, 263);
             this.fizClientBankAcc.Mask = "99999999999999999999";
@@ -544,6 +544,17 @@ namespace ProjectOffice.forms
             this.label10.TabIndex = 79;
             this.label10.Text = "Логотип";
             // 
+            // directorLbl
+            // 
+            this.directorLbl.AutoSize = true;
+            this.directorLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.directorLbl.Location = new System.Drawing.Point(21, 167);
+            this.directorLbl.Name = "directorLbl";
+            this.directorLbl.Size = new System.Drawing.Size(114, 25);
+            this.directorLbl.TabIndex = 78;
+            this.directorLbl.Text = "*Директор";
+            this.directorLbl.Visible = false;
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -614,6 +625,18 @@ namespace ProjectOffice.forms
             this.orgBank.TabIndex = 65;
             this.orgBank.TextChanged += new System.EventHandler(this.control_Changed);
             // 
+            // director
+            // 
+            this.director.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.director.Location = new System.Drawing.Point(26, 195);
+            this.director.MaxLength = 256;
+            this.director.Name = "director";
+            this.director.Size = new System.Drawing.Size(615, 34);
+            this.director.TabIndex = 57;
+            this.director.Visible = false;
+            this.director.TextChanged += new System.EventHandler(this.control_Changed);
+            this.director.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.director_KeyPress);
+            // 
             // orgName
             // 
             this.orgName.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -623,27 +646,6 @@ namespace ProjectOffice.forms
             this.orgName.Size = new System.Drawing.Size(476, 34);
             this.orgName.TabIndex = 57;
             this.orgName.TextChanged += new System.EventHandler(this.control_Changed);
-            // 
-            // director
-            // 
-            this.director.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.director.Location = new System.Drawing.Point(26, 195);
-            this.director.MaxLength = 256;
-            this.director.Name = "director";
-            this.director.Size = new System.Drawing.Size(615, 34);
-            this.director.TabIndex = 57;
-            this.director.TextChanged += new System.EventHandler(this.control_Changed);
-            this.director.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.director_KeyPress);
-            // 
-            // directorLbl
-            // 
-            this.directorLbl.AutoSize = true;
-            this.directorLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.directorLbl.Location = new System.Drawing.Point(21, 167);
-            this.directorLbl.Name = "directorLbl";
-            this.directorLbl.Size = new System.Drawing.Size(114, 25);
-            this.directorLbl.TabIndex = 78;
-            this.directorLbl.Text = "*Директор";
             // 
             // ClientEditorForm
             // 

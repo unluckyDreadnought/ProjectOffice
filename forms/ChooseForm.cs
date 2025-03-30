@@ -467,5 +467,22 @@ order by UserSurname ASC;";
         {
             if (e.KeyCode == Keys.Enter) chooseBtn.PerformClick();
         }
+
+        private async void addObject_Click(object sender, EventArgs e)
+        {
+            if (_mode == ChooseMode.Client)
+            {
+                ClientEditorForm form = await ClientEditorForm.OpenOrganizationEditor();
+                form.ShowDialog();
+            }
+            else if (_mode == ChooseMode.Stages)
+            {
+                DictionaryEditForm editForm = null;
+                Common.LaunchAddEditForm(ref editForm, "Этапы", "Этапы", new string[] { "", "Название стадии" }, "stage", "StageID", new string[] { "StageTitle" }, "", () => { }, false);
+                editForm.ShowDialog();
+            }
+            chooseObjectsTable.Rows.Clear();
+            await UpdateList();
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ProjectOffice.forms;
 
 namespace ProjectOffice.logic
 {
@@ -443,6 +444,19 @@ ClientPhone, ClientEmail, ClientOrgINN, ClientOrgKPP, ClientOrgOGRN, ClientOrgBI
             double finalCost = 0, coeff = Convert.ToDouble(project.Coefficient);
             finalCost = documentedCost * (1 + (coeff / 100));
             return (Math.Round(finalCost, 2), Math.Round(documentedCost - finalCost, 2));
+        }
+
+        public static void LaunchAddEditForm(ref DictionaryEditForm addObjectForm, string title, string tableName, string[] fieldsText, string table, string columnIdName, string[] columnsToUpdate, string id, Action actionOnClose = null, bool edit = false)
+        {
+            if (addObjectForm == null || addObjectForm.IsDisposed)
+            {
+                addObjectForm = new DictionaryEditForm(title, fieldsText, table, columnIdName, columnsToUpdate, id, edit);
+                addObjectForm.tableName = tableName;
+                addObjectForm.FormClosed += (addForm, _) => {
+                    ((Form)addForm).Dispose();
+                    actionOnClose?.Invoke();
+                };
+            }
         }
     }
 }

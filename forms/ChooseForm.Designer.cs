@@ -70,6 +70,7 @@ namespace ProjectOffice.forms
             this.addObject.TabIndex = 1;
             this.addObject.Text = "+";
             this.addObject.UseVisualStyleBackColor = false;
+            this.addObject.Click += new System.EventHandler(this.addObject_Click);
             // 
             // searchGroup
             // 

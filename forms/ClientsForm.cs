@@ -100,7 +100,6 @@ from client where ClientID > 1; ";
             UpdateClientsTable();
         }
 
-
         private async void addClientBtn_Click(object sender, EventArgs e)
         {
             await OpenEditor();
