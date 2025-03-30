@@ -402,6 +402,10 @@ where ClientID = 0; ";
                 string clientName = (clientInfo.Length > 6) ? $"{clientInfo[0]} \"{clientInfo[2]}\"" : clientInfo[0];
 
                 PlaceValueToBookmarkRange("projectID", project.Id);
+                DateTime projectStart = DateTime.Parse(project.StartDate);
+                PlaceValueToBookmarkRange("day", projectStart.Day.ToString());
+                PlaceValueToBookmarkRange("textMonth", projectStart.ToString("MMMM"));
+                PlaceValueToBookmarkRange("year", projectStart.Year.ToString());
                 PlaceValueToBookmarkRange("clientName", clientName);
 
                 if (companyInfo.Length > 0)
@@ -411,7 +415,6 @@ where ClientID = 0; ";
                     string directorShort = Common.GetShortSnp(AppSettings.director);
 
                     PlaceValueToBookmarkRange("companyAddress", companyInfo[3]);
-                    PlaceValueToBookmarkRange("companyName", companyName);
                     PlaceValueToBookmarkRange("companyFullName", companyFullName);
                     PlaceValueToBookmarkRange("directorFullName", AppSettings.director);
                     PlaceValueToBookmarkRange("directorShortName", directorShort);
@@ -431,7 +434,6 @@ where ClientID = 0; ";
                 else
                 {
                     PlaceValueToBookmarkRange("companyAddress", "[Юридический адрес Разработчика]");
-                    PlaceValueToBookmarkRange("companyName", "[Краткое название Разработчика]");
                     PlaceValueToBookmarkRange("companyFullName", "[Полное название Разработчика]"); 
                     PlaceValueToBookmarkRange("directorFullName", "[ФИО директора Разработчика]");
                     PlaceValueToBookmarkRange("directorShortName", "[Фамилия Инициалы директора Разработчика]");
@@ -568,8 +570,8 @@ where ClientID = 0; ";
                 {
                     return ("Не удалось создать отчёт", true);
                 }
-                wordApp.Visible = true;
-                //wordApp.Visible = false;
+                //wordApp.Visible = true;
+                wordApp.Visible = false;
 
                 wrdDcs = wordApp.Documents;
                 wrdDc = wrdDcs.Add(template);
@@ -648,12 +650,12 @@ where ClientID = 0;";
                 {
                     if (initialCost.Length == 2)
                     {
-                        PlaceValueToBookmarkRange("intMoneyPart", toReturn[0]);
-                        PlaceValueToBookmarkRange("floatMoneyPart", toReturn[1]);
+                        PlaceValueToBookmarkRange("intMoneyPart", initialCost[0]);
+                        PlaceValueToBookmarkRange("floatMoneyPart", initialCost[1]);
                     }
                     else
                     {
-                        PlaceValueToBookmarkRange("intMoneyPart", toReturn[0]);
+                        PlaceValueToBookmarkRange("intMoneyPart", initialCost[0]);
                         PlaceValueToBookmarkRange("floatMoneyPart", "00");
                     }
                     if (withCoeff.Length == 2)
@@ -686,21 +688,35 @@ where ClientID = 0;";
                     }
 
                     int row = 0;
+                    Word.Cell cell = wrdTbl.Cell(row + 1, 1);
+                    wrdTbl.Rows.Add(wrdTbl.Rows[wrdTbl.Rows.Count]);
+                    cell = wrdTbl.Cell(row + 1, 1);
+                    wrdRng = cell.Range;
+                    wrdRng.Text = $"№";
+                    cell.Borders.OutsideColor = Word.WdColor.wdColorBlack;
+                    cell = wrdTbl.Cell(row + 1, 2);
+                    wrdRng = cell.Range;
+                    wrdRng.Text = "Проведенные работы в ходе реализации проекта";
+                    cell.Borders.OutsideLineStyle = Word.WdLineStyle.wdLineStyleSingle;
+                    cell.Borders.OutsideColor = Word.WdColor.wdColorBlack;
+                    ReleaseObject(cell);
                     while (row < subtaskTitles.Count)
                     {
                         wrdTbl.Rows.Add(wrdTbl.Rows[wrdTbl.Rows.Count]);
-                        Word.Cell cell = wrdTbl.Cell(row + 1, 1);
+                        cell = wrdTbl.Cell(row + 2, 1);
                         wrdRng = cell.Range;
                         wrdRng.Text = $"{row + 1}";
                         cell.Borders.OutsideColor = Word.WdColor.wdColorBlack;
-                        cell = wrdTbl.Cell(row + 1, 2);
+                        cell = wrdTbl.Cell(row + 2, 2);
                         wrdRng = cell.Range;
                         wrdRng.Text = subtaskTitles[row];
-                        cell.Borders.OutsideLineStyle = Word.WdLineStyle.wdLineStyleThickThinSmallGap;
+                        cell.Borders.OutsideLineStyle = Word.WdLineStyle.wdLineStyleSingle;
                         cell.Borders.OutsideColor = Word.WdColor.wdColorBlack;
                         ReleaseObject(cell);
                         row++;
                     }
+
+                    wrdTbl.Rows[wrdTbl.Rows.Count].Delete();
                 }
 
                 wordApp.ActiveDocument.SaveAs2(path);

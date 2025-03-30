@@ -585,7 +585,19 @@ from {Db.Name}.client where ClientID = {clientID}; ";
                     updateValues = new string[] { ((int)Status.Finish).ToString() };
                 }
                 int res = await proj.Update(toUpdate, updateValues);
-                if (res > 0) MessageBox.Show("Проект успешно завершён", "Завершение проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (res > 0)
+                {
+                    MessageBox.Show("Проект успешно завершён", "Завершение проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string baseSavePath = "";
+                    baseSavePath = Common.GetSaveFilePath("docx", "Документ Word (*.docx)|*.docx");
+                    Reports.SetBasePath(baseSavePath);
+                    MessageBox.Show($"Файл будет сохранён по пути '{Reports.baseSavePath}'", "Сохранение отчёта Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    (string text, bool isError) = await Reports.MakeEndWorkAct(proj, baseSavePath);
+                    if (text != null && isError)
+                    {
+                        MessageBox.Show(text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
                 else if (res == 0) MessageBox.Show("Проект не завершён. Произошла неизвестная ошибка.", "Завершение проекта", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
             }

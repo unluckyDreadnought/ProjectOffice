@@ -1259,7 +1259,6 @@ ProjectFactEndDate from {Db.Name}.project where ProjectID = {id}; ";
                 n = await this.Update(new ProjectField[] { ProjectField.Coefficient, ProjectField.Status, ProjectField.Title }, new string[] { this.Coefficient, this.Status, this.Title });
             }
             n = await this.AddEmployees(EmployeesId);
-            int indx = 0;
 
             List<string> listStgIds = new List<string>();
             List<Stage> storedDb = new List<Stage>();
