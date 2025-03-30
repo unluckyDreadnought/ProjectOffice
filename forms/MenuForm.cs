@@ -15,6 +15,7 @@ namespace ProjectOffice.forms
 {
     public partial class MenuForm : Form
     {
+        private Db _db = new Db();
         private delegate void BtnClickHandler(object sender, EventArgs e);
         private List<BtnClickHandler> handlersList = new List<BtnClickHandler>();
 
@@ -107,14 +108,16 @@ namespace ProjectOffice.forms
         }
 
         // common
-        private void LogoutBtn_Click(object sender, EventArgs e)
+        private async void LogoutBtn_Click(object sender, EventArgs e)
         {
+            await _db.LogToEventJournal(EventJournal.EventType.Exit, this);
             AppUser.ResetUser();
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
-        private void ExitBtn_Click(object sender, EventArgs e)
+        private async void ExitBtn_Click(object sender, EventArgs e)
         {
+            await _db.LogToEventJournal(EventJournal.EventType.Exit, this);
             this.DialogResult = DialogResult.Abort;
             this.Close();
         }

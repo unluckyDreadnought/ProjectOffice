@@ -33,8 +33,6 @@ namespace ProjectOffice.forms
         bool[] fieldsFilled = null;
         string[] storedData = null;
 
-        
-
         private async Task<(bool, bool)> FindSame()
         {
             bool sameKey = false;

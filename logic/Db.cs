@@ -60,6 +60,127 @@ namespace ProjectOffice.logic
             return name;
         }
 
+
+        /// <summary>
+        /// Удаляет все связанные записи с определённой записью из справочника
+        /// </summary>
+        /// <param name="objId">Идентификатор записи некоторого справочника</param>
+        /// <param name="tableName">Имя таблицы справочника в БД</param>
+        /// <returns>
+        /// Возвращает набор (количество удалённых записей; флаг завершения с ошибкой)<br></br>
+        /// Флаг завершения с ошибкой:<br></br>
+        /// false - ошибок нет<br></br>
+        /// true - ошибка
+        /// </returns>
+        static async public Task<(int, bool)> CascadeReferenceDictionaryDelete(string objId, string tableName)
+        {
+            Db _db = new Db();
+            Tables[] tables = { Tables.OrgType, Tables.Subtask, Tables.Stage, Tables.Specialization };
+            int tableIndx = 0;
+            while (tableIndx < tables.Length)
+            {
+                if (GetTableName(tables[tableIndx]) == tableName)
+                {
+                    break;
+                }
+                tableIndx++;
+            }
+            string query = "";
+            int total = 0;
+            int n = 0;
+            bool _continue = true;
+
+            switch (tables[tableIndx])
+            {
+                case Tables.OrgType:
+                    {
+                        query = $"select ClientID from {Db.Name}.{GetTableName(Tables.Client)} where ClientOrgTypeID = '{objId}';";
+                        string[] clientIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+                        if (_continue && clientIds.Length != 0)
+                        {
+                            query = $"select ProjectID from project where ProjectCustomerID in ({string.Join(",", clientIds)});";
+                            string[] projectIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+                            int indx = 0;
+
+                            while (_continue && indx < projectIds.Length)
+                            {
+                                Project proj = await Project.InitilazeAsync(projectIds[indx]);
+                                n = await proj.Delete();
+                                if (n < -1) _continue = false;
+                                else total += n;
+                                indx++;
+                            }
+
+                            if (_continue == false) break;
+                            query = $"delete from {Db.Name}.{GetTableName(Tables.Client)} where ClientID in ({string.Join(",", clientIds)});";
+                            (object num, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
+                            if (Convert.ToInt32(num) > 0) total += Convert.ToInt32(num);
+                            else _continue = false;
+                        }
+                        break;
+                    }
+                case Tables.Subtask:
+                    {
+                        query = $@"select ProjectID from {Db.Name}.{GetTableName(Tables.StgInProj)} 
+where StgLinkID in (
+select StgProjReferenceID from {Db.Name}.{GetTableName(Tables.SbtskInProjStg)} 
+where SubtaskID = {objId});";
+                        string[] projectIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+
+                        if (projectIds.Length != 0)
+                        {
+                            int indx = 0;
+                            while (_continue && indx < projectIds.Length)
+                            {
+                                (object num, _) = await Subtask.UnlinkSubtaskIds(projectIds[indx], objId);
+                                if (Convert.ToInt32(num) > 0) total += Convert.ToInt32(num);
+                                else _continue = false;
+                                indx++;
+                            }
+                        }
+                        break;
+                    }
+                case Tables.Stage:
+                    {
+                        query = $"select ProjectID from {Db.Name}.{GetTableName(Tables.StgInProj)} where StageID = {objId};";
+                        string[] projectIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+
+                        if (projectIds.Length != 0)
+                        {
+                            int indx = 0;
+                            while (_continue && indx < projectIds.Length)
+                            {
+                                (object num, _) = await Stage.Delete(projectIds[indx], objId);
+                                if (Convert.ToInt32(num) > 0) total += Convert.ToInt32(num);
+                                else _continue = false;
+                                indx++;
+                            }
+                        }
+                        break;
+                    }
+                case Tables.Specialization:
+                    {
+                        query = $"select UserID from {Db.Name}.{GetTableName(Tables.User)} where UserSpecializationID = {objId};";
+                        string[] userIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
+                        if (userIds.Length != 0)
+                        {
+                            query = $"delete from {Db.Name}.{GetTableName(Tables.UserProject)} where UserID in ({string.Join(",", userIds)})";
+                            (object num, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
+                            if (Convert.ToInt32(num) > 0) total += Convert.ToInt32(num);
+                            else _continue = false;
+
+                            if (_continue == false) break;
+                            query = $"delete from {Db.Name}.{GetTableName(Tables.User)} where UserID in ({string.Join(",", userIds)})";
+                            (num, _) = await Common.GetNoScalarResult(_db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query)));
+                            if (Convert.ToInt32(num) > 0) total += Convert.ToInt32(num);
+                            else _continue = false;
+                        }
+                        break;
+                    }
+            }
+            return (total, !_continue);
+        }
+
         public string MakeConnectionString(bool withDbName = true)
         {
             string conStr = $"host={AppSettings.dbHost};user={AppSettings.dbUser};password={AppSettings.dbUserPass};";
@@ -318,6 +439,12 @@ from `{AppSettings.dbName}`.`user` where UserLogin = @login and UserPassword = @
                 return (new string[] { "Пользователь с такими учётными данными не найден." }, null);
             }
             return (new string[] { result.Rows[0][0].ToString(), result.Rows[0][1].ToString(), result.Rows[0][2].ToString() }, result);
+        }
+
+        public async Task LogToEventJournal(EventJournal.EventType eventType, System.Windows.Forms.Form eventForm)
+        {
+            string query = $"insert into {Name}.{GetTableName(Tables.EventJournal)} value (null, {((int)eventType).ToString()}, {AppUser.Id}, '{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss")}', '{eventForm.Text}');";
+            await Common.GetNoScalarResult(GetAsynNonReaderResult(ExecuteNoDataResultAsync(query)));
         }
     }
 }

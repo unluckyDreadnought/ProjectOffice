@@ -105,6 +105,7 @@ namespace ProjectOffice.forms
                 case (int)UserRole.Employee: AppUser.Role = UserRole.Employee; break;
             }
             this.Hide();
+            await _db.LogToEventJournal(EventJournal.EventType.Authorize, this);
             MenuForm menuForm = new MenuForm();
             if (menuForm.ShowDialog() == DialogResult.Abort)
             {

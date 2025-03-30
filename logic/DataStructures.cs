@@ -9,7 +9,7 @@ namespace ProjectOffice.logic
         public static string ru_alp { get { return "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"; } }
         public static string en_alp { get { return "abcdefghijklmnopqrstuvwxyz"; } }
         public static string spec { get { return "!_.+=~$#%^:&?*(){}[]-<>"; } }
-        public static string emailPattern { get { return @"(?:(?:[._-]+)*(?:\w+)*(?:\d+)*)+\@(?:\w+)*(?:\d+)*.\w+";  } }
+        public static string emailPattern { get { return @"(?:(?:[._-]+)*(?:\w+)*(?:\d+)*)+\@(?:\w+)*(?:\d+)*.\w+"; } }
     }
 
     public enum ChooseMode
@@ -59,7 +59,7 @@ namespace ProjectOffice.logic
         Id = 0,
         Status = 1,
         CLient = 2,
-        Creator = 3, 
+        Creator = 3,
         Title = 4,
         StartDate = 5,
         PlanEnd = 6,
@@ -135,6 +135,64 @@ namespace ProjectOffice.logic
                 string[] ids = Common.DataTableToStringArray(dt);
                 return string.Join(":", ids);
             }
+        }
+    }
+
+    public static class EventJournal
+    {
+
+        public enum EventType
+        {
+            Authorize = 1,
+            ChangeObject = 2,
+            CreateObject = 3,
+            DeleteObject = 4,
+            Exit = 5,
+            TimeoutExit = 6,
+        }
+
+        public static EventType GetEventTypeById(string id)
+        {
+            EventType type = EventType.Exit;
+            EventType[] types = { EventType.Authorize, EventType.ChangeObject, EventType.CreateObject, EventType.DeleteObject, EventType.Exit, EventType.TimeoutExit };
+            int typeIndx = 0;
+            while (typeIndx < types.Length)
+            {
+                if (((int)types[typeIndx]).ToString() == id)
+                {
+                    type = types[typeIndx];
+                    break;
+                }
+                typeIndx++;
+            }
+            return type;
+        }
+
+        public static string GetHumanReadableEventType(EventType eventType)
+        {
+            string title = "";
+            switch (eventType)
+            {
+                case EventType.Authorize: title = "Авторизация"; break;
+                case EventType.ChangeObject: title = "Изменение объекта"; break;
+                case EventType.CreateObject: title = "Создание объекта"; break;
+                case EventType.DeleteObject: title = "Удаление объекта"; break;
+                case EventType.Exit: title = "Выход из системы"; break;
+                case EventType.TimeoutExit: title = "Выход по истечении времени бездействия"; break;
+            }
+            return title;
+        }
+
+        public static string GetEventTypeId(string eventTypeTitle)
+        {
+            EventType[] types = { EventType.Authorize, EventType.ChangeObject, EventType.CreateObject, EventType.DeleteObject, EventType.Exit, EventType.TimeoutExit };
+            int indx = 0;
+            while (indx < types.Length)
+            {
+                if (eventTypeTitle == GetHumanReadableEventType(types[indx])) break;
+                indx++;
+            }
+            return (indx < types.Length) ? ((int)types[indx]).ToString() : null;
         }
     }
 

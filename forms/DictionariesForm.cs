@@ -239,38 +239,26 @@ namespace ProjectOffice.forms
             return checkedText;
         }
 
-        private async void DeleteRow(string table, string idColumn)
+        private async Task DeleteRow(string table, string idColumn)
         {
             int temp = 0;
             string key = (int.TryParse(objectTable.SelectedRows[0].Cells[0].Value.ToString(), out temp)) ? 
                 objectTable.SelectedRows[0].Cells[0].Value.ToString() : $"'{objectTable.SelectedRows[0].Cells[0].Value.ToString()}'";
             object res = null;
-            if (table == "subtask")
+
+            (int refsDeletedCount, bool isErrorEnd) = await Db.CascadeReferenceDictionaryDelete(key, table);
+            if (!isErrorEnd && refsDeletedCount > 0)
             {
-                (res, _) = await Subtask.Delete(key);
+                MessageBox.Show($"Удалено {refsDeletedCount} связанных записей", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else if (table == "stage")
+            else if (isErrorEnd)
             {
-                string query = $"select ProjectID from stage_in_project where StageID = {key};";
-                string[] projIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
-                int indx = 0;
-                while (indx < projIds.Length)
-                {
-                    (res, _) = await Stage.Delete(projIds[indx], key);
-                    if (Convert.ToInt32(res) == -1) break;
-                    indx++;
-                }
-                if (Convert.ToInt32(res) != -1)
-                {
-                    query = $"delete from {Db.Name}.{table} where {idColumn} = {key};";
-                    res = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
-                }
+                MessageBox.Show("Не удалось удалить ссылку на удаляемую запись из связанной таблицы", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            else
-            {
-                string query = $"delete from {Db.Name}.{table} where {idColumn} = {key};";
-                res = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
-            }
+            string query = $"delete from {Db.Name}.{table} where {idColumn} = {key};";
+            res = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
+
             if (res == null) return;
             if (res is int && (int)res > 0) MessageBox.Show("Запись успешно удалена", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else if (res is string) MessageBox.Show((string)res, $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -293,16 +281,16 @@ namespace ProjectOffice.forms
             }
         }
 
-        private void statusCheckBtn_CheckedChanged(object sender, EventArgs e)
-        {
-            UncheckOtherBtns(sender);
-            if (statusCheckBtn.Checked)
-            {
-                SetDbEntityProperties("status", "StatusID", new string[] { "StatusTitle" });
-                UpdateTable();
+        //private void statusCheckBtn_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    UncheckOtherBtns(sender);
+        //    if (statusCheckBtn.Checked)
+        //    {
+        //        SetDbEntityProperties("status", "StatusID", new string[] { "StatusTitle" });
+        //        UpdateTable();
 
-            }
-        }
+        //    }
+        //}
 
         private void stagesCheckBtn_CheckedChanged(object sender, EventArgs e)
         {
@@ -402,7 +390,7 @@ namespace ProjectOffice.forms
             if (objectTable.SelectedRows.Count == 0) return;
             if (MessageBox.Show("Вы уверены, что хотите удалить запись?\nЕсли значение где-то применено, связанные записи тоже будут удалены.", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                DeleteRow(table, columnIdName);
+                await DeleteRow(table, columnIdName);
                 UpdateTable();
             }
         }
