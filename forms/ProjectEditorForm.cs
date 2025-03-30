@@ -439,7 +439,6 @@ from {Db.Name}.client where ClientID = {clientID}; ";
 
         private async void projectNameTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (projectNameTextBox.Text.Trim() == "") SetProjNamePlaceholder();
             proj.Title = projectNameTextBox.Text.Trim();
             await CheckFieldsFilling();
         }

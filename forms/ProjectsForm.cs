@@ -182,16 +182,6 @@ and ProjectTitle like '%{searchPattern}%' ";
             projectSearchLineTextBox.ForeColor = Color.Black;
         }
 
-        private string ShortSnp(string snp)
-        {
-            string[] parts = snp.Split(' ');
-            for (int i = 1; i < parts.Length; i++)
-            {
-                parts[i] = $"{parts[i][0]}.";
-            }
-            return String.Join(" ", parts).Trim(' ', '.');
-        }
-
         private async Task<object> GetDateFromAsync(Task<(object, Exception)> task)
         {
             object res = await _db.GetAsynNonReaderResult(task);
@@ -251,7 +241,7 @@ where IsResponsible = 1;";
             int i = 0;
             while (i < dt.Rows.Count)
             {
-                respResult.Add(ShortSnp(dt.Rows[i][0].ToString()));
+                respResult.Add(Common.GetShortSnp(dt.Rows[i][0].ToString()));
                 i++;
             }
             return respResult.ToArray();
@@ -313,7 +303,6 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
 
                         break;
                     }
-                case 2: break;
                 case 3:
                     {
                         column = "project.ProjectStatusID";
@@ -491,7 +480,6 @@ where IsResponsible = 1 and '{shortSnp}' = concat(`user`.UserSurname, ' ', subst
             switch (projectFilterOnCombo.SelectedIndex)
             {
                 case 1: projectFilterCombo.Items.AddRange(await GetResponsibleEmployees()); break;
-                case 2: break;
                 case 3: projectFilterCombo.Items.AddRange(await GetStatuses()); break;
                 default: break;
             }

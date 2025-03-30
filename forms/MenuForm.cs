@@ -73,10 +73,6 @@ namespace ProjectOffice.forms
         {
             ChangeVisibilityToOpenNewForm(new ProjectsForm());
         }
-        private void PlanningBtn_Click(object sender, EventArgs e)
-        {
-            ChangeVisibilityToOpenNewForm(new PlannigForm());
-        }
         private void StatsBtn_Click(object sender, EventArgs e)
         {
             ChangeVisibilityToOpenNewForm(new StatisticForm());
@@ -133,7 +129,6 @@ namespace ProjectOffice.forms
                 case "Справочники": handler = DictionariesBtn_Click; break;
                 case "Журнал действий": handler = ActJournalBtn_Click; break;
                 case "Учёт проектов": handler = ProjectManamentBtn_Click; break;
-                case "Планирование": handler = PlanningBtn_Click; break;
                 case "Статистика": handler = StatsBtn_Click; break;
                 case "Проекты": handler = ShowProjects_Click; break;
                 case "Настройки": handler = SettingsBtn_Click; break;
@@ -224,7 +219,8 @@ namespace ProjectOffice.forms
         private async void MenuForm_Load(object sender, EventArgs e)
         {
             CenterHorizontally(CreateButtonsAccordingToRole(), buttonsPanel, 30);
-            this.Text = $"{Resources.APP_NAME}";
+            this.Icon = Resources.PROJECT_OFFICE_ICON;
+            this.Text = $"{Resources.APP_NAME}: Меню";
             usrSnpLbl.Text = AppUser.Snp;
             userModeTip.SetToolTip(usrSnpLbl, AppUser.GetUserMode());
             userPhotoPic.Image = AppUser.Photo;

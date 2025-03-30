@@ -42,7 +42,7 @@ namespace ProjectOffice.forms
             this.backToMenuBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.backToMenuBtn.BackColor = System.Drawing.SystemColors.ControlLight;
             this.backToMenuBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.backToMenuBtn.Location = new System.Drawing.Point(36, 274);
+            this.backToMenuBtn.Location = new System.Drawing.Point(12, 274);
             this.backToMenuBtn.Name = "backToMenuBtn";
             this.backToMenuBtn.Size = new System.Drawing.Size(137, 42);
             this.backToMenuBtn.TabIndex = 15;
@@ -57,7 +57,7 @@ namespace ProjectOffice.forms
             this.saveSettingsBtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
             this.saveSettingsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.saveSettingsBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
-            this.saveSettingsBtn.Location = new System.Drawing.Point(315, 274);
+            this.saveSettingsBtn.Location = new System.Drawing.Point(345, 274);
             this.saveSettingsBtn.Name = "saveSettingsBtn";
             this.saveSettingsBtn.Size = new System.Drawing.Size(149, 42);
             this.saveSettingsBtn.TabIndex = 16;
@@ -71,7 +71,7 @@ namespace ProjectOffice.forms
             this.setsPswdTextBox.Location = new System.Drawing.Point(62, 131);
             this.setsPswdTextBox.MaxLength = 256;
             this.setsPswdTextBox.Name = "setsPswdTextBox";
-            this.setsPswdTextBox.Size = new System.Drawing.Size(347, 28);
+            this.setsPswdTextBox.Size = new System.Drawing.Size(347, 34);
             this.setsPswdTextBox.TabIndex = 14;
             this.setsPswdTextBox.UseSystemPasswordChar = true;
             this.setsPswdTextBox.TextChanged += new System.EventHandler(this.setsPswdTextBox_TextChanged);
@@ -100,7 +100,7 @@ namespace ProjectOffice.forms
             // AppSettingsForm
             // 
             this.AcceptButton = this.saveSettingsBtn;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.ClientSize = new System.Drawing.Size(506, 335);

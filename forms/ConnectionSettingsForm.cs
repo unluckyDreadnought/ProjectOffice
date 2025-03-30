@@ -97,6 +97,8 @@ namespace ProjectOffice.forms
 
         private void hidePswdChar_Click(object sender, EventArgs e)
         {
+            if (pswdToSettingsTextBox.UseSystemPasswordChar) hidePswdChar.Image = Resources.HIDE_PICTURE;
+            else hidePswdChar.Image = Resources.SHOW_PICTURE;
             pswdToSettingsTextBox.UseSystemPasswordChar = !pswdToSettingsTextBox.UseSystemPasswordChar;
         }
 

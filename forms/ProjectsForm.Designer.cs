@@ -268,7 +268,6 @@ namespace ProjectOffice.forms
             this.projectFilterOnCombo.Items.AddRange(new object[] {
             "Фильтр по ...",
             "Ответственные",
-            "Этапы",
             "Статус"});
             this.projectFilterOnCombo.Location = new System.Drawing.Point(6, 29);
             this.projectFilterOnCombo.Margin = new System.Windows.Forms.Padding(2);

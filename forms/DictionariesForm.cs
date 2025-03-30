@@ -249,7 +249,7 @@ namespace ProjectOffice.forms
             (int refsDeletedCount, bool isErrorEnd) = await Db.CascadeReferenceDictionaryDelete(key, table);
             if (!isErrorEnd && refsDeletedCount > 0)
             {
-                MessageBox.Show($"Удалено {refsDeletedCount} связанных записей", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Удалено {refsDeletedCount} связанных записей", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else if (isErrorEnd)
             {
@@ -260,7 +260,7 @@ namespace ProjectOffice.forms
             res = await _db.GetAsynNonReaderResult(_db.ExecuteNoDataResultAsync(query));
 
             if (res == null) return;
-            if (res is int && (int)res > 0) MessageBox.Show("Запись успешно удалена", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            if (res is int && (int)res > 0) MessageBox.Show("Запись успешно удалена", $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else if (res is string) MessageBox.Show((string)res, $"Удаление записи из справочника \"{currentDictionary}\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
@@ -281,17 +281,6 @@ namespace ProjectOffice.forms
             }
         }
 
-        //private void statusCheckBtn_CheckedChanged(object sender, EventArgs e)
-        //{
-        //    UncheckOtherBtns(sender);
-        //    if (statusCheckBtn.Checked)
-        //    {
-        //        SetDbEntityProperties("status", "StatusID", new string[] { "StatusTitle" });
-        //        UpdateTable();
-
-        //    }
-        //}
-
         private void stagesCheckBtn_CheckedChanged(object sender, EventArgs e)
         {
             UncheckOtherBtns(sender);
@@ -299,7 +288,6 @@ namespace ProjectOffice.forms
             {
                 SetDbEntityProperties("stage", "StageID", new string[] { "StageTitle" });
                 UpdateTable();
-
             };
         }
 
@@ -310,7 +298,6 @@ namespace ProjectOffice.forms
             {
                 SetDbEntityProperties("organitationtype", "OrganitationTypeName", new string[] { "OrganitationTypeDescription" });
                 UpdateTable();
-
             };
         }
 
@@ -321,7 +308,6 @@ namespace ProjectOffice.forms
             {
                 SetDbEntityProperties("subtask", "SubtaskID", new string[] { "SubtaskTitle" });
                 UpdateTable();
-
             };
         }
 

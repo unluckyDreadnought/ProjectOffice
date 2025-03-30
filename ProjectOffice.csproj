@@ -153,12 +153,6 @@
     <Compile Include="forms\ClientEditorForm.Designer.cs">
       <DependentUpon>ClientEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="forms\PlannigForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="forms\PlannigForm.Designer.cs">
-      <DependentUpon>PlannigForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="forms\ProjectEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -247,9 +241,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="forms\ClientEditorForm.resx">
       <DependentUpon>ClientEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="forms\PlannigForm.resx">
-      <DependentUpon>PlannigForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\ProjectEditorForm.resx">
       <DependentUpon>ProjectEditorForm.cs</DependentUpon>

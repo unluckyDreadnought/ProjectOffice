@@ -86,6 +86,7 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
         private void UsersForm_Load(object sender, EventArgs e)
         {
             this.Text = $"{Resources.APP_NAME}: Пользователи системы";
+            this.Icon = Resources.PROJECT_OFFICE_ICON;
             usrSnpLbl.Text = AppUser.Snp;
             userPhotoPic.Image = AppUser.Photo;
             userModeTip.SetToolTip(usrSnpLbl, AppUser.GetUserMode());

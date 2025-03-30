@@ -52,6 +52,8 @@ namespace ProjectOffice.forms
         {
             AppSettings.settingsPswd = setsPswdTextBox.Text.Trim();
             AppSettings.SaveModified();
+            MessageBox.Show("Пароль к настройкам подключения успешно изменён.", "Изменение пароля к настройкам", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Close();
         }
 
         // Обработчик события изменения текста в текстовом поле
