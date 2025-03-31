@@ -94,7 +94,7 @@ namespace ProjectOffice.logic
             {
                 case Tables.OrgType:
                     {
-                        query = $"select ClientID from {Db.Name}.{GetTableName(Tables.Client)} where ClientOrgTypeID = '{objId}';";
+                        query = $"select ClientID from {Db.Name}.{GetTableName(Tables.Client)} where ClientOrgTypeID = {objId};";
                         string[] clientIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
                         if (_continue && clientIds.Length != 0)
                         {

@@ -94,7 +94,7 @@ namespace ProjectOffice.forms
             else if (res is int && (int)res > 0)
             {
                 await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
-                MessageBox.Show("Запись успешно добавлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Запись успешно обновлена.", $"Справочник \"{tableName}\"", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -220,7 +220,14 @@ namespace ProjectOffice.forms
                 if (i == -1)
                 {
                     val[i + 1] = (editMode) ? $"{storedData[i+1]}" : "null";
-                    val[i + 2] = (editMode) ? $"{storedData[i+1]}" : "null";
+                    try
+                    {
+                        val[i + 2] = (editMode) ? $"{storedData[i + 2]}" : "null";
+                    }
+                    catch (Exception)
+                    {
+                        val[i + 2] = "null";
+                    }
                 }
                 if (i >= 0 && i < panel1.Controls.Count)
                 {
@@ -302,7 +309,8 @@ namespace ProjectOffice.forms
 
         private void TextBox_KeyPressed(object sender, KeyPressEventArgs e)
         {
-            if (Symbols.ru_alp.Contains(Char.ToLower(e.KeyChar)) || e.KeyChar == 8 || e.KeyChar == 127 || e.KeyChar == ' ' || e.KeyChar == '-') return;
+            if (Symbols.ru_alp.Contains(Char.ToLower(e.KeyChar)) || e.KeyChar == 8 || e.KeyChar == 127 || e.KeyChar == ' ' || e.KeyChar == '-' || 
+                (!(new string[] { Db.GetTableName(Db.Tables.OrgType), Db.GetTableName(Db.Tables.Stage) }).Contains(table) && Symbols.en_alp.Contains(Char.ToLower(e.KeyChar)))) return;
             else e.Handled = true;
         }
 

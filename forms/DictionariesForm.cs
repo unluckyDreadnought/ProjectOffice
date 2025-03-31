@@ -147,14 +147,15 @@ namespace ProjectOffice.forms
             string idCol = "";
             while (row < dt.Rows.Count)
             {
-                if (dt.Rows[row][0].ToString().Contains("ID") || dt.Rows[row][0].ToString().Contains("Id"))
+                if (dt.Rows[row][0].ToString().Contains("ID") || dt.Rows[row][0].ToString().Contains("Id") || dt.Rows[row][3].ToString() == "PRI")
                 {
                     idCol = dt.Rows[row][0].ToString();
                     break;
                 }
                 row++;
             }
-            query = $"select * from {table} where {idCol} != 0 order by {orderColumn};";
+            if (idCol.ToLower().Contains("id")) query = $"select * from {table} where {idCol} != 0 order by {orderColumn};";
+            else query = $"select * from {table} order by {orderColumn};";
             var task = _db.ExecuteReaderAsync(query);
             return await Common.GetAsyncResult(task);
         }
@@ -377,8 +378,10 @@ namespace ProjectOffice.forms
             if (MessageBox.Show("Вы уверены, что хотите удалить запись?\nЕсли значение где-то применено, связанные записи тоже будут удалены.", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 await DeleteRow(table, columnIdName);
+                await _db.LogToEventJournal(EventJournal.EventType.DeleteObject, this);
                 UpdateTable();
             }
+            else MessageBox.Show($"Операция удаления записи из таблицы \"{currentDictionary}\" была прервана.", "Подтверждение удаления", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

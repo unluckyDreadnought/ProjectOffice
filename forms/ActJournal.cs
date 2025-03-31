@@ -231,22 +231,37 @@ inner join {Db.Name}.{Db.GetTableName(Db.Tables.User)} on user.UserID = eventjou
             MessageBox.Show($"Данные будут сохранены в файле по пути \"{path}\"", "Экспорт Журнала действий пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
             bool txt = Path.GetExtension(path) == ".txt";
             // создание файла и записываем в него данные
-            using (var strWrtr = new StreamWriter(new FileStream(path, FileMode.Open, FileAccess.ReadWrite),Encoding.UTF8))
+            try
             {
-                // вставка заголовка
-                if (txt) strWrtr.WriteLine($"Дата и время\tПользователь\tТип действия\tЗаголовок формы");
-                else strWrtr.WriteLine($"Дата и время;Пользователь;Тип действия;Заголовок формы");
-                int line = 0;
-                // вставка данных с определённым для типа файла разделителем
-                string separator = (txt) ? "\t" : ";";
-                while (line < data.Length)
+                using (var strWrtr = new StreamWriter(new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite), Encoding.UTF8))
                 {
-                    strWrtr.WriteLine(string.Join(separator, data[line]));
-                    line++;
-                    if (line != 0 && line % 50 == 0) strWrtr.Flush();
+                    // вставка заголовка
+                    if (txt) strWrtr.WriteLine($"Дата и время\tПользователь\tТип действия\tЗаголовок формы");
+                    else strWrtr.WriteLine($"Дата и время;Пользователь;Тип действия;Заголовок формы");
+                    int line = 0;
+                    // вставка данных с определённым для типа файла разделителем
+                    string separator = (txt) ? "\t" : ";";
+                    while (line < data.Length)
+                    {
+                        strWrtr.WriteLine(string.Join(separator, data[line]));
+                        line++;
+                        if (line != 0 && line % 50 == 0) strWrtr.Flush();
+                    }
+                    // окончательно записываем данные и очищаем буфер
+                    strWrtr.Flush();
                 }
-                // окончательно записываем данные и очищаем буфер
-                strWrtr.Flush();
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show($"Не удалось получить доступ к файлу для сохранения данных.", "Экспорт Журнала действий пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show($"Каталог не найден.", "Экспорт Журнала действий пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Произошла ошибка.\n{ex.Message}", "Экспорт Журнала действий пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

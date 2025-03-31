@@ -173,6 +173,7 @@ from client where ClientID > 1; ";
                     }
                 }
             }
+            else MessageBox.Show("Операция удаления выбранного клиента была прервана", "Удаление клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
             UpdateClientsTable();
         }
     }
