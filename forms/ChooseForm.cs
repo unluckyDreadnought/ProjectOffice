@@ -21,14 +21,23 @@ namespace ProjectOffice.forms
         public string Title = "";
         string allSelected = " [Все]";
 
+        // список индексов записей, которые были выбраны - хранилище результатов выбора
         public List<string[]> SelectedIndexes { get; private set; } = new List<string[]>();
 
+        /// <summary>
+        /// Определяет настройки таблицы объектов
+        /// </summary>
+        /// <param name="col">Колонка таблицы объектов</param>
+        /// <param name="columnTitle">Заголовок колонки таблицы</param>
         private void ResolveColumnSettings(ref DataGridViewColumn col, ref string columnTitle)
         {
+            // проверка заголовка на пустоту
             if (columnTitle.Trim().Length > 0)
             {
+                // проверка содержания в заголовке столбца V (определяет подразумевается ли множественный выбор)
                 if (columnTitle.Contains("V"))
                 {
+                    // применение к колонке настроек колонки с CheckBox (полями выбора)
                     col = new DataGridViewCheckBoxColumn();
                     col.CellTemplate = new DataGridViewCheckBoxCell();
                     columnTitle = columnTitle.Replace("V", "");
@@ -36,11 +45,13 @@ namespace ProjectOffice.forms
                 }
                 else
                 {
+                    // применение к колонке настроек текстового столбца
                     col = new DataGridViewColumn();
                     col.CellTemplate = new DataGridViewTextBoxCell();
                     col.FillWeight = 3;
                 }
             }
+            // заголовка нет - колонка - столбец изображений
             else
             {
                 col = new DataGridViewImageColumn();
@@ -49,10 +60,14 @@ namespace ProjectOffice.forms
             }
         }
 
+        /// <summary>
+        /// Определяет количество столбцов и их тип в таблицы объектов в соответствии с режимом пользователя
+        /// </summary>
         private void ResolveChooseMode()
         {
             switch (_mode)
             {
+                // настройки таблицы в режиме выбора "Клиент"
                 case ChooseMode.Client:
                     {
                         string[] titles = { "id", "Имя", "Телефон", "Адрес", "" };
@@ -67,6 +82,7 @@ namespace ProjectOffice.forms
                         }
                         break;
                     }
+                // настройки таблицы в режиме выбора "Сотрудник"
                 case ChooseMode.Employee:
                     {
                         string[] titles = { "id", "ФИО", "Специальность", "УчастиеV", "ОтветственныйV" };
@@ -81,6 +97,7 @@ namespace ProjectOffice.forms
                         }
                         break;
                     }
+                // настройки таблицы в режиме выбора "Этапы"
                 case ChooseMode.Stages:
                     {
                         string[] titles = { "id", "Стадия", "ВключитьV" };

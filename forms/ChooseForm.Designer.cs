@@ -32,14 +32,11 @@ namespace ProjectOffice.forms
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.addObject = new System.Windows.Forms.Button();
-            this.searchGroup = new System.Windows.Forms.GroupBox();
-            this.searchLine = new System.Windows.Forms.TextBox();
             this.buttonsPanel = new System.Windows.Forms.Panel();
             this.cancelBtn = new System.Windows.Forms.Button();
             this.chooseBtn = new System.Windows.Forms.Button();
             this.chooseObjectsTable = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
-            this.searchGroup.SuspendLayout();
             this.buttonsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chooseObjectsTable)).BeginInit();
             this.SuspendLayout();
@@ -49,11 +46,10 @@ namespace ProjectOffice.forms
             this.panel1.AutoSize = true;
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(239)))), ((int)(((byte)(251)))));
             this.panel1.Controls.Add(this.addObject);
-            this.panel1.Controls.Add(this.searchGroup);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(584, 75);
+            this.panel1.Size = new System.Drawing.Size(584, 50);
             this.panel1.TabIndex = 0;
             // 
             // addObject
@@ -64,35 +60,13 @@ namespace ProjectOffice.forms
             this.addObject.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
             this.addObject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.addObject.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.addObject.Location = new System.Drawing.Point(536, 27);
+            this.addObject.Location = new System.Drawing.Point(532, 6);
             this.addObject.Name = "addObject";
             this.addObject.Size = new System.Drawing.Size(40, 41);
             this.addObject.TabIndex = 1;
             this.addObject.Text = "+";
             this.addObject.UseVisualStyleBackColor = false;
             this.addObject.Click += new System.EventHandler(this.addObject_Click);
-            // 
-            // searchGroup
-            // 
-            this.searchGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.searchGroup.Controls.Add(this.searchLine);
-            this.searchGroup.Location = new System.Drawing.Point(8, 0);
-            this.searchGroup.Name = "searchGroup";
-            this.searchGroup.Size = new System.Drawing.Size(517, 72);
-            this.searchGroup.TabIndex = 0;
-            this.searchGroup.TabStop = false;
-            this.searchGroup.Text = "Поиск";
-            // 
-            // searchLine
-            // 
-            this.searchLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.searchLine.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.searchLine.Location = new System.Drawing.Point(3, 30);
-            this.searchLine.Name = "searchLine";
-            this.searchLine.Size = new System.Drawing.Size(511, 34);
-            this.searchLine.TabIndex = 2;
             // 
             // buttonsPanel
             // 
@@ -149,14 +123,14 @@ namespace ProjectOffice.forms
             this.chooseObjectsTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.chooseObjectsTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chooseObjectsTable.EnableHeadersVisualStyles = false;
-            this.chooseObjectsTable.Location = new System.Drawing.Point(0, 75);
+            this.chooseObjectsTable.Location = new System.Drawing.Point(0, 50);
             this.chooseObjectsTable.Name = "chooseObjectsTable";
             this.chooseObjectsTable.ReadOnly = true;
             this.chooseObjectsTable.RowHeadersVisible = false;
             this.chooseObjectsTable.RowHeadersWidth = 51;
             this.chooseObjectsTable.RowTemplate.Height = 24;
             this.chooseObjectsTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.chooseObjectsTable.Size = new System.Drawing.Size(584, 362);
+            this.chooseObjectsTable.Size = new System.Drawing.Size(584, 387);
             this.chooseObjectsTable.TabIndex = 3;
             this.chooseObjectsTable.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.chooseObjectsTable_CellClick_1);
             this.chooseObjectsTable.KeyDown += new System.Windows.Forms.KeyEventHandler(this.chooseObjectsTable_KeyDown);
@@ -179,8 +153,6 @@ namespace ProjectOffice.forms
             this.Load += new System.EventHandler(this.ChooseForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.searchGroup.ResumeLayout(false);
-            this.searchGroup.PerformLayout();
             this.buttonsPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chooseObjectsTable)).EndInit();
             this.ResumeLayout(false);
@@ -193,8 +165,6 @@ namespace ProjectOffice.forms
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel buttonsPanel;
         private System.Windows.Forms.DataGridView chooseObjectsTable;
-        private System.Windows.Forms.GroupBox searchGroup;
-        private System.Windows.Forms.TextBox searchLine;
         private System.Windows.Forms.Button cancelBtn;
         private System.Windows.Forms.Button chooseBtn;
         private System.Windows.Forms.Button addObject;

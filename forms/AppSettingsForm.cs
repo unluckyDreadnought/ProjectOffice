@@ -14,6 +14,7 @@ namespace ProjectOffice.forms
 {
     public partial class AppSettingsForm : Form
     {
+        // конструктор класса
         public AppSettingsForm()
         {
             InitializeComponent();
@@ -22,6 +23,7 @@ namespace ProjectOffice.forms
         // Функция, управляющая доступностью для нажатия кнопки сохранения
         private void ChangeSaveBtnEnable()
         {
+            // проверка на пустоту поля ввода пароля, если значение непустое - делаем кнопку доступной для нажатия 
             if (setsPswdTextBox.Text.Trim().Length > 0)
             {
                 saveSettingsBtn.Enabled = !(AppSettings.settingsPswd == setsPswdTextBox.Text.Trim()); 
@@ -35,6 +37,7 @@ namespace ProjectOffice.forms
         // Обработчик события загрузки формы
         private void AppSettingsForm_Load(object sender, EventArgs e)
         {
+            // установка названия формы и иконки
             this.Text = $"{Resources.APP_NAME}: Настройки";
             this.Icon = Resources.PROJECT_OFFICE_ICON;
             setsPswdTextBox.UseSystemPasswordChar = true;
@@ -50,6 +53,7 @@ namespace ProjectOffice.forms
         // Обработчик события нажатия на кнопку сохранения
         private void saveSettingsBtn_Click(object sender, EventArgs e)
         {
+            // сохранение пароля без лишних пробелов
             AppSettings.settingsPswd = setsPswdTextBox.Text.Trim();
             AppSettings.SaveModified();
             MessageBox.Show("Пароль к настройкам подключения успешно изменён.", "Изменение пароля к настройкам", MessageBoxButtons.OK, MessageBoxIcon.Information);

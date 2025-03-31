@@ -19,11 +19,7 @@ namespace ProjectOffice.forms
         bool[] fieldsFilled = new bool[] { false, false };
         private Db _db = null;
 
-        private void LoginDebug(string user)
-        {
-            LoginTextBox_nec.Text = PswdTextBox_nec.Text = user;
-        }
-
+        // конструктор класса
         public AuthorizationForm()
         {
             InitializeComponent();
@@ -46,9 +42,11 @@ namespace ProjectOffice.forms
         // Обработчик загрузки формы авторизации
         private void AuthorizationForm_Load(object sender, EventArgs e)
         {
+            // установка названия формы и иконки
             this.Text = $"{Resources.APP_NAME}: Авторизация пользователя";
             this.Icon = Resources.PROJECT_OFFICE_ICON;
             appLogo.Image = Resources.PROJECT_OFFICE_LOGO;
+            // проверка заполнения полей
             CheckFieldsFilling();
         }
 
@@ -69,22 +67,27 @@ namespace ProjectOffice.forms
         // Обработчик нажатия на кнопку входа в приложение
         private async void LogInBtn_Click(object sender, EventArgs e)
         {
+            // подготавливаем логин и пароль для сравнения со значениями в базе данных
             string login = LoginTextBox_nec.Text.Trim();
             string pass = Security.HashSha512(PswdTextBox_nec.Text.Trim());
             // Поиск пользователя по логину и хэшированному паролю среди записанных в базе данных
             (string[] result, DataTable dt) = await _db.FindUser(login, pass);
+            // неудачное подключении к БД
             if (result == null)
             {
                 MessageBox.Show("Ошибка обращения к базе данных", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            // пользователь с такими учётными данными не обнаружен
             else if (result.Length == 1)
             {
                 MessageBox.Show(result[0], "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // заполнение данных текущего пользователя
             AppUser.Photo = null;
+            // сохранение фотографии пользователя, если она была найдена
             if (dt.Rows[0].ItemArray[3] as byte[] != null)
             {
                 byte[] bytes = Сompressor.DecompressBytes((byte[])dt.Rows[0].ItemArray[3]);
@@ -93,6 +96,7 @@ namespace ProjectOffice.forms
                     AppUser.Photo = new Bitmap(ms);
                 }
             }
+            // сохранение основных данных о пользователе
             AppUser.Id = result[2];
             AppUser.Snp = result[0];
             int mode = 0;
@@ -104,14 +108,19 @@ namespace ProjectOffice.forms
                 case (int)UserRole.Employee: AppUser.Role = UserRole.Employee; break;
             }
             this.Hide();
+            // запись входа в систему в "Журнал действий пользователей"
             await _db.LogToEventJournal(EventJournal.EventType.Authorize, this);
+            // открытие меню
             MenuForm menuForm = new MenuForm();
+            // определение реакции системы на закрытие меню
             if (menuForm.ShowDialog() == DialogResult.Abort)
             {
+                // полный выход - нажатие кнопки "Выход" на форме меню
                 Application.Exit();
             }
             else
             {
+                // выход из аккаунта - нажатие кнопки "Покинуть личный кабинет" на форме меню
                 ClearFields();
                 this.Show();
             }           
@@ -124,6 +133,7 @@ namespace ProjectOffice.forms
             PswdTextBox_nec.UseSystemPasswordChar = !PswdTextBox_nec.UseSystemPasswordChar;
         }
 
+        // Обработчик нажатия на  кнопку "Выход" на форме авторизации
         private void ExitBtn_Click(object sender, EventArgs e)
         {
             Application.Exit();
