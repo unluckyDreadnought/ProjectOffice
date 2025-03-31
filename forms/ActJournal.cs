@@ -17,41 +17,63 @@ namespace ProjectOffice.forms
     {
         Db _db = new Db();
 
+        // конструктор класса
         public ActJournal()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Загружает режимы пользователей в список выбора
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadFilterUserModes()
         {
+            // очистка прежде существовавших вариантов и установка базового
             filterUserRoleCombo.Items.Clear();
             filterUserRoleCombo.Items.Add("Роль пользователя");
             filterUserRoleCombo.SelectedIndex = 0;
-
+            // получение списка режимов пользователя и их загрузка в список выбора
             string query = $"select UserModeTitle from {Db.Name}.{Db.GetTableName(Db.Tables.UserMode)};";
             string[] modes = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
             filterUserRoleCombo.Items.AddRange(modes);
         }
 
+        /// <summary>
+        /// Загружает типы действий (событий) записываемые в Журнале действий пользователей
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadFilterEvent()
         {
+            // очистка прежде существовавших вариантов и установка базового
             filterEventTypeCombo.Items.Clear();
             filterEventTypeCombo.Items.Add("Событие");
             filterEventTypeCombo.SelectedIndex = 0;
-
+            // получение списка типов действий
             string query = $"select EventTypeID from {Db.Name}.{Db.GetTableName(Db.Tables.EventType)};";
             string[] typeIds = Common.DataTableToStringArray(await Common.GetAsyncResult(_db.ExecuteReaderAsync(query)));
             int indx = 0;
             while (indx < typeIds.Length)
             {
+                // преобразование идентификатора в название типа
+                // загрузка типов действий в список выбора
                 filterEventTypeCombo.Items.Add(EventJournal.GetHumanReadableEventType(EventJournal.GetEventTypeById(typeIds[indx])));
                 indx++;
             }
         }
 
+        /// <summary>
+        /// Загружает список действий пользователей исходя из заданных параметров фильтрации
+        /// </summary>
+        /// <param name="modeTitle">Название типа пользователя</param>
+        /// <param name="typeId">Назание типа события</param>
+        /// <param name="start">Дата начала</param>
+        /// <param name="end">Дата конца</param>
+        /// <returns>Возвращает асинхронную операцию, результатом которой является массив массивов строк записей действий пользователей</returns>
         private async Task<string[][]> LoadEvents(string modeTitle = null, string typeId = null, string start = null, string end = null)
         {
             List<string> fields = new List<string>();
+            // формирование запроса к базе данных
             string query = $@"select EventTypeID, UserSurname, UserName, UserPatronymic, EventDateTime, FormName from {Db.Name}.{Db.GetTableName(Db.Tables.EventJournal)}
 inner join {Db.Name}.{Db.GetTableName(Db.Tables.User)} on user.UserID = eventjournal.UserID ";
             if (modeTitle != null || typeId != null || start != null || end != null)
