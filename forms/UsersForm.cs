@@ -126,8 +126,17 @@ inner join {Db.Name}.usermode on usermode.UserModeID = user.UserModeID where Use
 
         private async void deleteUserBtn_Click(object sender, EventArgs e)
         {
-            DataGridViewRow selectedRow = usersTable.Rows.Cast<DataGridViewRow>().Where(
+            DataGridViewRow selectedRow = null;
+            try
+            {
+                selectedRow = usersTable.Rows.Cast<DataGridViewRow>().Where(
                 row => row.Cells["id"].Value.ToString() == userId).First();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Выберите пользователя для удаления", "Удаления пользователей", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             string userSnp = selectedRow.Cells["fio"].Value.ToString();
             string userLogin = selectedRow.Cells["login"].Value.ToString();
             if (MessageBox.Show($"Вы действительно хотите удалить этого пользователя ({userSnp} [{userLogin}])?", 

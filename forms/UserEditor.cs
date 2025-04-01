@@ -337,14 +337,19 @@ where UserID = {userId};";
                 (rows, e) = await _db.ExecuteNoDataResultAsync(query, Сompressor.CompressBytes(imgMem.ToArray()));
             }
             else (rows, e) = await _db.ExecuteNoDataResultAsync(query);
+
+            string title = $"Создание ";
+            title += userMode ? "пользователя" : "сотрудника";
+            string subject = userMode ? "Пользователь" : "Сотрудник";
+
             if (e != null)
             {
-                MessageBox.Show(e.Message, "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             if (rows > 0)
             {
                 await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
-                MessageBox.Show($"Пользователь создан успешно.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{subject} создан успешно.", title, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -408,14 +413,18 @@ where UserID = {userId};";
                 (rows, e) = await _db.ExecuteNoDataResultAsync(query);
             }
 
+            string title = $"Изменение ";
+            title += userMode ? "пользователя" : "сотрудника";
+            string subject = userMode ? "Пользователь" : "Сотрудник";
+
             if (e != null)
             {
-                MessageBox.Show(e.Message, "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             if (rows > 0)
             {
                 await _db.LogToEventJournal(EventJournal.EventType.ChangeObject, this);
-                MessageBox.Show($"Пользователь успешно отредактирован.", "Создание пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{subject} успешно отредактирован.", title, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

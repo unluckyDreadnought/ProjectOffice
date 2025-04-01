@@ -86,12 +86,20 @@ order by Snp asc;";
 
         private async void deleteEmployeeBtn_Click(object sender, EventArgs e)
         {
-            DataGridViewRow selectedRow = employeeTable.Rows.Cast<DataGridViewRow>().Where(
-                row => row.Cells[0].Value.ToString() == uId).First();
+            DataGridViewRow selectedRow = null;
+            try
+            {
+                selectedRow = employeeTable.Rows.Cast<DataGridViewRow>().Where(
+    row => row.Cells[0].Value.ToString() == uId).First();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Выберите сотрудника для удаления", "Удаления сотрудников", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             string userSnp = selectedRow.Cells["fio"].Value.ToString();
-
-            if (MessageBox.Show($"Вы действительно хотите удалить этого пользователя ({userSnp})?",
-                "Редактор пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show($"Вы действительно хотите удалить этого сотрудника ({userSnp})?",
+                "Редактор сотрудников", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 bool deleting = true;
                 bool force = false;

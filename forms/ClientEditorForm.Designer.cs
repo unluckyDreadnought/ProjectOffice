@@ -122,6 +122,7 @@ namespace ProjectOffice.forms
             this.clientTabs.SelectedIndex = 0;
             this.clientTabs.Size = new System.Drawing.Size(678, 550);
             this.clientTabs.TabIndex = 33;
+            this.clientTabs.SelectedIndexChanged += new System.EventHandler(this.clientTabs_SelectedIndexChanged);
             this.clientTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.clientTabs_Selecting);
             // 
             // tabPage1
@@ -588,6 +589,7 @@ namespace ProjectOffice.forms
             "ЗАО",
             "АО"});
             this.orgType.Location = new System.Drawing.Point(500, 264);
+            this.orgType.MaxDropDownItems = 10;
             this.orgType.Name = "orgType";
             this.orgType.Size = new System.Drawing.Size(142, 37);
             this.orgType.TabIndex = 62;
@@ -603,6 +605,7 @@ namespace ProjectOffice.forms
             this.orgAddr.Size = new System.Drawing.Size(476, 66);
             this.orgAddr.TabIndex = 58;
             this.orgAddr.TextChanged += new System.EventHandler(this.control_Changed);
+            this.orgAddr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.orgAddress_KeyPress);
             // 
             // emailTxt
             // 
@@ -613,6 +616,7 @@ namespace ProjectOffice.forms
             this.emailTxt.Size = new System.Drawing.Size(377, 34);
             this.emailTxt.TabIndex = 66;
             this.emailTxt.TextChanged += new System.EventHandler(this.control_Changed);
+            this.emailTxt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.email_KeyPress);
             // 
             // orgBank
             // 
@@ -647,6 +651,7 @@ namespace ProjectOffice.forms
             this.orgName.Size = new System.Drawing.Size(476, 34);
             this.orgName.TabIndex = 57;
             this.orgName.TextChanged += new System.EventHandler(this.control_Changed);
+            this.orgName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.orgName_KeyPress);
             // 
             // ClientEditorForm
             // 

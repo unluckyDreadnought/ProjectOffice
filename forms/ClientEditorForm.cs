@@ -48,6 +48,7 @@ namespace ProjectOffice.forms
         {
             int tabIndx = isOrganization ? 1 : 0;
             clientTabs.SelectTab(tabIndx);
+            CheckFieldsFilling();
         }
 
         private string GetPhoneText(string initial)
@@ -517,6 +518,12 @@ ClientBank = '{fizClientBank.Text.Trim()}', ClientPhone = '{phn}', ClientEmail =
             }
             fizPhoto.Image = new Bitmap(imgStream);
             CheckFieldsFilling();
+        }
+
+        private void clientTabs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            organization = clientTabs.SelectedIndex == 0 ? false : true;
+            SelectTab(organization);
         }
     }
 }
